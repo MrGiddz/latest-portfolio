@@ -19,7 +19,7 @@ const Portfolio = () => {
   const [currentSection, setCurrentSection] = useState(0);
   const [isDesktop, setIsDesktop] = useState(false);
 
-  const containerRef = useRef(null);
+const containerRef = useRef<HTMLDivElement>(null);
 
   // We only initialize scroll hooks if it's a desktop view
   const { scrollYProgress } = useScroll({
