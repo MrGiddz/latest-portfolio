@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
@@ -31,6 +31,7 @@ export default function PortfolioLayout({
   const [showScrollIndicator, setShowScrollIndicator] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
   const [scrollAccumulator, setScrollAccumulator] = useState(0);
+   const contentRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     setShowScrollIndicator(pathname === "/");
@@ -45,34 +46,46 @@ export default function PortfolioLayout({
     return () => window.removeEventListener("scroll", handleScroll);
   }, [pathname]);
 
-  const pageVariants = {
-    initial: { opacity: 0, x: "-100vw" },
-    animate: { opacity: 1, x: 0 },
-    exit: { opacity: 0, x: "100vw" },
-  };
+  //   const pageVariants = {
+  //     initial: { opacity: 0, x: "-100vw" },
+  //     animate: { opacity: 1, x: 0 },
+  //     exit: { opacity: 0, x: "100vw" },
+  //   };
 
+  
+
+
+  // --- REPLACE your existing handleWheel useEffect with this new version ---
   useEffect(() => {
-    const SCROLL_THRESHOLD = 200;
+    const SCROLL_THRESHOLD = 1000;
 
     const handleWheel = (e: WheelEvent) => {
       if (isNavigating) return;
 
+      // Determine which element is scrolling based on the device
+      const scrollableElement = isDesktop ? contentRef.current : window;
+      const contentContainer = isDesktop ? contentRef.current : document.body;
+      
+      if (!scrollableElement || !contentContainer) return;
+
+      // Get scroll values from the correct element
+      const scrollTop = isDesktop ? (scrollableElement as HTMLElement).scrollTop : (scrollableElement as Window).scrollY;
+      const clientHeight = isDesktop ? (scrollableElement as HTMLElement).clientHeight : (scrollableElement as Window).innerHeight;
+      const scrollHeight = isDesktop ? (contentContainer as HTMLElement).scrollHeight : contentContainer.offsetHeight;
+
+      const isAtBottom = clientHeight + scrollTop >= scrollHeight - 2;
+      const isAtTop = scrollTop === 0;
+
       const isScrollingDown = e.deltaY > 0;
       const isScrollingUp = e.deltaY < 0;
       const currentIndex = navLinks.findIndex((link) => link.href === pathname);
-
-      const isAtBottom =
-        window.innerHeight + window.scrollY >= document.body.offsetHeight - 2;
-      const isAtTop = window.scrollY === 0;
-
+      
+      // The rest of the logic remains the same, but now uses the correct values
       if (isScrollingDown && isAtBottom) {
         const newAccumulator = scrollAccumulator + e.deltaY;
         setScrollAccumulator(newAccumulator);
 
-        if (
-          newAccumulator >= SCROLL_THRESHOLD &&
-          currentIndex < navLinks.length - 1
-        ) {
+        if (newAccumulator >= SCROLL_THRESHOLD && currentIndex < navLinks.length - 1) {
           setIsNavigating(true);
           const nextLink = navLinks[currentIndex + 1];
           router.push(nextLink.href);
@@ -82,7 +95,7 @@ export default function PortfolioLayout({
           }, 1500);
         }
       } else if (isScrollingUp && isAtTop) {
-        const newAccumulator = scrollAccumulator + e.deltaY; // deltaY is negative here
+        const newAccumulator = scrollAccumulator + e.deltaY;
         setScrollAccumulator(newAccumulator);
 
         if (newAccumulator <= -SCROLL_THRESHOLD && currentIndex > 0) {
@@ -95,16 +108,16 @@ export default function PortfolioLayout({
           }, 1500);
         }
       } else {
-        // If we are not at the top or bottom, reset the accumulator
         setScrollAccumulator(0);
       }
     };
 
+    // Listen on the window, but check the correct element's scroll
     window.addEventListener("wheel", handleWheel);
     return () => {
       window.removeEventListener("wheel", handleWheel);
     };
-  }, [pathname, router, isNavigating, navLinks, scrollAccumulator]); // Add scrollAccumulator to dependencies
+  }, [pathname, router, isNavigating, scrollAccumulator, isDesktop]);
 
   useEffect(() => {
     // We only want this behavior on mobile devices, and not for the homepage
@@ -121,17 +134,54 @@ export default function PortfolioLayout({
     }
   }, [pathname, isDesktop]);
 
+  const pageVariants = {
+    initial: {
+      opacity: 0,
+      x: "-100%", // next page moves in from the left
+    },
+    animate: {
+      opacity: 1,
+      x: 0,
+    },
+    exit: {
+      opacity: 0,
+      x: "100%", // current page moves out to the right
+    },
+  };
+
+  const pageTransition = {
+    type: "tween",
+    ease: "anticipate",
+    duration: 0.7,
+  };
+
   return (
-    <div className="min-h-screen relative overflow-hidden font-mono">
+    <div className="min-h-screen relative font-mono">
       {/* Animated Background */}
 
-      <div className="fixed inset-0 -z-10">
+      <div
+        className="fixed inset-0 -z-10"
+        style={{
+          backgroundColor: "#111827",
+          backgroundImage: `radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.4) 100%),linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px)`,
+          backgroundSize: "100% 100%, 2rem 2rem, 2rem 2rem",
+        }}
+      >
+        <div
+          className="fixed inset-0 -z-10"
+          style={{
+            backgroundColor: "#111827",
+            backgroundImage: `radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.4) 100%),linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px)`,
+            backgroundSize: "100% 100%, 2rem 2rem, 2rem 2rem",
+          }}
+        />
         {/* Layer 1: Thematic Base Color (Driven by section change) */}
         <motion.div
           className="absolute inset-0"
           animate={{
             background: sectionBackgrounds[pathname] || sectionBackgrounds["/"],
           }}
+          style={{ opacity: 0.4 }}
           transition={{ duration: 1.5, ease: "easeInOut" }}
         />
 
@@ -154,10 +204,10 @@ export default function PortfolioLayout({
           }}
         />
 
-        {/* Layer 3: Subtle "breathing" texture (from before) */}
+        {/* Layer 3: Subtle "breathing" texture*/}
         <motion.div
           className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent"
-          animate={{ opacity: [0.1, 0.4, 0.1] }}
+          animate={{ opacity: [0.1, 0.8, 0.1] }}
           transition={{
             duration: 8,
             repeat: Infinity,
@@ -167,20 +217,8 @@ export default function PortfolioLayout({
         />
       </div>
 
-      <div
-        className="fixed inset-0 -z-10"
-        style={{
-          backgroundColor: "#111827", // Dark Slate 900 from Tailwind
-          backgroundImage: `
-      radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.4) 100%),
-      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-      linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px)
-    `,
-          backgroundSize: "100% 100%, 2rem 2rem, 2rem 2rem",
-        }}
-      />
-
       <div className="flex flex-col lg:flex-row">
+
         {/* --- Left Side (Profile) --- */}
         <div className="w-full lg:w-1/2 lg:h-screen lg:fixed lg:top-0 lg:left-0 flex flex-col justify-center items-center p-8 lg:p-12 min-h-screen">
           <motion.div
@@ -368,12 +406,14 @@ export default function PortfolioLayout({
 
         {/* --- Right Side (Page Content) --- */}
         <main
+         ref={contentRef}
           id="page-content"
-          className="w-full lg:w-1/2 lg:ml-[50%] pb-24 lg:pb-0"
+          className="w-full lg:w-1/2 lg:ml-[50%] pb-24 lg:pb-0 relative"
         >
-          <AnimatePresence mode="wait">
+          <AnimatePresence>
             <motion.main
               key={pathname}
+              className="absolute inset-0"
               variants={pageVariants}
               transition={{
                 type: "tween",

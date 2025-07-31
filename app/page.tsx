@@ -102,9 +102,10 @@ const ExperienceContent = () => (
 
 export default function HomePage() {
   return (
-    // The min-h-screen here allows the content to be taller than the viewport
-    <div className="min-h-screen w-full flex items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-2xl backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl my-24">
+    // STEP 1: Remove flex properties from this outer container
+    <div className="min-h-screen w-full p-6 md:p-10">
+      {/* STEP 2: Add mx-auto to the inner card for horizontal centering */}
+      <div className="w-full max-w-2xl mx-auto backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl my-24">
         {/* About Me Section */}
         <section>
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-8 text-center font-mono">
