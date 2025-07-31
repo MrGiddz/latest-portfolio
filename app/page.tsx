@@ -102,7 +102,7 @@ const ExperienceContent = () => (
 
 export default function HomePage() {
   return (
-    // STEP 1: Remove flex properties from this outer container
+
     <div className="min-h-screen w-full p-6 md:p-10">
       {/* STEP 2: Add mx-auto to the inner card for horizontal centering */}
       <div className="w-full max-w-2xl mx-auto backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl my-24">

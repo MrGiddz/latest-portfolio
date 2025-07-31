@@ -1,14 +1,13 @@
 import {
-  User,
-  Briefcase,
   Wrench,
   LayoutGrid,
   GraduationCap,
   MessageSquare,
+  Home,
 } from "lucide-react";
 
 export const navLinks = [
-  { href: "/", label: "About", icon: User },
+  { href: "/", label: "Home", icon: Home },
   // { href: "/experience", label: "Experience", icon: Briefcase },
   { href: "/skills", label: "Skills", icon: Wrench },
   { href: "/projects", label: "Projects", icon: LayoutGrid },

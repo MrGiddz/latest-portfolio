@@ -57,7 +57,7 @@ export default function PortfolioLayout({
 
   // --- REPLACE your existing handleWheel useEffect with this new version ---
   useEffect(() => {
-    const SCROLL_THRESHOLD = 1000;
+    const SCROLL_THRESHOLD = 800;
 
     const handleWheel = (e: WheelEvent) => {
       if (isNavigating) return;
