@@ -37,7 +37,7 @@ const CredentialsContent = () => (
 
     {/* Certifications Section */}
     <div>
-      <h3 className="text-white font-semibold text-lg mb-4">Certifications</h3>
+      <h3 className="text-white font-semibold text-lg mb-4 font-jetbrains">Certifications</h3>
       <div className="space-y-4">
         {certificationsData.map((cert, index) => (
           <div key={index}>

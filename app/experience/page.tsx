@@ -57,7 +57,7 @@ export default function ExperiencePage() {
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-2xl backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl">
-        <h2 className="text-3xl md:text-4xl font-bold text-white mb-8 text-center font-mono">
+        <h2 className="text-3xl md:text-4xl font-bold text-white mb-8 text-center font-jetbrains">
           Experience
         </h2>
         <ExperienceContent />

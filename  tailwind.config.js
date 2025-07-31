@@ -1,4 +1,4 @@
-import defaultTheme from 'tailwindcss/defaultTheme';
+import defaultTheme from "tailwindcss/defaultTheme";
 
 /** @type {import('tailwindcss').Config} */
 const config = {
@@ -10,10 +10,9 @@ const config = {
   theme: {
     extend: {
       fontFamily: {
-        // Use the CSS variable for sans-serif fonts
-        sans: ['var(--font-plus-jakarta-sans)', ...defaultTheme.fontFamily.sans],
-        // Use the CSS variable for mono fonts
-        mono: ['var(--font-space-mono)', ...defaultTheme.fontFamily.mono],
+        sans: ["var(--font-plus-jakarta-sans)", "sans-serif"],
+        mono: ["var(--font-space-mono)", "monospace"],
+        code: ["var(--font-fira-code)", "monospace"],
       },
     },
   },

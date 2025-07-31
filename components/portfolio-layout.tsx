@@ -8,9 +8,17 @@ import { Mail, ArrowDown } from "lucide-react";
 import { SiGithub, SiFacebook, SiInstagram } from "react-icons/si";
 import { FaTwitter } from "react-icons/fa";
 import Image from "next/image";
-import { TypeAnimation } from "react-type-animation";
+import Typewriter from "typewriter-effect";
 import { navLinks, sectionBackgrounds } from "@/lib/portfolio-data";
 import NavigationLoader from "./navigation-loader";
+
+const socialLinks = [
+  { Icon: SiGithub, href: "https://github.com/your-username" },
+  { Icon: FaTwitter, href: "https://twitter.com/your-username" },
+  { Icon: SiFacebook, href: "https://facebook.com/your-username" },
+  { Icon: SiInstagram, href: "https://instagram.com/your-username" },
+  { Icon: Mail, href: "mailto:your.email@example.com" },
+];
 
 export default function PortfolioLayout({
   children,
@@ -21,7 +29,8 @@ export default function PortfolioLayout({
   const router = useRouter();
   const [isNavigating, setIsNavigating] = useState(false);
   const [showScrollIndicator, setShowScrollIndicator] = useState(false);
-    const [isDesktop, setIsDesktop] = useState(false); 
+  const [isDesktop, setIsDesktop] = useState(false);
+  const [scrollAccumulator, setScrollAccumulator] = useState(0);
 
   useEffect(() => {
     setShowScrollIndicator(pathname === "/");
@@ -43,37 +52,51 @@ export default function PortfolioLayout({
   };
 
   useEffect(() => {
+    const SCROLL_THRESHOLD = 200;
+
     const handleWheel = (e: WheelEvent) => {
-      // If we are already navigating, do nothing
       if (isNavigating) return;
 
       const isScrollingDown = e.deltaY > 0;
       const isScrollingUp = e.deltaY < 0;
-
       const currentIndex = navLinks.findIndex((link) => link.href === pathname);
 
-      // Check for scroll down at the bottom of the page
-      if (
-        isScrollingDown &&
-        window.innerHeight + window.scrollY >= document.body.offsetHeight
-      ) {
-        if (currentIndex < navLinks.length - 1) {
+      const isAtBottom =
+        window.innerHeight + window.scrollY >= document.body.offsetHeight - 2;
+      const isAtTop = window.scrollY === 0;
+
+      if (isScrollingDown && isAtBottom) {
+        const newAccumulator = scrollAccumulator + e.deltaY;
+        setScrollAccumulator(newAccumulator);
+
+        if (
+          newAccumulator >= SCROLL_THRESHOLD &&
+          currentIndex < navLinks.length - 1
+        ) {
           setIsNavigating(true);
           const nextLink = navLinks[currentIndex + 1];
           router.push(nextLink.href);
-
-          setTimeout(() => setIsNavigating(false), 1500);
+          setTimeout(() => {
+            setIsNavigating(false);
+            setScrollAccumulator(0);
+          }, 1500);
         }
-      }
+      } else if (isScrollingUp && isAtTop) {
+        const newAccumulator = scrollAccumulator + e.deltaY; // deltaY is negative here
+        setScrollAccumulator(newAccumulator);
 
-      // Check for scroll up at the top of the page
-      if (isScrollingUp && window.scrollY === 0) {
-        if (currentIndex > 0) {
+        if (newAccumulator <= -SCROLL_THRESHOLD && currentIndex > 0) {
           setIsNavigating(true);
           const prevLink = navLinks[currentIndex - 1];
           router.push(prevLink.href);
-          setTimeout(() => setIsNavigating(false), 1500);
+          setTimeout(() => {
+            setIsNavigating(false);
+            setScrollAccumulator(0);
+          }, 1500);
         }
+      } else {
+        // If we are not at the top or bottom, reset the accumulator
+        setScrollAccumulator(0);
       }
     };
 
@@ -81,22 +104,22 @@ export default function PortfolioLayout({
     return () => {
       window.removeEventListener("wheel", handleWheel);
     };
-  }, [pathname, router, isNavigating]);
+  }, [pathname, router, isNavigating, navLinks, scrollAccumulator]); // Add scrollAccumulator to dependencies
 
-    useEffect(() => {
+  useEffect(() => {
     // We only want this behavior on mobile devices, and not for the homepage
-    if (!isDesktop && pathname !== '/') {
+    if (!isDesktop && pathname !== "/") {
       // Wait a brief moment for the page transition to start
       const timer = setTimeout(() => {
-        const content = document.getElementById('page-content');
+        const content = document.getElementById("page-content");
         if (content) {
-          content.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          content.scrollIntoView({ behavior: "smooth", block: "start" });
         }
       }, 200); // 200ms delay to ensure a smooth transition
 
       return () => clearTimeout(timer);
     }
-  }, [pathname, isDesktop]); 
+  }, [pathname, isDesktop]);
 
   return (
     <div className="min-h-screen relative overflow-hidden font-mono">
@@ -160,7 +183,7 @@ export default function PortfolioLayout({
               transition={{ type: "spring", stiffness: 300 }}
             >
               <Image
-                src="/olamide-profile.jpeg" // The path to your image in the public folder
+                src="/profile.jpg" // The path to your image in the public folder
                 alt="Olaniyi Olamide's profile picture"
                 width={128} // Corresponds to w-32 (32 * 4px = 128px)
                 height={128} // Corresponds to h-32
@@ -170,30 +193,61 @@ export default function PortfolioLayout({
             </motion.div>
 
             <div className="space-y-2">
-              <TypeAnimation
-                sequence={["Hello, I'm Olamide!"]}
-                wrapper="h1"
-                speed={50}
-                cursor={false} // No cursor on the first line
-                className="text-gray-300 text-xl md:text-2xl"
+              <Typewriter
+                options={{
+                  loop: true,
+                  delay: 50,
+                  cursorClassName: "text-blue-400",
+                }}
+                onInit={(typewriter) => {
+                  typewriter
+                    .pauseFor(200)
+                    .typeString(
+                      "<span style='color: #60a5fa;'>Hello, </span> I'm <span style='color: #facc15;'>Olamide!.</span>"
+                    )
+                    .pauseFor(5000)
+                    .start();
+                }}
               />
 
-              <TypeAnimation
-                sequence={[
-                  1200, // Wait 1.2s after the first line is typed
-                  "A Full Stack Developer.",
-                  2000, // Keep the text for 2s
-                  "A Problem Solver.",
-                  2000,
-                  "A Tech Enthusiast.",
-                  2000,
-                ]}
-                wrapper="h2"
-                speed={50}
-                cursor={true}
-                repeat={Infinity}
-                className="text-white text-4xl md:text-5xl font-bold leading-tight font-mono"
-              />
+              <h2 className="text-white text-2xl md:text-3xl font-bold leading-tight font-code h-28 lg:h-auto">
+                <Typewriter
+                  options={{
+                    loop: true,
+                    delay: 50,
+                    cursorClassName: "text-blue-400",
+                  }}
+                  onInit={(typewriter) => {
+                    typewriter
+                      .pauseFor(1200)
+                      .typeString(
+                        'Building with <span style="color: #60a5fa;">React</span> & <span style="color: #ffffff;">Next.js</span>.'
+                      )
+                      .pauseFor(2500)
+                      .deleteAll()
+                      .typeString(
+                        'Scalable APIs in <span style="color: #84cc16;">Node.js</span>.'
+                      )
+                      .pauseFor(2500)
+                      .deleteAll()
+                      .typeString(
+                        'Managing <span style="color: #4ade80;">MongoDB</span> & <span style="color: #3b82f6;">PostgreSQL</span>.'
+                      )
+                      .pauseFor(2500)
+                      .deleteAll()
+                      .typeString(
+                        'Writing Type-Safe <span style="color: #3178c6;">TypeScript</span>.'
+                      )
+                      .pauseFor(2500)
+                      .deleteAll()
+                      .typeString(
+                        'Deploying on <span style="color: #f59e0b;">AWS</span> & <span style="color: #06b6d4;">Docker</span>.'
+                      )
+                      .pauseFor(2500)
+                      .start();
+                  }}
+                />
+              </h2>
             </div>
 
             <motion.div
@@ -258,7 +312,7 @@ export default function PortfolioLayout({
               animate={{ opacity: 1 }}
               transition={{ delay: 1.1 }}
             >
-              {[SiGithub, FaTwitter, SiFacebook, SiInstagram, Mail].map(
+              {/* {[SiGithub, FaTwitter, SiFacebook, SiInstagram, Mail].map(
                 (Icon, index) => (
                   <motion.div
                     key={index}
@@ -273,13 +327,37 @@ export default function PortfolioLayout({
                     <Icon className="w-5 h-5 text-gray-300" />
                   </motion.div>
                 )
-              )}
+              )} */}
+
+              {socialLinks.map(({ Icon, href }, index) => (
+                <motion.a
+                  key={index}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-12 h-12 border border-gray-500 rounded-full flex items-center justify-center cursor-pointer backdrop-blur-sm"
+                  whileHover={{
+                    scale: 1.1,
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                    borderColor: "rgba(255, 255, 255, 0.3)",
+                  }}
+                  whileTap={{ scale: 0.9 }}
+                  title={
+                    href.includes("mailto") ? "Send an email" : "Visit profile"
+                  }
+                >
+                  <Icon className="w-5 h-5 text-gray-300" />
+                </motion.a>
+              ))}
             </motion.div>
           </motion.div>
         </div>
 
         {/* --- Right Side (Page Content) --- */}
-        <main id="page-content"  className="w-full lg:w-1/2 lg:ml-[50%] pb-24 lg:pb-0">
+        <main
+          id="page-content"
+          className="w-full lg:w-1/2 lg:ml-[50%] pb-24 lg:pb-0"
+        >
           <AnimatePresence mode="wait">
             <motion.main
               key={pathname}
