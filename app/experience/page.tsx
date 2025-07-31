@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import React from "react";
 
 // You can define the data right here or import it from your data library
@@ -27,6 +28,10 @@ const experienceData = [
     date: "Oct 2020 - June 2021",
   },
 ];
+
+export const metadata: Metadata = {
+  title: "Experience",
+};
 
 // This sub-component keeps the main return statement clean
 const ExperienceContent = () => (

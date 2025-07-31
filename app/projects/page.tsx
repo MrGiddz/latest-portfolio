@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import React from "react";
 
 // --- Data for Projects ---
@@ -18,6 +19,10 @@ const projectsData = [
     tech: ["Next.js", "D3.js", "Python", "Redis"],
   },
 ];
+
+export const metadata: Metadata = {
+  title: "Projects",
+};
 
 // --- Sub-component for the main content ---
 const ProjectsContent = () => (

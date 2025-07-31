@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { Mail } from "lucide-react";
+import { Mail, ArrowDown } from "lucide-react";
 import { SiGithub, SiFacebook, SiInstagram } from "react-icons/si";
 import { FaTwitter } from "react-icons/fa";
 import Image from "next/image";
@@ -20,19 +20,27 @@ export default function PortfolioLayout({
   const router = useRouter();
   const [isNavigating, setIsNavigating] = useState(false);
 
+  const [showScrollIndicator, setShowScrollIndicator] = useState(false);
+
+  useEffect(() => {
+    setShowScrollIndicator(pathname === "/");
+
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setShowScrollIndicator(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [pathname]);
+
   const pageVariants = {
     initial: { opacity: 0, x: "-100vw" },
     animate: { opacity: 1, x: 0 },
     exit: { opacity: 0, x: "100vw" },
   };
 
-  const pageTransition = {
-    type: "tween",
-    ease: "anticipate",
-    duration: 0.7,
-  };
-
-  // --- NEW: Scroll Navigation Logic ---
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
       // If we are already navigating, do nothing
@@ -72,7 +80,7 @@ export default function PortfolioLayout({
     return () => {
       window.removeEventListener("wheel", handleWheel);
     };
-  }, [pathname, router, isNavigating, navLinks]);
+  }, [pathname, router, isNavigating]);
 
   return (
     <div className="min-h-screen relative overflow-hidden font-mono">
@@ -344,6 +352,30 @@ export default function PortfolioLayout({
           })}
         </div>
       </div>
+
+      <AnimatePresence>
+        {showScrollIndicator && (
+          <motion.div
+            className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.5 }}
+          >
+            <motion.div
+              animate={{ y: [0, 10, 0] }} // Bouncing animation
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            >
+              <ArrowDown className="w-8 h-8 text-white/50" />
+            </motion.div>
+            <span className="mt-2 text-xs text-white/50">Scroll Down</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import React from "react";
 
 // --- Data for Certifications ---
@@ -15,6 +16,10 @@ const certificationsData = [
     issuer: "MongoDB University - 2021",
   },
 ];
+
+export const metadata: Metadata = {
+  title: "My Credentials",
+};
 
 // --- Sub-component for the main content ---
 const CredentialsContent = () => (
