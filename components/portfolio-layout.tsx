@@ -279,7 +279,7 @@ export default function PortfolioLayout({
         </div>
 
         {/* --- Right Side (Page Content) --- */}
-        <main id="page-content"  className="w-full lg:w-1/2 lg:ml-[50%]">
+        <main id="page-content"  className="w-full lg:w-1/2 lg:ml-[50%] pb-24 lg:pb-0">
           <AnimatePresence mode="wait">
             <motion.main
               key={pathname}
