@@ -167,6 +167,19 @@ export default function PortfolioLayout({
         />
       </div>
 
+      <div
+        className="fixed inset-0 -z-10"
+        style={{
+          backgroundColor: "#111827", // Dark Slate 900 from Tailwind
+          backgroundImage: `
+      radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.4) 100%),
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px)
+    `,
+          backgroundSize: "100% 100%, 2rem 2rem, 2rem 2rem",
+        }}
+      />
+
       <div className="flex flex-col lg:flex-row">
         {/* --- Left Side (Profile) --- */}
         <div className="w-full lg:w-1/2 lg:h-screen lg:fixed lg:top-0 lg:left-0 flex flex-col justify-center items-center p-8 lg:p-12 min-h-screen">

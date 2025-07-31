@@ -1,16 +1,53 @@
 import React from "react";
 
-// --- Content for About Section ---
+const Highlight = ({
+  children,
+  color = "text-cyan-400",
+}: {
+  children: React.ReactNode;
+  color?: string;
+}) => {
+  return <span className={`${color} font-medium`}>{children}</span>;
+};
+
+// The new AboutContent component with inline syntax highlighting
 const AboutContent = () => (
   <div className="space-y-6">
     <p className="text-gray-300 leading-relaxed">
-      Hey there, I&apos;m Olaniyi Gideon Olamide — a full-stack developer with a strong focus on backend architecture and system reliability. With over 5 years of experience, I specialize in building scalable web applications using technologies like Node.js, Express, MongoDB, React, and Next.js.
+      Hey there, I&apos;m Olaniyi Gideon Olamide — a{" "}
+      <Highlight color="text-purple-400">full-stack developer</Highlight> with
+      a strong focus on{" "}
+      <Highlight color="text-yellow-400">backend architecture</Highlight> and{" "}
+      <Highlight color="text-yellow-400">system reliability</Highlight>. With
+      over 5 years of experience, I specialize in building{" "}
+      <Highlight color="text-yellow-400">scalable web applications</Highlight>{" "}
+      using technologies like <Highlight>Node.js</Highlight>,{" "}
+      <Highlight>Express</Highlight>, <Highlight>MongoDB</Highlight>,{" "}
+      <Highlight>React</Highlight>, and <Highlight>Next.js</Highlight>.
     </p>
     <p className="text-gray-300 leading-relaxed">
-      I&apos;m passionate about turning complex ideas into functional digital products. Whether I&apos;m designing robust APIs, managing cloud deployments, or mentoring teams, I aim to deliver clean, maintainable code and long-term value. My work spans across industries like e-learning, event management, and SaaS platforms — always focused on performance, usability, and business impact.
+      I&apos;m passionate about turning complex ideas into{" "}
+      <Highlight color="text-yellow-400">
+        functional digital products
+      </Highlight>
+      . Whether I&apos;m designing robust <Highlight>APIs</Highlight>, managing{" "}
+      <Highlight>cloud deployments</Highlight>, or mentoring teams, I aim to
+      deliver{" "}
+      <Highlight color="text-yellow-400">clean, maintainable code</Highlight>{" "}
+      and long-term value. My work spans across industries like e-learning,
+      event management, and SaaS platforms — always focused on{" "}
+      <Highlight color="text-green-400">performance</Highlight>,{" "}
+      <Highlight color="text-green-400">usability</Highlight>, and{" "}
+      <Highlight color="text-green-400">business impact</Highlight>.
     </p>
     <p className="text-gray-300 leading-relaxed">
-      I enjoy collaborating with product teams, shipping features fast, and continuously learning. If I&apos;m not coding, you&apos;ll find me creating tech videos, exploring new frameworks, or simplifying systems that scale.
+      I enjoy collaborating with{" "}
+      <Highlight color="text-purple-400">product teams</Highlight>,{" "}
+      <Highlight color="text-purple-400">shipping features fast</Highlight>,
+      and{" "}
+      <Highlight color="text-purple-400">continuously learning</Highlight>. If
+      I&apos;m not coding, you&apos;ll find me creating tech videos, exploring
+      new frameworks, or simplifying systems that scale.
     </p>
   </div>
 );
