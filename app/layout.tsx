@@ -1,20 +1,17 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Space_Mono } from "next/font/google";
 import "./globals.css";
+import PortfolioLayout from "@/components/portfolio-layout";
 
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  display: 'swap',
-  variable: '--font-plus-jakarta-sans',
+  variable: "--font-plus-jakarta-sans",
 });
-
-
 const spaceMono = Space_Mono({
-  weight: ['400', '700'],
+  weight: ["400", "700"],
   subsets: ["latin"],
-  display: 'swap',
-  variable: '--font-space-mono',
+  variable: "--font-space-mono",
 });
 
 export const metadata: Metadata = {
@@ -28,9 +25,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // Apply the font variables to the entire app
     <html lang="en" className={`${plusJakartaSans.variable} ${spaceMono.variable}`}>
-      <body>{children}</body>
+      <body>
+        {/* Wrap all pages with your PortfolioLayout here */}
+        <PortfolioLayout>{children}</PortfolioLayout>
+      </body>
     </html>
   );
 }
