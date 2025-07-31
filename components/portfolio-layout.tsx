@@ -10,6 +10,7 @@ import { FaTwitter } from "react-icons/fa";
 import Image from "next/image";
 import { TypeAnimation } from "react-type-animation";
 import { navLinks, sectionBackgrounds } from "@/lib/portfolio-data";
+import NavigationLoader from "./navigation-loader";
 
 export default function PortfolioLayout({
   children,
@@ -19,8 +20,8 @@ export default function PortfolioLayout({
   const pathname = usePathname();
   const router = useRouter();
   const [isNavigating, setIsNavigating] = useState(false);
-
   const [showScrollIndicator, setShowScrollIndicator] = useState(false);
+    const [isDesktop, setIsDesktop] = useState(false); 
 
   useEffect(() => {
     setShowScrollIndicator(pathname === "/");
@@ -60,7 +61,7 @@ export default function PortfolioLayout({
           setIsNavigating(true);
           const nextLink = navLinks[currentIndex + 1];
           router.push(nextLink.href);
-          // Unlock navigation after the page transition is complete
+
           setTimeout(() => setIsNavigating(false), 1500);
         }
       }
@@ -81,6 +82,21 @@ export default function PortfolioLayout({
       window.removeEventListener("wheel", handleWheel);
     };
   }, [pathname, router, isNavigating]);
+
+    useEffect(() => {
+    // We only want this behavior on mobile devices, and not for the homepage
+    if (!isDesktop && pathname !== '/') {
+      // Wait a brief moment for the page transition to start
+      const timer = setTimeout(() => {
+        const content = document.getElementById('page-content');
+        if (content) {
+          content.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 200); // 200ms delay to ensure a smooth transition
+
+      return () => clearTimeout(timer);
+    }
+  }, [pathname, isDesktop]); 
 
   return (
     <div className="min-h-screen relative overflow-hidden font-mono">
@@ -263,7 +279,7 @@ export default function PortfolioLayout({
         </div>
 
         {/* --- Right Side (Page Content) --- */}
-        <main className="w-full lg:w-1/2 lg:ml-[50%]">
+        <main id="page-content"  className="w-full lg:w-1/2 lg:ml-[50%]">
           <AnimatePresence mode="wait">
             <motion.main
               key={pathname}
@@ -376,6 +392,8 @@ export default function PortfolioLayout({
           </motion.div>
         )}
       </AnimatePresence>
+
+      <AnimatePresence>{isNavigating && <NavigationLoader />}</AnimatePresence>
     </div>
   );
 }
