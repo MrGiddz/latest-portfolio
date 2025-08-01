@@ -11,6 +11,7 @@ import Image from "next/image";
 import Typewriter from "typewriter-effect";
 import { navLinks, sectionBackgrounds } from "@/lib/portfolio-data";
 import NavigationLoader from "./navigation-loader";
+import ScrollNotification from "./scroll-notification";
 
 const socialLinks = [
   { Icon: SiGithub, href: "https://github.com/your-username" },
@@ -31,7 +32,20 @@ export default function PortfolioLayout({
   const [showScrollIndicator, setShowScrollIndicator] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
   const [scrollAccumulator, setScrollAccumulator] = useState(0);
-   const contentRef = useRef<HTMLElement>(null);
+  const contentRef = useRef<HTMLElement>(null);
+
+  const navState = useRef({
+    isPrimed: false,
+    targetHref: "",
+    scrollAccumulator: 0,
+    debounceTimeout: null as NodeJS.Timeout | null,
+  });
+
+  const [navNotification, setNavNotification] = useState<{
+    visible: boolean;
+    direction: "up" | "down";
+    pageName: string;
+  }>({ visible: false, direction: "down", pageName: "" });
 
   useEffect(() => {
     setShowScrollIndicator(pathname === "/");
@@ -52,72 +66,114 @@ export default function PortfolioLayout({
   //     exit: { opacity: 0, x: "100vw" },
   //   };
 
-  
-
-
-  // --- REPLACE your existing handleWheel useEffect with this new version ---
   useEffect(() => {
-    const SCROLL_THRESHOLD = 800;
+    const SCROLL_THRESHOLD = 150;
+    const DEBOUNCE_DELAY = 250;
+
+    const resetNavState = () => {
+      if (navState.current.debounceTimeout)
+        clearTimeout(navState.current.debounceTimeout);
+      navState.current.isPrimed = false;
+      navState.current.targetHref = "";
+      navState.current.scrollAccumulator = 0;
+      setNavNotification({ visible: false, direction: "down", pageName: "" });
+    };
 
     const handleWheel = (e: WheelEvent) => {
       if (isNavigating) return;
 
-      // Determine which element is scrolling based on the device
-      const scrollableElement = isDesktop ? contentRef.current : window;
-      const contentContainer = isDesktop ? contentRef.current : document.body;
-      
-      if (!scrollableElement || !contentContainer) return;
+      if (navState.current.debounceTimeout)
+        clearTimeout(navState.current.debounceTimeout);
 
-      // Get scroll values from the correct element
-      const scrollTop = isDesktop ? (scrollableElement as HTMLElement).scrollTop : (scrollableElement as Window).scrollY;
-      const clientHeight = isDesktop ? (scrollableElement as HTMLElement).clientHeight : (scrollableElement as Window).innerHeight;
-      const scrollHeight = isDesktop ? (contentContainer as HTMLElement).scrollHeight : contentContainer.offsetHeight;
+      const scrollContainer = isDesktop ? contentRef.current : window;
+      const contentBody = isDesktop
+        ? contentRef.current
+        : document.documentElement;
+      if (!scrollContainer || !contentBody) return;
 
-      const isAtBottom = clientHeight + scrollTop >= scrollHeight - 2;
-      const isAtTop = scrollTop === 0;
+      const scrollTop = isDesktop
+        ? (scrollContainer as HTMLElement).scrollTop
+        : window.scrollY;
+      const clientHeight = isDesktop
+        ? (scrollContainer as HTMLElement).clientHeight
+        : window.innerHeight;
+      const scrollHeight = contentBody.scrollHeight;
 
+      const isAtBottom = clientHeight + scrollTop >= scrollHeight - 5;
+      const isAtTop = scrollTop <= 0;
+      const currentIndex = navLinks.findIndex((link) => link.href === pathname);
       const isScrollingDown = e.deltaY > 0;
       const isScrollingUp = e.deltaY < 0;
-      const currentIndex = navLinks.findIndex((link) => link.href === pathname);
-      
-      // The rest of the logic remains the same, but now uses the correct values
-      if (isScrollingDown && isAtBottom) {
-        const newAccumulator = scrollAccumulator + e.deltaY;
-        setScrollAccumulator(newAccumulator);
 
-        if (newAccumulator >= SCROLL_THRESHOLD && currentIndex < navLinks.length - 1) {
-          setIsNavigating(true);
-          const nextLink = navLinks[currentIndex + 1];
-          router.push(nextLink.href);
-          setTimeout(() => {
-            setIsNavigating(false);
-            setScrollAccumulator(0);
-          }, 1500);
+      if (navState.current.isPrimed) {
+        if (
+          (isScrollingDown && navNotification.direction === "up") ||
+          (isScrollingUp && navNotification.direction === "down")
+        ) {
+          resetNavState();
+          return;
         }
-      } else if (isScrollingUp && isAtTop) {
-        const newAccumulator = scrollAccumulator + e.deltaY;
-        setScrollAccumulator(newAccumulator);
+      }
 
-        if (newAccumulator <= -SCROLL_THRESHOLD && currentIndex > 0) {
-          setIsNavigating(true);
-          const prevLink = navLinks[currentIndex - 1];
-          router.push(prevLink.href);
-          setTimeout(() => {
-            setIsNavigating(false);
-            setScrollAccumulator(0);
-          }, 1500);
+      let shouldPrime = false;
+
+      if (isScrollingDown && isAtBottom && currentIndex < navLinks.length - 1) {
+        navState.current.scrollAccumulator += e.deltaY;
+        if (navState.current.scrollAccumulator > SCROLL_THRESHOLD) {
+          shouldPrime = true;
+          if (!navState.current.isPrimed) {
+            navState.current.isPrimed = true;
+            const nextPage = navLinks[currentIndex + 1];
+            navState.current.targetHref = nextPage.href;
+            setNavNotification({
+              visible: true,
+              direction: "down",
+              pageName: nextPage.label,
+            });
+          }
+        }
+      } else if (isScrollingUp && isAtTop && currentIndex > 0) {
+        navState.current.scrollAccumulator += e.deltaY;
+        if (navState.current.scrollAccumulator < -SCROLL_THRESHOLD) {
+          shouldPrime = true;
+          if (!navState.current.isPrimed) {
+            navState.current.isPrimed = true;
+            const prevPage = navLinks[currentIndex - 1];
+            navState.current.targetHref = prevPage.href;
+            setNavNotification({
+              visible: true,
+              direction: "up",
+              pageName: prevPage.label,
+            });
+          }
         }
       } else {
-        setScrollAccumulator(0);
+        resetNavState();
+      }
+
+      if (shouldPrime) {
+        navState.current.debounceTimeout = setTimeout(() => {
+          if (navState.current.isPrimed) {
+            setIsNavigating(true);
+            router.push(navState.current.targetHref);
+          }
+          resetNavState();
+        }, DEBOUNCE_DELAY);
       }
     };
 
-    // Listen on the window, but check the correct element's scroll
-    window.addEventListener("wheel", handleWheel);
+    window.addEventListener("wheel", handleWheel, { passive: true });
     return () => {
       window.removeEventListener("wheel", handleWheel);
+      if (navState.current.debounceTimeout)
+        clearTimeout(navState.current.debounceTimeout);
     };
-  }, [pathname, router, isNavigating, scrollAccumulator, isDesktop]);
+  }, [pathname, router, isNavigating, isDesktop, navNotification.direction]);
+
+  // Effect to reset navigation lock after page changes
+  useEffect(() => {
+    setIsNavigating(false);
+  }, [pathname]);
 
   useEffect(() => {
     // We only want this behavior on mobile devices, and not for the homepage
@@ -218,7 +274,6 @@ export default function PortfolioLayout({
       </div>
 
       <div className="flex flex-col lg:flex-row">
-
         {/* --- Left Side (Profile) --- */}
         <div className="w-full lg:w-1/2 lg:h-screen lg:fixed lg:top-0 lg:left-0 flex flex-col justify-center items-center p-8 lg:p-12 min-h-screen">
           <motion.div
@@ -406,7 +461,7 @@ export default function PortfolioLayout({
 
         {/* --- Right Side (Page Content) --- */}
         <main
-         ref={contentRef}
+          ref={contentRef}
           id="page-content"
           className="w-full lg:w-1/2 lg:ml-[50%] pb-24 lg:pb-0 relative"
         >
@@ -521,6 +576,15 @@ export default function PortfolioLayout({
             </motion.div>
             <span className="mt-2 text-xs text-white/50">Scroll Down</span>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {navNotification.visible && (
+          <ScrollNotification
+            direction={navNotification.direction}
+            pageName={navNotification.pageName}
+          />
         )}
       </AnimatePresence>
 

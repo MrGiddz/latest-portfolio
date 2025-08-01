@@ -33,35 +33,44 @@ export default function ContactForm() {
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-2xl backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl">
+   <motion.div
+        className="w-full max-w-2xl backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{
+          duration: 0.5,
+          ease: "easeOut",
+          delay: 0.4, // 2. The delay ensures the page slides in first
+        }}
+      >
         <h2 className="text-3xl md:text-4xl font-bold text-white mb-8 text-center font-jetbrains">
           Let&apos;s work together
         </h2>
 
-            <motion.p 
+        <motion.p
           className="text-center text-gray-400 mb-8"
           variants={fieldVariants}
           initial="hidden"
           animate="visible"
-          transition={{ delay: 0.2 }} 
+          transition={{ delay: 0.2 }}
         >
           Or email me directly at:
           <a
-            href="mailto:mideolaniyi@outlook.com" 
+            href="mailto:mideolaniyi@outlook.com"
             className="flex items-center justify-center gap-2 text-blue-300 font-semibold hover:underline mt-1"
           >
             <Mail className="h-4 w-4" />
             <span>mideolaniyi@outlook.com</span>
           </a>
         </motion.p>
-        
 
-        <motion.form
+       <motion.form
           onSubmit={handleSubmit}
           className="space-y-8"
           variants={formContainerVariants}
           initial="hidden"
           animate="visible"
+          transition={{ delay: 0.8 }}
         >
           {/* Name Input */}
           <motion.div variants={fieldVariants} className="flex flex-col">
@@ -144,7 +153,7 @@ export default function ContactForm() {
             </button>
           </motion.div>
         </motion.form>
-      </div>
+   </motion.div>
     </div>
   );
 }
