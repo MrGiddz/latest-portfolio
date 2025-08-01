@@ -33,6 +33,7 @@ export default function PortfolioLayout({
   const [isDesktop, setIsDesktop] = useState(false);
   const [scrollAccumulator, setScrollAccumulator] = useState(0);
   const contentRef = useRef<HTMLElement>(null);
+  const [scrollHint, setScrollHint] = useState<"up" | "down" | null>(null);
 
   const navState = useRef({
     isPrimed: false,
@@ -67,7 +68,8 @@ export default function PortfolioLayout({
   //   };
 
   useEffect(() => {
-    const SCROLL_THRESHOLD = 150;
+    const HINT_THRESHOLD = 20; // Show hint after scrolling 20px
+    const NAV_THRESHOLD = 100; // Show popup and prime navigation after 100px
     const DEBOUNCE_DELAY = 250;
 
     const resetNavState = () => {
@@ -77,6 +79,7 @@ export default function PortfolioLayout({
       navState.current.targetHref = "";
       navState.current.scrollAccumulator = 0;
       setNavNotification({ visible: false, direction: "down", pageName: "" });
+      setScrollHint(null); // Also hide the hint
     };
 
     const handleWheel = (e: WheelEvent) => {
@@ -119,7 +122,10 @@ export default function PortfolioLayout({
 
       if (isScrollingDown && isAtBottom && currentIndex < navLinks.length - 1) {
         navState.current.scrollAccumulator += e.deltaY;
-        if (navState.current.scrollAccumulator > SCROLL_THRESHOLD) {
+        if (navState.current.scrollAccumulator > HINT_THRESHOLD) {
+          setScrollHint("down"); // Show hint
+        }
+        if (navState.current.scrollAccumulator > NAV_THRESHOLD) {
           shouldPrime = true;
           if (!navState.current.isPrimed) {
             navState.current.isPrimed = true;
@@ -134,7 +140,10 @@ export default function PortfolioLayout({
         }
       } else if (isScrollingUp && isAtTop && currentIndex > 0) {
         navState.current.scrollAccumulator += e.deltaY;
-        if (navState.current.scrollAccumulator < -SCROLL_THRESHOLD) {
+        if (navState.current.scrollAccumulator < -HINT_THRESHOLD) {
+          setScrollHint("up"); // Show hint
+        }
+        if (navState.current.scrollAccumulator < -NAV_THRESHOLD) {
           shouldPrime = true;
           if (!navState.current.isPrimed) {
             navState.current.isPrimed = true;
@@ -576,6 +585,21 @@ export default function PortfolioLayout({
             </motion.div>
             <span className="mt-2 text-xs text-white/50">Scroll Down</span>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {scrollHint && (
+          <motion.div
+            className={`fixed left-0 w-full h-1 bg-blue-400/50 shadow-[0_0_15px_rgba(59,130,246,0.7)] z-50 ${
+              scrollHint === "up" ? "top-0" : "bottom-0"
+            }`}
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            exit={{ scaleX: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            style={{ originX: 0.5 }} // Animate from the center
+          />
         )}
       </AnimatePresence>
 
