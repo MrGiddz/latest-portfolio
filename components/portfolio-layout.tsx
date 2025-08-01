@@ -336,27 +336,27 @@ export default function PortfolioLayout({
                     typewriter
                       .pauseFor(1200)
                       .typeString(
-                        'Building with <span style="color: #60a5fa;">React</span> & <span style="color: #ffffff;">Next.js</span>.'
+                        'Building <span style="color: #60a5fa;">React</span> & <span style="color: #a78bfa;">React Native</span> Apps.'
                       )
                       .pauseFor(2500)
                       .deleteAll()
                       .typeString(
-                        'Scalable APIs in <span style="color: #84cc16;">Node.js</span>.'
+                        'Robust Backends in <span style="color: #84cc16;">Node.js</span> & <span style="color: #e11d48;">Nest.js</span>.'
                       )
                       .pauseFor(2500)
                       .deleteAll()
                       .typeString(
-                        'Managing <span style="color: #4ade80;">MongoDB</span> & <span style="color: #3b82f6;">PostgreSQL</span>.'
+                        'Automated CI/CD with <span style="color: #06b6d4;">Docker</span> & <span style="color: #ffffff;">GitHub Actions</span>.'
                       )
                       .pauseFor(2500)
                       .deleteAll()
                       .typeString(
-                        'Writing Type-Safe <span style="color: #3178c6;">TypeScript</span>.'
+                        'Managing <span style="color: #f59e0b;">VPS Servers</span> & <span style="color: #4ade80;">Nginx</span>.'
                       )
                       .pauseFor(2500)
                       .deleteAll()
                       .typeString(
-                        'Deploying on <span style="color: #f59e0b;">AWS</span> & <span style="color: #06b6d4;">Docker</span>.'
+                        'Cloud-Native Deployments on <span style="color: #f59e0b;">AWS</span> & <span style="color: #3b82f6;">GCP</span>.'
                       )
                       .pauseFor(2500)
                       .start();
