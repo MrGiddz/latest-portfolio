@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
@@ -9,16 +10,23 @@ import { SiGithub, SiFacebook, SiInstagram } from "react-icons/si";
 import { FaTwitter } from "react-icons/fa";
 import Image from "next/image";
 import Typewriter from "typewriter-effect";
-import { navLinks, sectionBackgrounds } from "@/lib/portfolio-data";
+import {
+  navLinks,
+  sectionBackgrounds,
+  sectionThemes,
+} from "@/lib/portfolio-data";
 import NavigationLoader from "./navigation-loader";
 import ScrollNotification from "./scroll-notification";
+import CustomCursor from "./custom-cursor";
+import { FaPhone } from "react-icons/fa6";
 
 const socialLinks = [
-  { Icon: SiGithub, href: "https://github.com/your-username" },
-  { Icon: FaTwitter, href: "https://twitter.com/your-username" },
-  { Icon: SiFacebook, href: "https://facebook.com/your-username" },
-  { Icon: SiInstagram, href: "https://instagram.com/your-username" },
-  { Icon: Mail, href: "mailto:your.email@example.com" },
+  { Icon: SiGithub, href: "https://github.com/mrgiddz" },
+  { Icon: FaTwitter, href: "https://twitter.com/mide_niyi" },
+  { Icon: SiFacebook, href: "https://facebook.com/midelaniyi" },
+  { Icon: SiInstagram, href: "https://www.instagram.com/mide_niyi" },
+  { Icon: FaPhone, href: "tel:+2348026406566" },
+  { Icon: Mail, href: "mailto:mideolaniyi@outlook.com" },
 ];
 
 export default function PortfolioLayout({
@@ -31,7 +39,6 @@ export default function PortfolioLayout({
   const [isNavigating, setIsNavigating] = useState(false);
   const [showScrollIndicator, setShowScrollIndicator] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
-  const [scrollAccumulator, setScrollAccumulator] = useState(0);
   const contentRef = useRef<HTMLElement>(null);
   const [scrollHint, setScrollHint] = useState<"up" | "down" | null>(null);
 
@@ -47,6 +54,8 @@ export default function PortfolioLayout({
     direction: "up" | "down";
     pageName: string;
   }>({ visible: false, direction: "down", pageName: "" });
+
+  const currentTheme = sectionThemes[pathname] || sectionThemes["/"];
 
   useEffect(() => {
     setShowScrollIndicator(pathname === "/");
@@ -214,15 +223,11 @@ export default function PortfolioLayout({
     },
   };
 
-  const pageTransition = {
-    type: "tween",
-    ease: "anticipate",
-    duration: 0.7,
-  };
-
   return (
     <div className="min-h-screen relative font-mono">
       {/* Animated Background */}
+
+      <CustomCursor />
 
       <div
         className="fixed inset-0 -z-10"
@@ -308,22 +313,24 @@ export default function PortfolioLayout({
             </motion.div>
 
             <div className="space-y-2">
-              <Typewriter
-                options={{
-                  loop: true,
-                  delay: 50,
-                  cursorClassName: "text-blue-400",
-                }}
-                onInit={(typewriter) => {
-                  typewriter
-                    .pauseFor(200)
-                    .typeString(
-                      "<span style='color: #60a5fa;'>Hello, </span> I'm <span style='color: #facc15;'>Olamide!.</span>"
-                    )
-                    .pauseFor(5000)
-                    .start();
-                }}
-              />
+              <div className="text-gray-300 text-xl md:text-2xl h-8">
+                <Typewriter
+                  options={{
+                    loop: true,
+                    delay: 50,
+                    cursorClassName: "text-blue-400",
+                  }}
+                  onInit={(typewriter) => {
+                    typewriter
+                      .pauseFor(200)
+                      .typeString(
+                        "<span style='color: #60a5fa;'>Hello,</span><span style='color: #d1d5db;'> I'm </span><span style='color: #facc15;'>Olamide!</span>"
+                      )
+                      .pauseFor(5000)
+                      .start();
+                  }}
+                />
+              </div>
 
               <h2 className="text-white text-2xl md:text-3xl font-bold leading-tight font-code h-28 lg:h-auto">
                 <Typewriter
@@ -376,10 +383,13 @@ export default function PortfolioLayout({
                 return (
                   <Link key={link.href} href={link.href} passHref>
                     <motion.button
+                      onClick={() =>
+                        isNavigating ? null : setIsNavigating(true)
+                      }
                       className={`px-5 py-2 border rounded-full transition-colors duration-300 backdrop-blur-sm text-sm ${
                         isActive
-                          ? "border-white bg-white/20 text-white"
-                          : "border-gray-500 text-gray-300 hover:bg-white/10"
+                          ? `${currentTheme.activeBg} ${currentTheme.activeBorder} text-white`
+                          : `${currentTheme.border} text-gray-300 ${currentTheme.hoverBg}`
                       }`}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
@@ -398,52 +408,31 @@ export default function PortfolioLayout({
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.0 }}
             >
-              {/* "Let's Work" Button (links to contact page) */}
-              <Link href="/contact" passHref>
-                <motion.button
-                  className="px-6 py-3 bg-white/10 border border-white/30 text-white rounded-full transition-colors duration-300 backdrop-blur-sm hover:bg-white/20"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Let&apos;s Work
-                </motion.button>
-              </Link>
-
-              {/* "Download Resume" Button */}
               <motion.a
-                href="/Olamide-Resume.pdf" // Make sure this matches your file name in /public
-                download="Olamide-Gideon-Resume.pdf" // This is the name the file will have when downloaded
+                href="/Olamide-Resume.pdf"
+                download="Olamide-Gideon-Resume.pdf"
                 className="px-6 py-3 border border-gray-500 text-gray-300 rounded-full transition-colors duration-300 backdrop-blur-sm hover:bg-white/10"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
                 Download Resume
               </motion.a>
+              <Link href="/contact" passHref>
+                <motion.button
+                  className={`px-6 py-3 bg-white/10 ${currentTheme.border} text-white rounded-full transition-colors duration-300 backdrop-blur-sm ${currentTheme.hoverBg}`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Let&apos;s Work
+                </motion.button>
+              </Link>
             </motion.div>
-
             <motion.div
               className="flex justify-center gap-6 pt-6"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.1 }}
             >
-              {/* {[SiGithub, FaTwitter, SiFacebook, SiInstagram, Mail].map(
-                (Icon, index) => (
-                  <motion.div
-                    key={index}
-                    className="w-12 h-12 border border-gray-500 rounded-full flex items-center justify-center cursor-pointer backdrop-blur-sm"
-                    whileHover={{
-                      scale: 1.1,
-                      backgroundColor: "rgba(255, 255, 255, 0.1)",
-                      borderColor: "rgba(255, 255, 255, 0.3)",
-                    }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    <Icon className="w-5 h-5 text-gray-300" />
-                  </motion.div>
-                )
-              )} */}
-
               {socialLinks.map(({ Icon, href }, index) => (
                 <motion.a
                   key={index}
@@ -458,7 +447,11 @@ export default function PortfolioLayout({
                   }}
                   whileTap={{ scale: 0.9 }}
                   title={
-                    href.includes("mailto") ? "Send an email" : "Visit profile"
+                    href.includes("mailto:")
+                      ? "Send an email"
+                      : href.includes("tel:")
+                      ? "Call me"
+                      : "Visit profile"
                   }
                 >
                   <Icon className="w-5 h-5 text-gray-300" />
@@ -501,7 +494,7 @@ export default function PortfolioLayout({
           return (
             <Link key={`indicator-${link.href}`} href={link.href} passHref>
               <div
-                className="relative group flex items-center"
+                className="relative group flex items-center cursor-pointer"
                 title={link.label}
               >
                 <div className="absolute right-full top-1/2 -translate-y-1/2 mr-4 px-3 py-1.5 bg-gray-900 text-white text-sm rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap">

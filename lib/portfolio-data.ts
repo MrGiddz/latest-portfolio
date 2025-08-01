@@ -23,3 +23,41 @@ export const sectionBackgrounds: { [key: string]: string } = {
   "/credentials": "linear-gradient(45deg, #4c1111, #7f1d1d)",
   "/contact": "linear-gradient(45deg, #3f3f46, #1f2937)",
 };
+
+export const sectionThemes: { [key: string]: { text: string; border: string; hoverBg: string; activeBg: string; activeBorder: string; } } = {
+  "/": {
+    text: "text-blue-400",
+    border: "border-blue-500/30",
+    hoverBg: "hover:bg-blue-500/10",
+    activeBg: "bg-blue-500/20",
+    activeBorder: "border-blue-400",
+  },
+  "/skills": {
+    text: "text-purple-400",
+    border: "border-purple-500/30",
+    hoverBg: "hover:bg-purple-500/10",
+    activeBg: "bg-purple-500/20",
+    activeBorder: "border-purple-400",
+  },
+  "/projects": {
+    text: "text-sky-400",
+    border: "border-sky-500/30",
+    hoverBg: "hover:bg-sky-500/10",
+    activeBg: "bg-sky-500/20",
+    activeBorder: "border-sky-400",
+  },
+  "/credentials": {
+    text: "text-red-400",
+    border: "border-red-500/30",
+    hoverBg: "hover:bg-red-500/10",
+    activeBg: "bg-red-500/20",
+    activeBorder: "border-red-400",
+  },
+  "/contact": {
+    text: "text-gray-400",
+    border: "border-gray-500/30",
+    hoverBg: "hover:bg-gray-500/10",
+    activeBg: "bg-gray-500/20",
+    activeBorder: "border-gray-400",
+  },
+};

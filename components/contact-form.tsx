@@ -33,7 +33,7 @@ export default function ContactForm() {
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center p-6 md:p-10">
-   <motion.div
+      <motion.div
         className="w-full max-w-2xl backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl"
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -64,7 +64,7 @@ export default function ContactForm() {
           </a>
         </motion.p>
 
-       <motion.form
+        <motion.form
           onSubmit={handleSubmit}
           className="space-y-8"
           variants={formContainerVariants}
@@ -153,7 +153,7 @@ export default function ContactForm() {
             </button>
           </motion.div>
         </motion.form>
-   </motion.div>
+      </motion.div>
     </div>
   );
 }
