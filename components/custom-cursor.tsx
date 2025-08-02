@@ -41,52 +41,10 @@ const CursorVisual = ({ state }: { state: string }) => {
                 opacity: { repeat: Infinity, duration: 1.2, ease: "easeInOut" },
               }}
             />
-                {state === "button" && (
-          <motion.g key="button">
-            <motion.circle
-              cx="25"
-              cy="25"
-              r="23"
-              fill="black"
-              stroke="white"
-              strokeWidth="2"
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.5 }}
-            />
-            
-            <motion.path
-              d={yellowCursorPath}
-              stroke="#facc15"
-              strokeWidth="3"
-              strokeLinecap="round"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: [0, 1, 0] }}
-              exit={{ opacity: 0 }}
-              transition={{
-                opacity: { repeat: Infinity, duration: 1.2, ease: "easeInOut" },
-              }}
-            />
-            <motion.path
-              key="blue-arc"
-              d={circlePath}
-              stroke="#60a5fa"
-              strokeWidth="4"
-              strokeLinecap="round"
-              initial={{ opacity: 0, pathLength: 0.25 }}
-              animate={{ opacity: 1, pathOffset: [0, 1] }}
-              exit={{ opacity: 0, pathLength: 0.25 }}
-              transition={{
-                pathOffset: { repeat: Infinity, duration: 1.5, ease: "linear" },
-                opacity: { duration: 0.3 },
-              }}
-            />
-          </motion.g>
-        )}
           </motion.g>
         )}
 
-            {state === "button" && (
+        {state === "button" && (
           <motion.g key="button">
             <motion.circle
               cx="25"
@@ -99,7 +57,7 @@ const CursorVisual = ({ state }: { state: string }) => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.5 }}
             />
-            
+
             <motion.path
               d={yellowCursorPath}
               stroke="#facc15"
