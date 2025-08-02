@@ -386,7 +386,7 @@ export default function PortfolioLayout({
                       onClick={() =>
                         isNavigating ? null : setIsNavigating(true)
                       }
-                      className="animated-border-button relative"
+                      className="animated-border-button relative transition-all duration-500"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       style={
@@ -397,7 +397,14 @@ export default function PortfolioLayout({
                       }
                     >
                       <div
-                        className={`relative px-5 py-2 rounded-full backdrop-blur-sm text-sm z-10 ${
+                        className={`absolute inset-1 rounded-full z-[9]  ${
+                          !isActive
+                            ? `${currentTheme.hoverBgSolid} hover:bg-black`
+                            : `${currentTheme.activeBg} hover:bg-black`
+                        }`}
+                      />
+                      <div
+                        className={`relative px-5 py-2 rounded-full backdrop-blur-sm text-sm z-10 transition-all duration-500 ${
                           isActive
                             ? `${currentTheme.activeBg} ${currentTheme.activeBorder}`
                             : `border ${currentTheme.border} ${currentTheme.hoverBgSolid}`

@@ -43,18 +43,18 @@ export const sectionThemes: {
     text: "text-blue-400",
     border: "border-blue-500/30",
     hoverBg: "hover:bg-blue-500/10",
-    hoverBgSolid: "hover:bg-blue-400/70",
+    hoverBgSolid: "hover:bg-blue-400/80",
     activeBg: "bg-blue-500/20",
     activeBorder: "border-blue-400",
     // New glow colors
-    glowColorDark: "#3b82f6", // blue-500
-    glowColorLight: "#60a5fa", // blue-400
+    glowColorDark: "#3b82f6",
+    glowColorLight: "#60a5fa",
   },
   "/skills": {
     text: "text-purple-400",
     border: "border-purple-500/30",
     hoverBg: "hover:bg-purple-500/10",
-    hoverBgSolid: "hover:bg-purple-400/70",
+    hoverBgSolid: "hover:bg-purple-400/80",
     activeBg: "bg-purple-500/20",
     activeBorder: "border-purple-400",
     // New glow colors
@@ -65,7 +65,7 @@ export const sectionThemes: {
     text: "text-sky-400",
     border: "border-sky-500/30",
     hoverBg: "hover:bg-sky-500/10",
-    hoverBgSolid: "hover:bg-sky-400/70",
+    hoverBgSolid: "hover:bg-sky-400/80",
     activeBg: "bg-sky-500/20",
     activeBorder: "border-sky-400",
     // New glow colors
@@ -76,7 +76,7 @@ export const sectionThemes: {
     text: "text-red-400",
     border: "border-red-500/30",
     hoverBg: "hover:bg-red-500/10",
-    hoverBgSolid: "hover:bg-red-400/70",
+    hoverBgSolid: "hover:bg-red-400/80",
     activeBg: "bg-red-500/20",
     activeBorder: "border-red-400",
     // New glow colors
@@ -87,7 +87,7 @@ export const sectionThemes: {
     text: "text-gray-400",
     border: "border-gray-500/30",
     hoverBg: "hover:bg-gray-500/10",
-    hoverBgSolid: "hover:bg-gray-400/70",
+    hoverBgSolid: "hover:bg-gray-400/80",
     activeBg: "bg-gray-500/20",
     activeBorder: "border-gray-400",
     // New glow colors

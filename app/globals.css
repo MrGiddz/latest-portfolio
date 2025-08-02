@@ -47,7 +47,6 @@ button {
   }
 }
 
-
 @property --angle {
   syntax: "<angle>";
   initial-value: 0deg;
@@ -59,7 +58,6 @@ button {
     --angle: 360deg;
   }
 }
-
 
 /* Add this to your global CSS file */
 @property --angle {
@@ -74,35 +72,31 @@ button {
   }
 }
 
-/* This is the class for our button wrapper */
 .animated-border-button {
   position: relative;
-  /* The padding creates the space for the border to appear */
   padding: 2px;
-  border-radius: 9999px; /* This must match the inner element's border-radius */
+  border-radius: 9999px;
 }
 
-/* This pseudo-element IS the animated border */
 .animated-border-button::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
   border-radius: inherit;
-  /* --- MODIFIED: Use CSS variables for the gradient colors --- */
   background: conic-gradient(
     from var(--angle),
     transparent 20%,
-    var(--glow-color-light), /* Use the light color variable */
-    var(--glow-color-dark),  /* Use the dark color variable */
+    var(--glow-color-light),
+    var(--glow-color-dark),
     transparent 40%
   );
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
 }
 
-/* On hover, make the border visible and start the animation */
 .animated-border-button:hover::before {
   opacity: 1;
   animation: rotate-border-animation 4s linear infinite;
+  transition: all 1s ease-in-out;
 }
