@@ -26,9 +26,83 @@
 body {
   background: var(--background);
   color: var(--foreground);
-    cursor: none;
+  cursor: none;
 }
 
-a, button {
+a,
+button {
   cursor: none;
+}
+
+.animate-glow {
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
+}
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes rotate-shine {
+  to {
+    --angle: 360deg;
+  }
+}
+
+
+/* Add this to your global CSS file */
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes rotate-border-animation {
+  to {
+    --angle: 360deg;
+  }
+}
+
+/* This is the class for our button wrapper */
+.animated-border-button {
+  position: relative;
+  /* The padding creates the space for the border to appear */
+  padding: 2px;
+  border-radius: 9999px; /* This must match the inner element's border-radius */
+}
+
+/* This pseudo-element IS the animated border */
+.animated-border-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  /* --- MODIFIED: Use CSS variables for the gradient colors --- */
+  background: conic-gradient(
+    from var(--angle),
+    transparent 20%,
+    var(--glow-color-light), /* Use the light color variable */
+    var(--glow-color-dark),  /* Use the dark color variable */
+    transparent 40%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* On hover, make the border visible and start the animation */
+.animated-border-button:hover::before {
+  opacity: 1;
+  animation: rotate-border-animation 4s linear infinite;
 }

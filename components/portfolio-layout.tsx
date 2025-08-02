@@ -386,15 +386,31 @@ export default function PortfolioLayout({
                       onClick={() =>
                         isNavigating ? null : setIsNavigating(true)
                       }
-                      className={`px-5 py-2 border rounded-full transition-colors duration-300 backdrop-blur-sm text-sm ${
-                        isActive
-                          ? `${currentTheme.activeBg} ${currentTheme.activeBorder} text-white`
-                          : `${currentTheme.border} text-gray-300 ${currentTheme.hoverBg}`
-                      }`}
+                      className="animated-border-button relative"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
+                      style={
+                        {
+                          "--glow-color-dark": currentTheme.glowColorDark,
+                          "--glow-color-light": currentTheme.glowColorLight,
+                        } as React.CSSProperties
+                      }
                     >
-                      {link.label}
+                      <div
+                        className={`relative px-5 py-2 rounded-full backdrop-blur-sm text-sm z-10 ${
+                          isActive
+                            ? `${currentTheme.activeBg} ${currentTheme.activeBorder}`
+                            : `border ${currentTheme.border} ${currentTheme.hoverBgSolid}`
+                        }`}
+                      >
+                        <span
+                          className={`${
+                            isActive ? "text-white" : "text-gray-300"
+                          }`}
+                        >
+                          {link.label}
+                        </span>
+                      </div>
                     </motion.button>
                   </Link>
                 );

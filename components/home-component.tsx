@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Metadata } from "next";
 import React from "react";
@@ -15,33 +15,83 @@ const Highlight = ({
   return <span className={`${color} font-medium`}>{children}</span>;
 };
 
-// --- NEW, PARAPHRASED AboutContent component ---
+// --- RESTRUCTURED AboutContent component with a more natural tone ---
 const AboutContent = () => (
-    <div className="space-y-6">
-    <p className="text-gray-300 leading-relaxed">
-      As a software engineer, I&apos;m driven by the challenge of solving complex problems with technology. My passion lies in building high-quality digital experiences, from high-performance <Highlight color="text-purple-400">web applications</Highlight> and robust backend systems to native <Highlight color="text-purple-400">mobile apps</Highlight> for both Android & iOS.
+  <div className="space-y-6 text-gray-300 leading-relaxed">
+    <p>
+      Building things with code is my passion. For{" "}
+      <Highlight>over 8 years</Highlight>, I&apos;ve been on a journey from
+      writing my first lines of code to leading projects as a{" "}
+      <Highlight>Senior Software Engineer</Highlight>, always focused on
+      architecting high-performance, scalable digital solutions and creating
+      seamless user experiences.
     </p>
-    <p className="text-gray-300 leading-relaxed">
-      I&apos;m proficient across the full stack, with a primary toolkit centered on <Highlight>JavaScript</Highlight>, <Highlight>TypeScript</Highlight>, <Highlight>React</Highlight>, <Highlight>Next.js</Highlight>, and <Highlight>Nest.js</Highlight>. My experience also includes a strong foundation in <Highlight color="text-orange-400">Java</Highlight> for enterprise-level projects and deploying scalable solutions on cloud platforms like <Highlight color="text-yellow-400">AWS</Highlight> and <Highlight color="text-yellow-400">GCP</Highlight>.
+    <p>
+      I am proficient across the full stack, with a deep expertise in frontend
+      development using <Highlight>React</Highlight>,{" "}
+      <Highlight>Next.js</Highlight>, and <Highlight>TypeScript</Highlight> to
+      build dynamic and responsive user interfaces. On the backend, I leverage{" "}
+      <Highlight>Nest.js</Highlight>, <Highlight>Node.js</Highlight>, and{" "}
+      <Highlight>Java</Highlight> to engineer secure REST APIs and real-time
+      communication systems with Web Sockets. My experience also extends to
+      native mobile development for both{" "}
+      <Highlight color="text-purple-400">Android & iOS</Highlight>.
     </p>
-    <p className="text-gray-300 leading-relaxed">
-      My work has spanned diverse industries, including <Highlight color="text-green-400">e-learning</Highlight>, <Highlight color="text-green-400">event management</Highlight>, and <Highlight color="text-green-400">SaaS</Highlight>, where I&apos;ve consistently delivered value and impact. Outside of coding, I&apos;m often creating tech content, exploring new frameworks, or brainstorming my next project.
+    <p>
+      A core part of my skill set involves deploying and managing applications
+      on major cloud platforms like{" "}
+      <Highlight color="text-yellow-400">AWS</Highlight> and{" "}
+      <Highlight color="text-yellow-400">GCP</Highlight>. I have a strong
+      command of DevOps practices, using tools like{" "}
+      <Highlight>Docker</Highlight> and <Highlight>GitHub Actions</Highlight> to
+      create and manage efficient CI/CD pipelines, ensuring smooth and rapid
+      deployment cycles.
     </p>
   </div>
 );
 
-
 // --- Experience Data (no changes needed) ---
 const experienceData = [
+  {
+    role: "Senior Full Stack Consultant",
+    company: "Ribacka Media AB",
+    location: "Stockholm, Sweden (Remote)",
+    date: "Feb 2025 - Present",
+    points: [
+      <>
+        Providing full-stack software development and automation expertise as a
+        consultant.
+      </>,
+      <>
+        Developing and maintaining scalable applications to meet client needs.
+      </>,
+      <>
+        Collaborating with the client to define project scope and deliver
+        high-quality software solutions.
+      </>,
+    ],
+  },
   {
     role: "Full Stack Developer (Tech Lead)",
     company: "SkoolMedia Nigeria Limited",
     location: "Lagos, Nigeria",
-    date: "Aug 2022 - Present",
+    date: "Aug 2022 - Feb 2025",
     points: [
-      <>Boosted monthly subscriptions by <Highlight color="text-green-400">150%</Highlight> by spearheading performance optimizations and rolling out high-demand features.</>,
-      <>Cut feature deployment times by <Highlight color="text-green-400">40%</Highlight> by managing and optimizing CI/CD pipelines with GitHub Actions and Docker.</>,
-      <>Accelerated content upload efficiency by <Highlight color="text-green-400">50%</Highlight> by engineering a custom admin dashboard.</>,
+      <>
+        Boosted monthly subscriptions by{" "}
+        <Highlight color="text-green-400">150%</Highlight> by spearheading
+        performance optimizations and rolling out high-demand features.
+      </>,
+      <>
+        Cut feature deployment times by{" "}
+        <Highlight color="text-green-400">40%</Highlight> by managing and
+        optimizing CI/CD pipelines with GitHub Actions and Docker.
+      </>,
+      <>
+        Accelerated content upload efficiency by{" "}
+        <Highlight color="text-green-400">50%</Highlight> by engineering a
+        custom admin dashboard.
+      </>,
     ],
   },
   {
@@ -50,8 +100,17 @@ const experienceData = [
     location: "Lagos, Nigeria",
     date: "Feb 2022 - Aug 2022",
     points: [
-        <>Saved <Highlight color="text-green-400">2.5 million NGN</Highlight> in potential costs by repairing and upgrading a critical HPE ProLiant server.</>,
-        <>Increased staff productivity by <Highlight color="text-green-400">20%</Highlight> and boosted online sales by <Highlight color="text-green-400">15%</Highlight> through a comprehensive IT infrastructure upgrade.</>,
+      <>
+        Saved <Highlight color="text-green-400">2.5 million NGN</Highlight> in
+        potential costs by repairing and upgrading a critical HPE ProLiant
+        server.
+      </>,
+      <>
+        Increased staff productivity by{" "}
+        <Highlight color="text-green-400">20%</Highlight> and boosted online
+        sales by <Highlight color="text-green-400">15%</Highlight> through a
+        comprehensive IT infrastructure upgrade.
+      </>,
     ],
   },
   {
@@ -60,8 +119,14 @@ const experienceData = [
     location: "Lagos, Nigeria",
     date: "July 2021 - Feb 2022",
     points: [
-        <>Architected and led the frontend development of responsive, mobile-first web applications.</>,
-        <>Engineered real-time data communication with hardware devices by building robust APIs and integrating Web Sockets.</>,
+      <>
+        Architected and led the frontend development of responsive, mobile-first
+        web applications.
+      </>,
+      <>
+        Engineered real-time data communication with hardware devices by
+        building robust APIs and integrating Web Sockets.
+      </>,
     ],
   },
   {
@@ -70,7 +135,10 @@ const experienceData = [
     location: "Abuja, Nigeria",
     date: "Oct 2020 - June 2021",
     points: [
-        <>Developed scalable web applications and APIs for seamless data transfer and system integration.</>,
+      <>
+        Developed scalable web applications and APIs for seamless data transfer
+        and system integration.
+      </>,
     ],
   },
 ];
@@ -100,7 +168,7 @@ const ExperienceContent = () => (
 );
 
 export const metadata: Metadata = {
-    title: "About",
+  title: "About",
 };
 
 export default function HomePage() {
