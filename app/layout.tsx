@@ -43,7 +43,7 @@ export const metadata: Metadata = {
   creator: "Olaniyi Gideon Olamide",
   manifest: "/site.webmanifest",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/favicon.svg",
     apple: "/apple-touch-icon.png",
     shortcut: "/favicon-16x16.png",
   },

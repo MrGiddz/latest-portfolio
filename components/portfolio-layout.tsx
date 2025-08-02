@@ -19,6 +19,7 @@ import NavigationLoader from "./navigation-loader";
 import ScrollNotification from "./scroll-notification";
 import CustomCursor from "./custom-cursor";
 import { FaPhone } from "react-icons/fa6";
+import NavigationHint from "./navigation-hint";
 
 const socialLinks = [
   { Icon: SiGithub, href: "https://github.com/mrgiddz" },
@@ -41,6 +42,8 @@ export default function PortfolioLayout({
   const [isDesktop, setIsDesktop] = useState(false);
   const contentRef = useRef<HTMLElement>(null);
   const [scrollHint, setScrollHint] = useState<"up" | "down" | null>(null);
+
+  const [showNavHint, setShowNavHint] = useState(false);
 
   const navState = useRef({
     isPrimed: false,
@@ -207,6 +210,34 @@ export default function PortfolioLayout({
       return () => clearTimeout(timer);
     }
   }, [pathname, isDesktop]);
+
+  useEffect(() => {
+    // Check the actual window width directly, not the state, to avoid timing issues.
+    const isCurrentlyDesktop = window.innerWidth >= 1024;
+    const hasSeenHint = sessionStorage.getItem("hasSeenNavHint");
+
+
+    console.log({hasSeenHint, isCurrentlyDesktop})
+    // The condition is now reliable on the very first run.
+    if (hasSeenHint || !isCurrentlyDesktop) {
+      return;
+    }
+
+    // This log will now show up correctly when the conditions are met.
+    console.log("Hint conditions met. Setting timer...");
+
+    const showHintTimer = setTimeout(() => {
+      setShowNavHint(true);
+    }, 2000);
+
+    return () => clearTimeout(showHintTimer);
+  }, []); 
+
+  // 👇 This is the function we will pass to the hint component
+  const handleDismissHint = () => {
+    setShowNavHint(false);
+    sessionStorage.setItem("hasSeenNavHint", "true");
+  };
 
   const pageVariants = {
     initial: {
@@ -607,7 +638,9 @@ export default function PortfolioLayout({
       <AnimatePresence>
         {scrollHint && (
           <motion.div
-            className={`fixed left-0 w-full h-1 ${currentTheme.activeBg} shadow-[0_0_15px_rgba(59,130,246,0.7)] z-50 ${
+            className={`fixed left-0 w-full h-1 ${
+              currentTheme.activeBg
+            } shadow-[0_0_15px_rgba(59,130,246,0.7)] z-50 ${
               scrollHint === "up" ? "top-0" : "bottom-0"
             }`}
             initial={{ scaleX: 0 }}
@@ -629,6 +662,10 @@ export default function PortfolioLayout({
       </AnimatePresence>
 
       <AnimatePresence>{isNavigating && <NavigationLoader />}</AnimatePresence>
+
+      <AnimatePresence>
+        {showNavHint && <NavigationHint onDismiss={handleDismissHint} />}
+      </AnimatePresence>
     </div>
   );
 }

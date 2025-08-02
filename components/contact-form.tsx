@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 
 const formContainerVariants = {
   hidden: { opacity: 0 },
@@ -47,22 +47,34 @@ export default function ContactForm() {
           Let&apos;s work together
         </h2>
 
-        <motion.p
+        <motion.div
           className="text-center text-gray-400 mb-8"
           variants={fieldVariants}
           initial="hidden"
           animate="visible"
           transition={{ delay: 0.2 }}
         >
-          Or email me directly at:
-          <a
-            href="mailto:mideolaniyi@outlook.com"
-            className="flex items-center justify-center gap-2 text-blue-300 font-semibold hover:underline mt-1"
-          >
-            <Mail className="h-4 w-4" />
-            <span>mideolaniyi@outlook.com</span>
-          </a>
-        </motion.p>
+          <p>Or reach me directly via:</p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-x-6 gap-y-2 mt-2">
+            {/* Email Link */}
+            <a
+              href="mailto:mideolaniyi@outlook.com"
+              className="flex items-center justify-center gap-2 text-blue-300 font-semibold hover:underline"
+            >
+              <Mail className="h-4 w-4" />
+              <span>mideolaniyi@outlook.com</span>
+            </a>
+            {/* Phone Link */}
+            <a
+              href="tel:+2348026406566"
+              className="flex items-center justify-center gap-2 text-blue-300 font-semibold hover:underline"
+            >
+              {/* --- FIXED: Replaced FaPhone with the Phone icon from lucide-react --- */}
+              <Phone className="h-4 w-4" />
+              <span>+234 802 640 6566</span>
+            </a>
+          </div>
+        </motion.div>
 
         <motion.form
           onSubmit={handleSubmit}
