@@ -607,14 +607,14 @@ export default function PortfolioLayout({
       <AnimatePresence>
         {scrollHint && (
           <motion.div
-            className={`fixed left-0 w-full h-1 bg-blue-400/50 shadow-[0_0_15px_rgba(59,130,246,0.7)] z-50 ${
+            className={`fixed left-0 w-full h-1 ${currentTheme.activeBg} shadow-[0_0_15px_rgba(59,130,246,0.7)] z-50 ${
               scrollHint === "up" ? "top-0" : "bottom-0"
             }`}
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
             exit={{ scaleX: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            style={{ originX: 0.5 }} // Animate from the center
+            style={{ originX: 0.5 }}
           />
         )}
       </AnimatePresence>
