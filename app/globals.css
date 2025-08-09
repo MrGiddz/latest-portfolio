@@ -1,0 +1,113 @@
+@import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700&family=Space+Mono:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Fira+Code:wght@300..700&display=swap");
+
+:root {
+  --background: #ffffff;
+  --foreground: #17117;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: "Space Mono", monospace;
+  --font-fira: "Fira Code", monospace;
+  --font-jetbrains: "JetBrains Mono", monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0f172a;
+    --foreground: #e2e8f0;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  cursor: none;
+}
+
+a,
+button {
+  cursor: none;
+}
+
+.animate-glow {
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
+}
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes rotate-shine {
+  to {
+    --angle: 360deg;
+  }
+}
+
+/* Add this to your global CSS file */
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes rotate-border-animation {
+  to {
+    --angle: 360deg;
+  }
+}
+
+.animated-border-button {
+  position: relative;
+  padding: 2px;
+  border-radius: 9999px;
+}
+
+.animated-border-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--angle),
+    transparent 20%,
+    var(--glow-color-light),
+    var(--glow-color-dark),
+    transparent 40%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.animated-border-button:hover::before,
+.animated-border-button:active::before {
+  opacity: 1;
+  animation: rotate-border-animation 4s linear infinite;
+  transition: all 1s ease-in-out;
+}
+
+.animated-border-button.is-tapped::before {
+  opacity: 1;
+  animation: rotate-border-animation 4s linear infinite;
+}
+
+.animated-border-button:focus-visible::before {
+  opacity: 1;
+  animation: rotate-border-animation 4s linear infinite;
+}
