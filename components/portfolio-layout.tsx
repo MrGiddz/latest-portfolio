@@ -352,7 +352,7 @@ export default function PortfolioLayout({
         />
 
         {/* Layer 2: NEW! Continuously moving light blobs */}
-        <motion.div
+        {/* <motion.div
           className="absolute inset-0"
           animate={{
             background: [
@@ -368,7 +368,7 @@ export default function PortfolioLayout({
             repeat: Infinity,
             ease: "linear",
           }}
-        />
+        /> */}
 
         {/* Layer 3: Subtle "breathing" texture*/}
         <motion.div
