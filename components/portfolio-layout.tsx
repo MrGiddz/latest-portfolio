@@ -23,7 +23,7 @@ import NavigationHint from "./navigation-hint";
 import { FlipWords } from "./ui/flip-words";
 import { TypewriterEffectSmooth } from "./ui/typewriter-effect";
 import { FloatingDock } from "./ui/floating-dock";
-
+import { ThemeSwitcher } from "./theme-switcher";
 
 const socialLinks = [
   {
@@ -321,6 +321,10 @@ export default function PortfolioLayout({
 
       <CustomCursor />
 
+      <div className="fixed top-6 right-6 z-50">
+        <ThemeSwitcher />
+      </div>
+
       <div
         className="fixed inset-0 -z-10 dark:bg-neutral-950"
         style={{
@@ -397,8 +401,8 @@ export default function PortfolioLayout({
               <Image
                 src="/profile.jpg" // The path to your image in the public folder
                 alt="Olaniyi Olamide's profile picture"
-                width={128} // Corresponds to w-32 (32 * 4px = 128px)
-                height={128} // Corresponds to h-32
+                width={150}
+                height={150}
                 className="h-full w-full object-cover" // Ensures the image fills the circle without distortion
                 priority // Tells Next.js to load this image first
               />
@@ -422,11 +426,15 @@ export default function PortfolioLayout({
                       .start();
                   }}
                 /> */}
-                <TypewriterEffectSmooth words={typewriterWords}  key={pathname} />
+                <TypewriterEffectSmooth
+                  words={typewriterWords}
+                  key={pathname}
+                />
               </div>
 
-              <h2 className="text-white text-2xl md:text-3xl font-bold leading-tight font-code h-28 lg:h-auto">
-                {/* <Typewriter
+              <div className="flex justify-center items-center">
+                <h2 className="text-white text-center  text-2xl md:text-3xl font-bold leading-tight font-code h-28 lg:h-auto">
+                  {/* <Typewriter
                   options={{
                     loop: true,
                     delay: 50,
@@ -462,8 +470,9 @@ export default function PortfolioLayout({
                       .start();
                   }}
                 /> */}
-                <FlipWords words={words} />
-              </h2>
+                  <FlipWords words={words} />
+                </h2>
+              </div>
             </div>
 
             <motion.div
@@ -585,6 +594,29 @@ export default function PortfolioLayout({
               />
             </motion.div>
           </motion.div>
+
+       <motion.footer
+            className="absolute bottom-6 text-center text-xs text-gray-500 dark:text-gray-400"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.5, duration: 1 }}
+          >
+            <p className="mb-2">
+              Built with <span className="text-gray-600 dark:text-gray-300">Next.js</span>, <span className="text-gray-600 dark:text-gray-300">Tailwind CSS</span>, and <span className="text-gray-600 dark:text-gray-300">Framer Motion</span>.
+            </p>
+            <p>
+              Design inspired by{" "}
+              <a
+                href="https://www.behance.net/oyinkanogundel"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-600 hover:text-slate-900 dark:text-gray-400 dark:hover:text-white underline"
+              >
+                Ogundele Oyinkansola
+              </a>
+            </p>
+            <p className="mt-2">© {new Date().getFullYear()} Olaniyi Olamide. All Rights Reserved.</p>
+          </motion.footer>
         </div>
 
         {/* --- Right Side (Page Content) --- */}

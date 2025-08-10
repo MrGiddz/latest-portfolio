@@ -52,7 +52,7 @@ const SkillCategory: React.FC<SkillCategoryProps> = ({
 const SkillsComponent = () => {
   return (
     <motion.div
-      className="w-full max-w-2xl backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl"
+      className="w-full max-w-3xl backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{
