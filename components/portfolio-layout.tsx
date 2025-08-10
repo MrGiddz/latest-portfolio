@@ -317,8 +317,6 @@ export default function PortfolioLayout({
 
   return (
     <div className="min-h-screen relative font-mono">
-      {/* Animated Background */}
-
       <CustomCursor />
 
       <div className="fixed top-6 right-6 z-50">
@@ -371,7 +369,7 @@ export default function PortfolioLayout({
         /> */}
 
         {/* Layer 3: Subtle "breathing" texture*/}
-        {/* <motion.div
+        <motion.div
           className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent"
           animate={{ opacity: [0.1, 0.8, 0.1] }}
           transition={{
@@ -380,7 +378,7 @@ export default function PortfolioLayout({
             ease: "easeInOut",
             repeatType: "reverse",
           }}
-        /> */}
+        />
       </div>
 
       <div className="flex flex-col lg:flex-row">
@@ -557,6 +555,7 @@ export default function PortfolioLayout({
                 </motion.button>
               </Link>
             </motion.div>
+
             <motion.div
               className="flex justify-center gap-4 pt-6"
               initial={{ opacity: 0 }}
@@ -588,15 +587,12 @@ export default function PortfolioLayout({
                 </motion.a>
               ))} */}
 
-              <FloatingDock
-                mobileClassName="translate-y-20"
-                items={socialLinks}
-              />
+                       <FloatingDock items={socialLinks} />
             </motion.div>
           </motion.div>
 
-       <motion.footer
-            className="absolute bottom-6 text-center text-xs text-gray-500 dark:text-gray-400"
+         <motion.footer
+            className="text-center text-xs text-gray-500 dark:text-gray-400 pt-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.5, duration: 1 }}
@@ -644,6 +640,9 @@ export default function PortfolioLayout({
           </AnimatePresence>
         </main>
       </div>
+
+        <FloatingDock items={socialLinks} />
+        
       {/* --- ADDITION 1: Desktop Section Indicators --- */}
       <div className="fixed right-6 top-1/2 transform -translate-y-1/2 space-y-4 z-10 hidden lg:flex flex-col">
         {navLinks.map((link) => {
@@ -725,7 +724,7 @@ export default function PortfolioLayout({
             transition={{ duration: 0.5 }}
           >
             <motion.div
-              animate={{ y: [0, 10, 0] }} // Bouncing animation
+              animate={{ y: [0, 10, 0] }}
               transition={{
                 duration: 1.5,
                 repeat: Infinity,

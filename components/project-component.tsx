@@ -155,10 +155,10 @@ const ProjectsContent = () => {
   return (
     <div ref={ref} className="relative">
       {/* The static background timeline bar */}
-          <div className="absolute left-4 top-0 h-full w-0.5 bg-slate-200 dark:bg-gray-700/50"></div>
+      <div className="absolute left-4 top-0 h-full w-0.5 bg-slate-200 dark:bg-gray-700/50"></div>
       {/* The animated, colored timeline bar */}
       <motion.div
-      className="absolute left-4 top-0 w-0.5 bg-sky-500 dark:bg-sky-400"
+        className="absolute left-4 top-0 w-0.5 bg-sky-500 dark:bg-sky-400"
         style={{ height, opacity }}
       />
 
@@ -173,7 +173,7 @@ const ProjectsContent = () => {
             transition={{ duration: 0.5 }}
           >
             {/* The dot on the timeline */}
-          {/* <div className="absolute -left-0.5 top-1.5 transform -translate-x-1/2">
+            {/* <div className="absolute -left-0.5 top-1.5 transform -translate-x-1/2">
               <div className="w-8 h-8 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center border-2 border-slate-200 dark:border-gray-700">
                 <LayoutGrid className="w-4 h-4 text-sky-500 dark:text-sky-300" />
               </div>

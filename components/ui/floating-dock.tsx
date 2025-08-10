@@ -1,11 +1,7 @@
-/**
- * Note: Use position fixed according to your needs
- * Desktop navbar is better positioned at the bottom
- * Mobile navbar is better positioned at bottom right.
- **/
+"use client";
 
 import { cn } from "@/lib/utils";
-import { IconLayoutNavbarCollapse } from "@tabler/icons-react";
+import { IconLayoutNavbarCollapse, IconX } from "@tabler/icons-react";
 import {
   AnimatePresence,
   MotionValue,
@@ -13,9 +9,8 @@ import {
   useMotionValue,
   useSpring,
   useTransform,
-} from "motion/react";
-
-import { useRef, useState } from "react";
+} from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 
 export const FloatingDock = ({
   items,
@@ -42,48 +37,67 @@ const FloatingDockMobile = ({
   className?: string;
 }) => {
   const [open, setOpen] = useState(false);
+  const dockRef = useRef<HTMLDivElement>(null);
+
+  // Effect to handle clicks outside the component
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (open && dockRef.current && !dockRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [open]);
+
   return (
-    <div className={cn("relative block md:hidden", className)}>
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            layoutId="nav"
-            className="absolute inset-x-0 bottom-full mb-2 flex flex-col gap-2"
-          >
-            {items.map((item, idx) => (
+    <div ref={dockRef} className={cn("fixed bottom-24 right-8 z-50 block md:hidden", className)}>
+      {/* This container holds the animating icons and is positioned absolutely
+          relative to the main button, preventing layout shifts. */}
+      <div className="absolute bottom-full mb-4 flex flex-col items-center gap-3">
+        <AnimatePresence>
+          {open && (
+            items.map((item, idx) => (
               <motion.div
                 key={item.title}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                }}
-                exit={{
-                  opacity: 0,
-                  y: 10,
-                  transition: {
-                    delay: idx * 0.05,
-                  },
-                }}
-                transition={{ delay: (items.length - 1 - idx) * 0.05 }}
+                initial={{ opacity: 0, scale: 0.5, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0, transition: { delay: (items.length - 1 - idx) * 0.1 } }}
+                exit={{ opacity: 0, scale: 0.5, y: 10, transition: { delay: idx * 0.1 } }}
               >
                 <a
                   href={item.href}
-                  key={item.title}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-900"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700"
                 >
-                  <div className="h-4 w-4">{item.icon}</div>
+                  <div className="h-5 w-5">{item.icon}</div>
                 </a>
               </motion.div>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
+            ))
+          )}
+        </AnimatePresence>
+      </div>
       <button
         onClick={() => setOpen(!open)}
-        className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-800"
+        className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 shadow-lg"
       >
-        <IconLayoutNavbarCollapse className="h-5 w-5 text-neutral-500 dark:text-neutral-400" />
+        <motion.div animate={{ rotate: open ? 45 : 0 }} className="relative h-6 w-6">
+            <AnimatePresence>
+                {!open && (
+                    <motion.div key="open" initial={{opacity: 0, scale: 0.5}} animate={{opacity: 1, scale: 1}} exit={{opacity: 0, scale: 0.5}} className="absolute inset-0">
+                        <IconLayoutNavbarCollapse className="h-full w-full text-neutral-600 dark:text-neutral-300" />
+                    </motion.div>
+                )}
+                {open && (
+                    <motion.div key="close" initial={{opacity: 0, scale: 0.5}} animate={{opacity: 1, scale: 1}} exit={{opacity: 0, scale: 0.5}} className="absolute inset-0">
+                        <IconX className="h-full w-full text-neutral-600 dark:text-neutral-300" />
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </motion.div>
       </button>
     </div>
   );
@@ -102,8 +116,8 @@ const FloatingDockDesktop = ({
       onMouseMove={(e) => mouseX.set(e.pageX)}
       onMouseLeave={() => mouseX.set(Infinity)}
       className={cn(
-        "mx-auto hidden h-16 items-end gap-4 rounded-2xl  px-4 pb-3 md:flex",
-        className,
+        "mx-auto hidden h-16 items-end gap-4 rounded-2xl px-4 pb-3 md:flex",
+        className
       )}
     >
       {items.map((item) => (
@@ -128,52 +142,24 @@ function IconContainer({
 
   const distance = useTransform(mouseX, (val) => {
     const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
-
     return val - bounds.x - bounds.width / 2;
   });
 
-  const widthTransform = useTransform(distance, [-150, 0, 150], [40, 80, 40]);
-  const heightTransform = useTransform(distance, [-150, 0, 150], [40, 80, 40]);
-
-  const widthTransformIcon = useTransform(distance, [-150, 0, 150], [20, 40, 20]);
-  const heightTransformIcon = useTransform(
-    distance,
-    [-150, 0, 150],
-    [20, 40, 20],
-  );
-
-  const width = useSpring(widthTransform, {
-    mass: 0.1,
-    stiffness: 150,
-    damping: 12,
-  });
-  const height = useSpring(heightTransform, {
-    mass: 0.1,
-    stiffness: 150,
-    damping: 12,
-  });
-
-  const widthIcon = useSpring(widthTransformIcon, {
-    mass: 0.1,
-    stiffness: 150,
-    damping: 12,
-  });
-  const heightIcon = useSpring(heightTransformIcon, {
-    mass: 0.1,
-    stiffness: 150,
-    damping: 12,
-  });
+  const width = useSpring(useTransform(distance, [-150, 0, 150], [40, 80, 40]), { mass: 0.1, stiffness: 150, damping: 12 });
+  const height = useSpring(useTransform(distance, [-150, 0, 150], [40, 80, 40]), { mass: 0.1, stiffness: 150, damping: 12 });
+  const widthIcon = useSpring(useTransform(distance, [-150, 0, 150], [20, 40, 20]), { mass: 0.1, stiffness: 150, damping: 12 });
+  const heightIcon = useSpring(useTransform(distance, [-150, 0, 150], [20, 40, 20]), { mass: 0.1, stiffness: 150, damping: 12 });
 
   const [hovered, setHovered] = useState(false);
 
   return (
-    <a href={href}>
+    <a href={href} target="_blank" rel="noopener noreferrer">
       <motion.div
         ref={ref}
         style={{ width, height }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className="relative flex aspect-square items-center justify-center rounded-full"
+        className="relative flex aspect-square items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700"
       >
         <AnimatePresence>
           {hovered && (
