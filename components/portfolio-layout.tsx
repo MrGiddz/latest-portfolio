@@ -333,14 +333,14 @@ export default function PortfolioLayout({
           backgroundSize: "100% 100%, 2rem 2rem, 2rem 2rem",
         }}
       >
-        <div
+        {/* <div
           className="fixed inset-0 -z-10 dark:bg-neutral-950"
           style={{
             // backgroundColor: "#111827",
             backgroundImage: `radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.4) 100%),linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px)`,
             backgroundSize: "100% 100%, 2rem 2rem, 2rem 2rem",
           }}
-        />
+        /> */}
         {/* Layer 1: Thematic Base Color (Driven by section change) */}
         <motion.div
           className="absolute inset-0"
@@ -371,7 +371,7 @@ export default function PortfolioLayout({
         /> */}
 
         {/* Layer 3: Subtle "breathing" texture*/}
-        <motion.div
+        {/* <motion.div
           className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent"
           animate={{ opacity: [0.1, 0.8, 0.1] }}
           transition={{
@@ -380,7 +380,7 @@ export default function PortfolioLayout({
             ease: "easeInOut",
             repeatType: "reverse",
           }}
-        />
+        /> */}
       </div>
 
       <div className="flex flex-col lg:flex-row">

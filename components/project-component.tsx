@@ -173,11 +173,11 @@ const ProjectsContent = () => {
             transition={{ duration: 0.5 }}
           >
             {/* The dot on the timeline */}
-          <div className="absolute -left-0.5 top-1.5 transform -translate-x-1/2">
+          {/* <div className="absolute -left-0.5 top-1.5 transform -translate-x-1/2">
               <div className="w-8 h-8 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center border-2 border-slate-200 dark:border-gray-700">
                 <LayoutGrid className="w-4 h-4 text-sky-500 dark:text-sky-300" />
               </div>
-            </div>
+            </div> */}
 
             {/* Project Content */}
             <div className="space-y-4">
