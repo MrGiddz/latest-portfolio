@@ -316,7 +316,7 @@ export default function PortfolioLayout({
   ];
 
   return (
-    <div className="min-h-screen relative font-mono">
+    <div className="min-h-screen relative font-mono overflow-x-hidden">
       <CustomCursor />
 
       <div className="fixed top-6 right-6 z-50">
@@ -642,7 +642,7 @@ export default function PortfolioLayout({
       </div>
 
         <FloatingDock items={socialLinks} />
-        
+
       {/* --- ADDITION 1: Desktop Section Indicators --- */}
       <div className="fixed right-6 top-1/2 transform -translate-y-1/2 space-y-4 z-10 hidden lg:flex flex-col">
         {navLinks.map((link) => {

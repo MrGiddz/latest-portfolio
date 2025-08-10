@@ -219,18 +219,18 @@ const ExperienceContent = () => {
         {experienceData.map((job, index) => (
           <motion.div
             key={index}
-            className="relative pl-12"
+            className="relative pl-10"
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, amount: 0.5 }}
             transition={{ duration: 0.5 }}
           >
             {/* The dot on the timeline */}
-            <div className="absolute -left-0.5 top-1.5 transform -translate-x-1/2">
+            {/* <div className="absolute -left-0.5 top-1.5 transform -translate-x-1/2">
               <div className="w-8 h-8 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center border-2 border-slate-200 dark:border-gray-700">
                 <Briefcase className="w-4 h-4 text-blue-500 dark:text-blue-300" />
               </div>
-            </div>
+            </div> */}
 
             {/* Job Content */}
             <div className="space-y-2">
@@ -265,7 +265,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen w-full p-4 md:p-10 md:pl-0 ">
       <motion.div
-        className="w-full max-w-3xl mx-auto backdrop-blur-md bg-slate-100/80 dark:bg-white/10 border border-slate-200 dark:border-white/20 rounded-3xl p-8 shadow-2xl my-24"
+        className="w-full max-w-3xl mx-auto backdrop-blur-md bg-slate-100/80 dark:bg-white/10 border border-slate-200 dark:border-white/20 rounded-3xl p-6 shadow-2xl my-24"
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{
