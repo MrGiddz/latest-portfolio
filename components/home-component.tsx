@@ -1,9 +1,9 @@
 "use client";
 
 import { Metadata } from "next";
-import { Briefcase } from "lucide-react";
-import React, { useRef } from "react"; // 1. Import useRef
+import React, { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
+import { Briefcase } from "lucide-react";
 import { AnimatedTestimonials } from "./ui/animated-testimonials";
 
 // Helper component for syntax highlighting
@@ -17,7 +17,7 @@ const Highlight = ({
   return <span className={`${color} font-medium`}>{children}</span>;
 };
 
-// --- RESTRUCTURED AboutContent component with a more natural tone ---
+// --- About Me Section Content ---
 const AboutContent = () => (
   <div className="space-y-6 text-gray-600 dark:text-gray-300 leading-relaxed">
     <p>
@@ -194,16 +194,23 @@ const testimonials = [
   },
 ];
 
-
 const ExperienceContent = () => {
-  const ref = useRef(null);
+  const ref = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    // Find the correct scroll container when the component mounts
+    containerRef.current = document.getElementById("page-content");
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start center", "end center"],
+    container: containerRef,
+    offset: ["start end", "end start"],
   });
 
   const height = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
-  const opacity = useTransform(scrollYProgress, [0, 0.05], [0, 1]);
+  const opacity = useTransform(scrollYProgress, [0, 0.1], [0, 1]);
 
   return (
     <div ref={ref} className="relative">
@@ -219,10 +226,11 @@ const ExperienceContent = () => {
         {experienceData.map((job, index) => (
           <motion.div
             key={index}
-            className="relative pl-10"
+            className="relative pl-12"
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.5 }}
+            // Tell the animation to use the correct scroll container as its viewport
+            viewport={{ root: containerRef, amount: 0.5 }}
             transition={{ duration: 0.5 }}
           >
             {/* The dot on the timeline */}
@@ -240,8 +248,12 @@ const ExperienceContent = () => {
                     className="text-slate-900 dark:text-white font-semibold text-lg"
                     dangerouslySetInnerHTML={{ __html: job.role }}
                   ></h3>
-                  <p className="text-blue-600 dark:text-blue-300">{job.company}</p>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm">{job.location}</p>
+                  <p className="text-blue-600 dark:text-blue-300">
+                    {job.company}
+                  </p>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">
+                    {job.location}
+                  </p>
                 </div>
                 <span className="text-gray-500 dark:text-gray-400 text-sm mt-2 sm:mt-0 font-mono">
                   {job.date}
@@ -260,10 +272,9 @@ const ExperienceContent = () => {
   );
 };
 
-
 export default function HomePage() {
   return (
-    <div className="min-h-screen w-full p-4 md:p-10 md:pl-0 ">
+    <div className="min-h-screen w-full p-4 md:p-10 md:pl-0 pb-10 md:pb-0">
       <motion.div
         className="w-full max-w-3xl mx-auto backdrop-blur-md bg-slate-100/80 dark:bg-white/10 border border-slate-200 dark:border-white/20 rounded-3xl p-6 shadow-2xl my-24"
         initial={{ opacity: 0, scale: 0.95 }}

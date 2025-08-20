@@ -84,7 +84,7 @@ export const metadata: Metadata = {
 
 export default function CredentialsPage() {
     return (
-        <div className="min-h-screen w-full flex flex-col items-center justify-center p-6 md:p-10">
+        <div className="min-h-screen w-full flex flex-col items-center justify-center p-6 md:p-10 pb-10 md:pb-0">
             <CredentialsComponent />
         </div>
     )

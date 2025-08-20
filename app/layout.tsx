@@ -83,7 +83,7 @@ export const metadata: Metadata = {
     siteName: "Olamide Olaniyi",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/profile.jpg",
         width: 1200,
         height: 630,
         alt: "Olamide Olaniyi - Senior Software Engineer Portfolio",
@@ -97,7 +97,7 @@ export const metadata: Metadata = {
     title: "Olamide Olaniyi - Senior Software Engineer",
     description:
       "Explore the portfolio of a multi-talented software engineer building web apps, mobile apps, and backend systems with React, Node.js, and Java.",
-    images: ["/og-image.jpg"],
+    images: ["/profile.jpg"],
     creator: "@mide_niyi",
   },
 };

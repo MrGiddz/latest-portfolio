@@ -24,6 +24,7 @@ import { FlipWords } from "./ui/flip-words";
 import { TypewriterEffectSmooth } from "./ui/typewriter-effect";
 import { FloatingDock } from "./ui/floating-dock";
 import { ThemeSwitcher } from "./theme-switcher";
+import NavigationButton from "./bottom-navigation";
 
 const socialLinks = [
   {
@@ -58,6 +59,13 @@ const socialLinks = [
   },
 ];
 
+interface NavPromptProps {
+  visible: boolean;
+  direction: "up" | "down";
+  href: string;
+  pageName: string;
+}
+
 export default function PortfolioLayout({
   children,
 }: {
@@ -79,7 +87,11 @@ export default function PortfolioLayout({
     targetHref: "",
     scrollAccumulator: 0,
     debounceTimeout: null as NodeJS.Timeout | null,
+    holdTimeout: null as NodeJS.Timeout | null,
+    overscroll: 0,
   });
+
+  const [navPrompt, setNavPrompt] = useState<NavPromptProps>({ visible: false, direction: "down", href: "", pageName: "" });
 
   const [navNotification, setNavNotification] = useState<{
     visible: boolean;
@@ -122,120 +134,65 @@ export default function PortfolioLayout({
   //   };
 
   useEffect(() => {
-    const HINT_THRESHOLD = 10; // Show hint after scrolling 20px
-    const NAV_THRESHOLD = 100; // Show popup and prime navigation after 100px
-    const DEBOUNCE_DELAY = 500;
-
-    const resetNavState = () => {
-      if (navState.current.debounceTimeout)
-        clearTimeout(navState.current.debounceTimeout);
-      navState.current.isPrimed = false;
-      navState.current.targetHref = "";
-      navState.current.scrollAccumulator = 0;
-      setNavNotification({ visible: false, direction: "down", pageName: "" });
-      setScrollHint(null); // Also hide the hint
-    };
-
-    const handleWheel = (e: WheelEvent) => {
+    const handleScroll = () => {
       if (isNavigating) return;
 
-      if (navState.current.debounceTimeout)
-        clearTimeout(navState.current.debounceTimeout);
-
-      const scrollContainer = isDesktop ? contentRef.current : window;
-      const contentBody = isDesktop
+      const scrollContainer = isDesktop
         ? contentRef.current
         : document.documentElement;
-      if (!scrollContainer || !contentBody) return;
+      if (!scrollContainer) return;
 
-      const scrollTop = isDesktop
-        ? (scrollContainer as HTMLElement).scrollTop
-        : window.scrollY;
-      const clientHeight = isDesktop
-        ? (scrollContainer as HTMLElement).clientHeight
-        : window.innerHeight;
-      const scrollHeight = contentBody.scrollHeight;
+      const { scrollTop, clientHeight, scrollHeight } = scrollContainer;
 
+      // Use a small buffer for floating point inaccuracies
       const isAtBottom = clientHeight + scrollTop >= scrollHeight - 5;
-      const isAtTop = scrollTop <= 0;
+      const isAtTop = scrollTop <= 5;
       const currentIndex = navLinks.findIndex((link) => link.href === pathname);
-      const isScrollingDown = e.deltaY > 0;
-      const isScrollingUp = e.deltaY < 0;
 
-      if (navState.current.isPrimed) {
-        if (
-          (isScrollingDown && navNotification.direction === "up") ||
-          (isScrollingUp && navNotification.direction === "down")
-        ) {
-          resetNavState();
-          return;
-        }
+      let newPromptState: NavPromptProps = {
+        visible: false,
+        direction: "down",
+        href: "",
+        pageName: "",
+      };
+
+      if (isAtBottom && currentIndex < navLinks.length - 1) {
+        const nextPage = navLinks[currentIndex + 1];
+        newPromptState = {
+          visible: true,
+          direction: "down",
+          href: nextPage.href,
+          pageName: nextPage.label,
+        };
+      } else if (isAtTop && currentIndex > 0) {
+        const prevPage = navLinks[currentIndex - 1];
+        newPromptState = {
+          visible: true,
+          direction: "up",
+          href: prevPage.href,
+          pageName: prevPage.label,
+        };
       }
 
-      let shouldPrime = false;
-
-      if (isScrollingDown && isAtBottom && currentIndex < navLinks.length - 1) {
-        navState.current.scrollAccumulator += e.deltaY;
-        if (navState.current.scrollAccumulator > HINT_THRESHOLD) {
-          setScrollHint("down"); // Show hint
-        }
-        if (navState.current.scrollAccumulator > NAV_THRESHOLD) {
-          shouldPrime = true;
-          if (!navState.current.isPrimed) {
-            navState.current.isPrimed = true;
-            const nextPage = navLinks[currentIndex + 1];
-            navState.current.targetHref = nextPage.href;
-            setNavNotification({
-              visible: true,
-              direction: "down",
-              pageName: nextPage.label,
-            });
-          }
-        }
-      } else if (isScrollingUp && isAtTop && currentIndex > 0) {
-        navState.current.scrollAccumulator += e.deltaY;
-        if (navState.current.scrollAccumulator < -HINT_THRESHOLD) {
-          setScrollHint("up"); // Show hint
-        }
-        if (navState.current.scrollAccumulator < -NAV_THRESHOLD) {
-          shouldPrime = true;
-          if (!navState.current.isPrimed) {
-            navState.current.isPrimed = true;
-            const prevPage = navLinks[currentIndex - 1];
-            navState.current.targetHref = prevPage.href;
-            setNavNotification({
-              visible: true,
-              direction: "up",
-              pageName: prevPage.label,
-            });
-          }
-        }
-      } else {
-        resetNavState();
-      }
-
-      if (shouldPrime) {
-        navState.current.debounceTimeout = setTimeout(() => {
-          if (navState.current.isPrimed) {
-            setIsNavigating(true);
-            router.push(navState.current.targetHref);
-          }
-          resetNavState();
-        }, DEBOUNCE_DELAY);
-      }
+      setNavPrompt(newPromptState);
     };
 
-    window.addEventListener("wheel", handleWheel, { passive: true });
+    const scrollEl = isDesktop ? contentRef.current : window;
+    scrollEl?.addEventListener("scroll", handleScroll, { passive: true });
+
+    // Initial check on page load to see if it's already at the top/bottom
+    const timer = setTimeout(handleScroll, 500);
+
     return () => {
-      window.removeEventListener("wheel", handleWheel);
-      if (navState.current.debounceTimeout)
-        clearTimeout(navState.current.debounceTimeout);
+      scrollEl?.removeEventListener("scroll", handleScroll);
+      clearTimeout(timer);
     };
-  }, [pathname, router, isNavigating, isDesktop, navNotification.direction]);
+  }, [pathname, isNavigating, isDesktop]);
 
   // Effect to reset navigation lock after page changes
   useEffect(() => {
     setIsNavigating(false);
+    setTappedButton(null);
   }, [pathname]);
 
   useEffect(() => {
@@ -315,8 +272,36 @@ export default function PortfolioLayout({
     },
   ];
 
+  const FooterContent = () => (
+    <>
+      <p className="mb-2">
+        Built with{" "}
+        <span className="text-gray-600 dark:text-gray-300">Next.js</span>,{" "}
+        <span className="text-gray-600 dark:text-gray-300">Tailwind CSS</span>,
+        and{" "}
+        <span className="text-gray-600 dark:text-gray-300">Framer Motion</span>.
+      </p>
+      <p>
+        Design inspired by{" "}
+        <a
+          href="https://www.behance.net/oyinkanogundel"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-gray-600 hover:text-slate-900 dark:text-gray-400 dark:hover:text-white underline"
+        >
+          Ogundele Oyinkansola
+        </a>
+      </p>
+      <p className="mt-2">
+        © {new Date().getFullYear()} Olaniyi Olamide. All Rights Reserved.
+      </p>
+    </>
+  );
+
   return (
     <div className="min-h-screen relative font-mono overflow-x-hidden">
+      {/* Animated Background */}
+
       <CustomCursor />
 
       <div className="fixed top-6 right-6 z-50">
@@ -331,14 +316,14 @@ export default function PortfolioLayout({
           backgroundSize: "100% 100%, 2rem 2rem, 2rem 2rem",
         }}
       >
-        {/* <div
+        <div
           className="fixed inset-0 -z-10 dark:bg-neutral-950"
           style={{
             // backgroundColor: "#111827",
             backgroundImage: `radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.4) 100%),linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px)`,
             backgroundSize: "100% 100%, 2rem 2rem, 2rem 2rem",
           }}
-        /> */}
+        />
         {/* Layer 1: Thematic Base Color (Driven by section change) */}
         <motion.div
           className="absolute inset-0"
@@ -350,7 +335,7 @@ export default function PortfolioLayout({
         />
 
         {/* Layer 2: NEW! Continuously moving light blobs */}
-        {/* <motion.div
+        <motion.div
           className="absolute inset-0"
           animate={{
             background: [
@@ -366,7 +351,7 @@ export default function PortfolioLayout({
             repeat: Infinity,
             ease: "linear",
           }}
-        /> */}
+        />
 
         {/* Layer 3: Subtle "breathing" texture*/}
         <motion.div
@@ -587,31 +572,29 @@ export default function PortfolioLayout({
                 </motion.a>
               ))} */}
 
-                       <FloatingDock items={socialLinks} />
+              <FloatingDock
+                mobileClassName="translate-y-20"
+                items={socialLinks}
+              />
             </motion.div>
           </motion.div>
 
-         <motion.footer
-            className="text-center text-xs text-gray-500 dark:text-gray-400 pt-8"
+          <motion.footer
+            className="hidden lg:block fixed bottom-6 left-0 w-1/2 text-center text-xs text-gray-500 dark:text-gray-400"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.5, duration: 1 }}
           >
-            <p className="mb-2">
-              Built with <span className="text-gray-600 dark:text-gray-300">Next.js</span>, <span className="text-gray-600 dark:text-gray-300">Tailwind CSS</span>, and <span className="text-gray-600 dark:text-gray-300">Framer Motion</span>.
-            </p>
-            <p>
-              Design inspired by{" "}
-              <a
-                href="https://www.behance.net/oyinkanogundel"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-600 hover:text-slate-900 dark:text-gray-400 dark:hover:text-white underline"
-              >
-                Ogundele Oyinkansola
-              </a>
-            </p>
-            <p className="mt-2">© {new Date().getFullYear()} Olaniyi Olamide. All Rights Reserved.</p>
+            <FooterContent />
+          </motion.footer>
+
+          <motion.footer
+            className="block md:hidden left-0 w-1/2 text-center text-xs text-gray-500 dark:text-gray-400"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.5, duration: 1 }}
+          >
+            <FooterContent />
           </motion.footer>
         </div>
 
@@ -619,7 +602,7 @@ export default function PortfolioLayout({
         <main
           ref={contentRef}
           id="page-content"
-          className="w-full lg:w-1/2 lg:ml-[50%] pb-24 lg:pb-0 relative"
+          className="w-full lg:w-1/2 lg:ml-[50%] pb-24 lg:pb-0 relative lg:h-screen lg:overflow-y-auto"
         >
           <AnimatePresence>
             <motion.main
@@ -641,8 +624,7 @@ export default function PortfolioLayout({
         </main>
       </div>
 
-        <FloatingDock items={socialLinks} />
-
+      <FloatingDock items={socialLinks} variant="mobile" />
       {/* --- ADDITION 1: Desktop Section Indicators --- */}
       <div className="fixed right-6 top-1/2 transform -translate-y-1/2 space-y-4 z-10 hidden lg:flex flex-col">
         {navLinks.map((link) => {
@@ -700,13 +682,13 @@ export default function PortfolioLayout({
                       isActive ? "text-white" : "text-white/60"
                     }`}
                   />
-                  <span
+                  {/* <span
                     className={`text-xs transition-all duration-300 ${
                       isActive ? "text-white font-bold" : "text-white/60"
                     }`}
                   >
                     {link.label.split(" ")[0]}
-                  </span>
+                  </span> */}
                 </div>
               </Link>
             );
@@ -724,7 +706,7 @@ export default function PortfolioLayout({
             transition={{ duration: 0.5 }}
           >
             <motion.div
-              animate={{ y: [0, 10, 0] }}
+              animate={{ y: [0, 10, 0] }} // Bouncing animation
               transition={{
                 duration: 1.5,
                 repeat: Infinity,
@@ -760,6 +742,16 @@ export default function PortfolioLayout({
           <ScrollNotification
             direction={navNotification.direction}
             pageName={navNotification.pageName}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {navPrompt.visible && (
+          <NavigationButton
+            direction={navPrompt.direction}
+            pageName={navPrompt.pageName}
+            onClick={() => handleNavClick(navPrompt.href)}
           />
         )}
       </AnimatePresence>

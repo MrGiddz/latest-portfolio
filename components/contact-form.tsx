@@ -41,7 +41,7 @@ export default function ContactForm() {
   };
 
   return (
-    <div className="w-full p-4 md:p-10 md:pl-0">
+    <div className="w-full p-4 md:p-10 md:pl-0 pb-10 md:pb-0">
       <motion.div
         className="w-full max-w-3xl mx-auto backdrop-blur-md bg-slate-100/80 dark:bg-white/10 border border-slate-200 dark:border-white/20 rounded-3xl p-8 shadow-2xl my-16"
         initial={{ opacity: 0, scale: 0.95 }}

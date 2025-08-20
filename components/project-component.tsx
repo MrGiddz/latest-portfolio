@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { LayoutGrid, Link as LinkIcon } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
@@ -9,7 +9,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 // Helper component for syntax highlighting within paragraphs
 const Highlight = ({
   children,
-  color = "text-yellow-400 dark:text-yellow-400",
+  color = "text-yellow-400",
 }: {
   children: React.ReactNode;
   color?: string;
@@ -23,18 +23,18 @@ const getTechColor = (tech: string): string => {
     case "react":
     case "next.js":
     case "react native":
-      return "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/50 dark:text-blue-300 dark:border-blue-500/30";
+      return "bg-blue-900/50 text-blue-300 border-blue-500/30";
     case "node.js":
     case "mongodb":
     case "express":
-      return "bg-green-100 text-green-700 border-green-200 dark:bg-green-900/50 dark:text-green-300 dark:border-green-500/30";
+      return "bg-green-900/50 text-green-300 border-green-500/30";
     case "docker":
     case "nginx":
-      return "bg-cyan-100 text-cyan-700 border-cyan-200 dark:bg-cyan-900/50 dark:text-cyan-300 dark:border-cyan-500/30";
+      return "bg-cyan-900/50 text-cyan-300 border-cyan-500/30";
     case "typescript":
-      return "bg-sky-100 text-sky-700 border-sky-200 dark:bg-sky-900/50 dark:text-sky-300 dark:border-sky-500/30";
+      return "bg-sky-900/50 text-sky-300 border-sky-500/30";
     default:
-      return "bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800/50 dark:text-gray-300 dark:border-gray-600/30";
+      return "bg-gray-800/50 text-gray-300 border-gray-600/30";
   }
 };
 
@@ -44,7 +44,7 @@ const getTechColor = (tech: string): string => {
 const projectsData = [
   {
     title: "Exampadi - E-Learning Ecosystem",
-    image: "/images/project-elearning.png",
+    image: "/images/test-img.png",
     desc: (
       <>
         Architected and developed a comprehensive e-learning ecosystem for{" "}
@@ -78,7 +78,7 @@ const projectsData = [
   },
   {
     title: "Mobile Banking App",
-    image: "/images/project-banking.png",
+    image: "/images/test-img.png",
     desc: (
       <>
         Developed a secure and intuitive{" "}
@@ -93,7 +93,7 @@ const projectsData = [
   },
   {
     title: "Real-Time IoT Dashboard",
-    image: "/images/project-iot.png",
+    image: "/images/test-img.png",
     desc: (
       <>
         Engineered a dashboard for visualizing data from hardware devices in{" "}
@@ -108,7 +108,7 @@ const projectsData = [
   },
   {
     title: "SaaS Analytics Platform",
-    image: "/images/project-analytics.png",
+    image: "/images/test-img.png",
     desc: (
       <>
         Created a comprehensive analytics dashboard for tracking{" "}
@@ -123,7 +123,7 @@ const projectsData = [
   },
   {
     title: "Cloud Infrastructure Automation",
-    image: "/images/project-cloud.png",
+    image: "/images/test-img.png",
     desc: (
       <>
         Designed and implemented a complete{" "}
@@ -141,16 +141,25 @@ const projectsData = [
   },
 ];
 
-// --- UPDATED ProjectsContent component with animated timeline ---
 const ProjectsContent = () => {
-  const ref = useRef(null);
+  const ref = useRef<HTMLDivElement>(null);
+  const [scrollContainer, setScrollContainer] = useState<HTMLElement | null>(
+    null
+  );
+
+  useEffect(() => {
+    // Find the correct scroll container when the component mounts
+    setScrollContainer(document.getElementById("page-content"));
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start center", "end center"],
+    container: scrollContainer ? { current: scrollContainer } : undefined,
+    offset: ["start end", "end start"],
   });
 
   const height = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
-  const opacity = useTransform(scrollYProgress, [0, 0.05], [0, 1]);
+  const opacity = useTransform(scrollYProgress, [0, 0.1], [0, 1]);
 
   return (
     <div ref={ref} className="relative">
@@ -166,10 +175,13 @@ const ProjectsContent = () => {
         {projectsData.map((project, index) => (
           <motion.div
             key={index}
-            className="relative pl-10"
+            className="relative pl-12"
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
+            viewport={{
+              root: scrollContainer ? { current: scrollContainer } : undefined,
+              amount: 0.3,
+            }}
             transition={{ duration: 0.5 }}
           >
             {/* The dot on the timeline */}
@@ -181,7 +193,7 @@ const ProjectsContent = () => {
 
             {/* Project Content */}
             <div className="space-y-4">
-              <div className="group relative rounded-lg overflow-hidden border border-white/10 dark:border-white/10 shadow-lg">
+              <div className="group relative rounded-lg overflow-hidden border border-slate-200 dark:border-white/10 shadow-lg">
                 <Image
                   src={project.image}
                   alt={`${project.title} screenshot`}
@@ -199,7 +211,7 @@ const ProjectsContent = () => {
               <h3 className="text-slate-900 dark:text-white font-semibold text-xl pt-2">
                 {project.title}
               </h3>
-              <p className="text-gray-600 dark:text-gray-300text-sm leading-relaxed">
+              <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
                 {project.desc}
               </p>
               <div className="flex flex-wrap gap-2">
@@ -219,7 +231,7 @@ const ProjectsContent = () => {
                   href={project.liveLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-sm text-sky-600 dark:text-sky-400  hover:text-sky-500 dark:hover:text-sky-300 transition-colors"
+                  className="flex items-center gap-2 text-sm text-sky-600 dark:text-sky-400 hover:text-sky-500 dark:hover:text-sky-300 transition-colors"
                 >
                   <LinkIcon size={16} />
                   Live Demo
@@ -245,7 +257,7 @@ const ProjectsContent = () => {
 const ProjectComponent = () => {
   return (
     <motion.div
-      className="w-full max-w-3xl mx-auto backdrop-blur-md bg-slate-100/80 dark:bg-white/10 border border-slate-200 dark:border-white/20 rounded-3xl p-4 shadow-2xl my-16"
+      className="w-full max-w-2xl mx-auto backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl my-16"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{
@@ -254,7 +266,7 @@ const ProjectComponent = () => {
         delay: 0.4,
       }}
     >
-      <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-8 text-center font-mono">
+      <h2 className="text-3xl md:text-4xl font-bold text-white mb-8 text-center font-mono">
         Projects
       </h2>
       <ProjectsContent />
