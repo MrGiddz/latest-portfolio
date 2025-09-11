@@ -6,8 +6,14 @@ import { motion } from "framer-motion";
 
 const experienceData = [
   {
+    role: "Full Stack Developer",
+    company: "RickbekaMedia, Stockholm Sweden",
+    location: "Dofollow Media AB, Victor Balcks Väg 187, Stockholm",
+    date: "Feb 2025 - Sept 2025",
+  },
+  {
     role: "Frontend/Full Stack Developer",
-    company: "ShockMedia Nigeria Limited",
+    company: "SkoolMedia Nigeria Limited",
     location: "Ikoyi, Lagos, Nigeria",
     date: "Aug 2022 - Present",
   },

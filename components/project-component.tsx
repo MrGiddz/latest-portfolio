@@ -43,8 +43,119 @@ const getTechColor = (tech: string): string => {
 // Data for Projects with images and links
 const projectsData = [
   {
+    title: "KrestCore Hub - All-in-One Church Management System",
+    image: "/rccg-admin.png", // Replace with the actual path to your project image
+    desc: (
+      <>
+        Developed a comprehensive, modular dashboard application,{" "}
+        <Highlight>KrestCore Hub</Highlight>, from the ground up using Next.js
+        and a modern tech stack. The system is designed as a powerful{" "}
+        <Highlight>Church Management System</Highlight> for RCCG Ceaseless Joy
+        Area HQ, automating administrative tasks and enhancing community
+        engagement.
+        <br />
+        <br />
+        Key contributions include building a complete{" "}
+        <Highlight>Role-Based Access Control (RBAC)</Highlight> system, a
+        dynamic <Highlight>form builder</Highlight> with submission management,
+        and a rich content management system for sermons and news. I integrated
+        multiple third-party services, including <Highlight>Paystack</Highlight>{" "}
+        for online giving, <Highlight>Termii</Highlight> for SMS notifications,
+        and <Highlight>Cloudinary</Highlight> for media asset management. The
+        platform also features automated cron jobs for sending birthday and
+        event reminders, a full-screen announcement system, and an inbox for
+        direct communication with the public.
+      </>
+    ),
+    tech: [
+      "Next.js",
+      "React",
+      "TypeScript",
+      "ShadCN UI",
+      "Tailwind CSS",
+      "MongoDB",
+      "Mongoose",
+      "NextAuth.js",
+      "Google Genkit (for AI)",
+      "Nodemailer",
+      "Cloudinary API",
+      "Paystack API",
+      "Termii SMS API",
+    ],
+    liveLink: "https://admin.rccg-cjp-admin.vercel.app", // Replace with the live URL
+    sourceLink: "https://admin.rccg-cjp-admin.vercel.app", // Replace with the source code URL
+  },
+  {
+    title: "RCCG Ceaseless Joy Church - A Modern Church Website",
+    image: "/rccg-client.png",
+    desc: (
+      <>
+        Developed a complete, production-ready website for a church
+        organization,{" "}
+        <Highlight color="text-purple-400">Beacon Church</Highlight>. The
+        platform features a dynamic and engaging user experience built with a
+        modern tech stack. The entire application is driven by a backend API,
+        allowing for dynamic content management of pages, events, announcements,
+        blog posts, and site configuration. Key features include a{" "}
+        <Highlight>dynamic announcement system</Highlight> (supporting both
+        banner and full-screen modal styles), a{" "}
+        <Highlight>backend-driven form builder</Highlight> for creating various
+        forms like membership and contact-us, and dedicated pages for
+        ministries, events, and news.
+      </>
+    ),
+    tech: [
+      "Next.js",
+      "React",
+      "TypeScript",
+      "Tailwind CSS",
+      "ShadCN UI",
+      "React Hook Form",
+      "Zod",
+      "Framer Motion",
+      "Vercel",
+      "CMS Integration",
+    ],
+    liveLink: "https://rccgceaselessjoy.com",
+    sourceLink: "https://rccg-cjp-client.vercel.app/",
+  },
+  {
+    title: "Bettor in Green & Sportsbook Casino Apps",
+    image: "/big.png",
+    desc: (
+      <>
+        Contributed to the development of{" "}
+        <Highlight color="text-green-400">Bettor in Green</Highlight> and{" "}
+        <Highlight color="text-green-400">Sportsbook Casino</Highlight> apps
+        while working with{" "}
+        <Highlight color="text-purple-400">
+          RickbekaMedia, Stockholm Sweden
+        </Highlight>
+        . I was responsible for building and integrating{" "}
+        <Highlight>personalized sportsbook promos</Highlight>, including{" "}
+        <Highlight color="text-yellow-400">state-based filtering</Highlight>,
+        user <Highlight color="text-cyan-400">onboarding flows</Highlight>,{" "}
+        <Highlight color="text-cyan-400">signup status tracking</Highlight>, and
+        dynamic affiliate link handling. I also optimized backend subscription
+        logic with <Highlight>Stripe</Highlight> to manage user roles, plans,
+        and upgrades in real time, ensuring seamless user experience.
+      </>
+    ),
+    tech: [
+      "Next.js",
+      "React",
+      "Material UI",
+      "Prisma",
+      "Stripe API",
+      "Node.js",
+      "Railway",
+    ],
+    liveLink: "https://app.bettoringreen.com/",
+    sourceLink: "#",
+  },
+  {
     title: "Exampadi - E-Learning Ecosystem",
-    image: "/images/test-img.png",
+    image: "/1.png",
     desc: (
       <>
         Architected and developed a comprehensive e-learning ecosystem for{" "}
@@ -73,72 +184,53 @@ const projectsData = [
       "PM2",
       "Digital Ocean",
     ],
-    liveLink: "#",
-    sourceLink: "#",
+    liveLink: "https://play.google.com/store/apps/details?id=com.exampadi&pcampaignid=web_share",
+    sourceLink: "https://exampadi.ng/",
   },
   {
-    title: "Mobile Banking App",
-    image: "/images/test-img.png",
-    desc: (
-      <>
-        Developed a secure and intuitive{" "}
-        <Highlight color="text-purple-400">cross-platform mobile app</Highlight>{" "}
-        for personal finance management. Integrated with banking APIs for
-        real-time transaction updates and balance tracking.
-      </>
-    ),
-    tech: ["React Native", "TypeScript", "Node.js", "Express"],
-    liveLink: "#",
-    sourceLink: "#",
+    "title": "OmololasTalksTv - A Cultural Storytelling Platform",
+    "image": "/omolola-client.png",
+    "desc": "Developed a complete, production-ready website for 'Yoruba Narratives', a platform dedicated to preserving and promoting African heritage through authentic storytelling. The entire application is driven by a backend API, allowing for dynamic content management of blog posts, videos, categories, team members, and the hero banner. Key features include a dynamic hero section with a carousel supporting both images and videos, a comprehensive blog with featured posts, recent articles, and category-based similar posts, an API-driven video library with an embedded YouTube player, and an interactive comment system with an admin approval workflow. The site also includes a robust contact form and basic analytics tracking.",
+    "tech": [
+      "Next.js",
+      "React",
+      "TypeScript",
+      "Tailwind CSS",
+      "ShadCN UI",
+      "React Hook Form",
+      "Zod",
+      "Lucide React",
+      "Embla Carousel",
+      "CMS Integration"
+    ],
+    "liveLink": "https://omololastalkstv.com",
+    "sourceLink": "#"
   },
-  {
-    title: "Real-Time IoT Dashboard",
-    image: "/images/test-img.png",
-    desc: (
-      <>
-        Engineered a dashboard for visualizing data from hardware devices in{" "}
-        <Highlight>real-time</Highlight>. Built robust APIs and integrated{" "}
-        <Highlight color="text-cyan-400">Web Sockets</Highlight> for seamless,
-        low-latency communication.
-      </>
-    ),
-    tech: ["React", "Node.js", "Socket.io", "PostgreSQL"],
-    liveLink: "#",
-    sourceLink: "#",
-  },
-  {
-    title: "SaaS Analytics Platform",
-    image: "/images/test-img.png",
-    desc: (
-      <>
-        Created a comprehensive analytics dashboard for tracking{" "}
-        <Highlight>business metrics</Highlight>. Features interactive charts and{" "}
-        <Highlight>real-time data visualization</Highlight> to provide
-        actionable insights for business growth.
-      </>
-    ),
-    tech: ["Next.js", "D3.js", "Python", "Redis"],
-    liveLink: "#",
-    sourceLink: "#",
-  },
-  {
-    title: "Cloud Infrastructure Automation",
-    image: "/images/test-img.png",
-    desc: (
-      <>
-        Designed and implemented a complete{" "}
-        <Highlight color="text-yellow-400">CI/CD pipeline</Highlight> for a
-        microservices-based application. Utilized{" "}
-        <Highlight color="text-cyan-400">Docker</Highlight> for containerization
-        and automated deployments to{" "}
-        <Highlight color="text-orange-400">AWS</Highlight>, reducing deployment
-        times by <Highlight color="text-green-400">40%</Highlight>.
-      </>
-    ),
-    tech: ["AWS", "Docker", "GitHub Actions", "Nginx"],
-    liveLink: "#",
-    sourceLink: "#",
-  },
+
+{
+  "title": "Omolola Talks TV Hub - Headless CMS & Content Dashboard",
+  "image": "/omolola-admin.png",
+  "desc": "Developed a full-featured, production-ready headless CMS and admin dashboard designed to manage a modern blog and its associated content. This powerful application provides a central hub for content creation, media management, user administration, and community engagement. The dashboard is built with a robust, API-driven architecture, enabling seamless integration with any front-end application. Key features include a comprehensive post management system with a rich text editor, dynamic categories, and tags; a complete media library with Cloudinary integration for image and video uploads; a full user and role-based access control (RBAC) system with email invitations; a content moderation queue for blog comments; an inbox for managing contact form submissions; integration with the YouTube API to fetch and manage channel videos; a complete newsletter and subscriber management system; and a customizable theming engine for appearance. The dashboard also includes a dedicated analytics section to track website traffic, top pages, referrers, and visitor geography.",
+  "tech": [
+    "Next.js (App Router)",
+    "React",
+    "TypeScript",
+    "Tailwind CSS",
+    "ShadCN UI",
+    "NextAuth.js",
+    "MongoDB",
+    "Mongoose",
+    "Genkit (AI)",
+    "Cloudinary",
+    "Nodemailer",
+    "Recharts",
+    "Zod",
+    "React Hook Form"
+  ],
+  "liveLink": "#",
+  "sourceLink": "#"
+}
+
 ];
 
 const ProjectsContent = () => {

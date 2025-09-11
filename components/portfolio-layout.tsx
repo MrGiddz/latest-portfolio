@@ -178,14 +178,14 @@ export default function PortfolioLayout({
     };
 
     const scrollEl = isDesktop ? contentRef.current : window;
-    scrollEl?.addEventListener("scroll", handleScroll, { passive: true });
+    // scrollEl?.addEventListener("scroll", handleScroll, { passive: true });
 
     // Initial check on page load to see if it's already at the top/bottom
-    const timer = setTimeout(handleScroll, 500);
+    // const timer = setTimeout(handleScroll, 500);
 
     return () => {
-      scrollEl?.removeEventListener("scroll", handleScroll);
-      clearTimeout(timer);
+      // scrollEl?.removeEventListener("scroll", handleScroll);
+      // clearTimeout(timer);
     };
   }, [pathname, isNavigating, isDesktop]);
 
@@ -214,7 +214,6 @@ export default function PortfolioLayout({
     const isCurrentlyDesktop = window.innerWidth >= 1024;
     const hasSeenHint = sessionStorage.getItem("hasSeenNavHint");
 
-    console.log({ hasSeenHint, isCurrentlyDesktop });
     if (hasSeenHint || !isCurrentlyDesktop) {
       return;
     }

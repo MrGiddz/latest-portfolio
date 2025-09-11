@@ -298,13 +298,13 @@ export default function HomePage() {
           </h2>
           <ExperienceContent />
         </section>
-        <hr className="my-12 border-gray-300 dark:border-gray-600/50" />
-        <section className="">
+        {/* <hr className="my-12 border-gray-300 dark:border-gray-600/50" /> */}
+        {/* <section className="">
           <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-8 text-center font-mono">
             Testimonials
           </h2>
           <AnimatedTestimonials testimonials={testimonials} />
-        </section>
+        </section> */}
       </motion.div>
     </div>
   );
