@@ -44,7 +44,7 @@ const getTechColor = (tech: string): string => {
 const projectsData = [
   {
     title: "KrestCore Hub - All-in-One Church Management System",
-    image: "/rccg-admin.png", // Replace with the actual path to your project image
+    image: "/rccg-client.png", // Replace with the actual path to your project image
     desc: (
       <>
         Developed a comprehensive, modular dashboard application,{" "}
@@ -87,7 +87,7 @@ const projectsData = [
   },
   {
     title: "RCCG Ceaseless Joy Church - A Modern Church Website",
-    image: "/rccg-client.png",
+    image: "/rccg-admin.png",
     desc: (
       <>
         Developed a complete, production-ready website for a church
