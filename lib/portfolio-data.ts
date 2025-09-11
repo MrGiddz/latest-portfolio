@@ -12,7 +12,7 @@ export const navLinks = [
   { href: "/skills", label: "Skills", icon: Wrench },
   { href: "/projects", label: "Projects", icon: LayoutGrid },
   { href: "/credentials", label: "Credentials", icon: GraduationCap },
-  { href: "/blog", label: "Blog", icon: Rss },
+  // { href: "/blog", label: "Blog", icon: Rss },
   { href: "/contact", label: "Contact", icon: MessageSquare },
 ];
 
