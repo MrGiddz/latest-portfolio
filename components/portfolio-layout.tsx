@@ -414,7 +414,8 @@ export default function PortfolioLayout({
 
     const scrollEl = isDesktop ? contentRef.current : window;
     scrollEl?.addEventListener("scroll", handleScroll, { passive: true });
-    const handleWheel = (event: WheelEvent) => {
+    const handleWheel: EventListener = (event) => {
+      if (!(event instanceof WheelEvent)) return;
       setDirectionFromWheel(event.deltaY);
       if (wheelIntentTimeoutRef.current) {
         clearTimeout(wheelIntentTimeoutRef.current);
