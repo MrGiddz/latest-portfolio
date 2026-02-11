@@ -5,8 +5,13 @@
 ## Site
 - Base URL: https://mideolaniyi.com
 - Owner: Olaniyi Gideon Olamide
-- Role: Senior Software Engineer
+- Role: Senior Software Engineer, Freelance Consultant, SEO Optimization Specialist
 - Contact: me@mideolaniyi.com
+
+## Services
+- Freelance software development (web, mobile, backend)
+- Technical consulting (architecture, code quality, delivery strategy)
+- SEO optimization (technical SEO, site performance, on-page improvements)
 
 ## Priority Pages
 - Home: https://mideolaniyi.com/

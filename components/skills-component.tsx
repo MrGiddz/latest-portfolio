@@ -6,7 +6,7 @@ import { motion } from "framer-motion"; // 1. Import motion
 // --- Data for Skills ---
 const frontendSkills = [
   "React",
-  "React Native",
+  "React Native (Android/iOS)",
   "Next.js",
   "Vue.js",
   "TypeScript",

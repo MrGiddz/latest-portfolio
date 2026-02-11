@@ -55,16 +55,42 @@ const AboutContent = () => (
       create and manage efficient CI/CD pipelines, ensuring smooth and rapid
       deployment cycles.
     </p>
+    <p>
+      I also work as a <Highlight>freelance engineer and consultant</Highlight>,
+      helping teams with <Highlight>SEO optimization</Highlight>, technical SEO,
+      website performance improvements, architecture reviews, and end-to-end
+      product delivery.
+    </p>
   </div>
 );
 
 // --- Experience Data ---
 const experienceData = [
   {
+    role: "Mobile Developer",
+    company: "Alabamarketplace.ng",
+    location: "Nigeria (Remote)",
+    date: "Feb 2026 - Present",
+    points: [
+      <>
+        Building and maintaining the mobile buyer app with a focus on smooth
+        onboarding, checkout reliability, and performance.
+      </>,
+      <>
+        Developing the seller app workflows for product management, order
+        handling, and marketplace operations.
+      </>,
+      <>
+        Collaborating with product and engineering stakeholders to ship
+        production-ready mobile features across both apps.
+      </>,
+    ],
+  },
+  {
     role: "Senior Full Stack Consultant",
-    company: "Ribacka Media AB",
+    company: "RickbekaMedia",
     location: "Stockholm, Sweden (Remote)",
-    date: "Feb 2025 - Present",
+    date: "Feb 2025 - Sept 2025",
     points: [
       <>
         Providing full-stack software development and automation expertise as a
@@ -213,62 +239,92 @@ const ExperienceContent = () => {
   const opacity = useTransform(scrollYProgress, [0, 0.1], [0, 1]);
 
   return (
-    <div ref={ref} className="relative">
-      {/* The static background timeline bar */}
-      <div className="absolute left-4 top-0 h-full w-0.5 bg-slate-200 dark:bg-gray-700/50"></div>
-      {/* The animated, colored timeline bar */}
-      <motion.div
-        className="absolute left-4 top-0 w-0.5 bg-blue-500 dark:bg-blue-400"
-        style={{ height, opacity }}
-      />
-
-      <div className="space-y-12">
+    <>
+      <div className="md:hidden space-y-4">
         {experienceData.map((job, index) => (
-          <motion.div
+          <div
             key={index}
-            className="relative pl-12"
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            // Tell the animation to use the correct scroll container as its viewport
-            viewport={{ root: containerRef, amount: 0.5 }}
-            transition={{ duration: 0.5 }}
+            className="rounded-2xl border border-slate-300/70 dark:border-white/20 bg-slate-50/70 dark:bg-white/5 p-4"
           >
-            {/* The dot on the timeline */}
-            {/* <div className="absolute -left-0.5 top-1.5 transform -translate-x-1/2">
-              <div className="w-8 h-8 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center border-2 border-slate-200 dark:border-gray-700">
-                <Briefcase className="w-4 h-4 text-blue-500 dark:text-blue-300" />
-              </div>
-            </div> */}
-
-            {/* Job Content */}
-            <div className="space-y-2">
-              <div className="flex flex-col sm:flex-row justify-between items-start">
-                <div>
-                  <h3
-                    className="text-slate-900 dark:text-white font-semibold text-lg"
-                    dangerouslySetInnerHTML={{ __html: job.role }}
-                  ></h3>
-                  <p className="text-blue-600 dark:text-blue-300">
-                    {job.company}
-                  </p>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm">
-                    {job.location}
-                  </p>
-                </div>
-                <span className="text-gray-500 dark:text-gray-400 text-sm mt-2 sm:mt-0 font-mono">
-                  {job.date}
-                </span>
-              </div>
-              <ul className="list-disc list-inside space-y-2 pt-2 pl-2 text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-                {job.points.map((point, i) => (
-                  <li key={i}>{point}</li>
-                ))}
-              </ul>
-            </div>
-          </motion.div>
+            <p className="inline-flex rounded-full border border-blue-300/60 dark:border-blue-400/30 bg-blue-500/10 px-2.5 py-1 text-xs font-medium text-blue-700 dark:text-blue-200">
+              {job.date}
+            </p>
+            <h3
+              className="mt-3 text-slate-900 dark:text-white font-semibold text-base"
+              dangerouslySetInnerHTML={{ __html: job.role }}
+            ></h3>
+            <p className="text-blue-600 dark:text-blue-300 text-sm">
+              {job.company}
+            </p>
+            <p className="text-gray-500 dark:text-gray-400 text-xs mt-1">
+              {job.location}
+            </p>
+            <ul className="list-disc list-inside space-y-1.5 pt-2 text-gray-600 dark:text-gray-300 text-xs leading-relaxed">
+              {job.points.map((point, i) => (
+                <li key={i}>{point}</li>
+              ))}
+            </ul>
+          </div>
         ))}
       </div>
-    </div>
+
+      <div ref={ref} className="relative hidden md:block">
+        {/* The static background timeline bar */}
+        <div className="absolute left-4 top-0 h-full w-0.5 bg-slate-200 dark:bg-gray-700/50"></div>
+        {/* The animated, colored timeline bar */}
+        <motion.div
+          className="absolute left-4 top-0 w-0.5 bg-blue-500 dark:bg-blue-400"
+          style={{ height, opacity }}
+        />
+
+        <div className="space-y-12">
+          {experienceData.map((job, index) => (
+            <motion.div
+              key={index}
+              className="relative pl-12"
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              // Tell the animation to use the correct scroll container as its viewport
+              viewport={{ root: containerRef, amount: 0.5 }}
+              transition={{ duration: 0.5 }}
+            >
+              {/* The dot on the timeline */}
+              {/* <div className="absolute -left-0.5 top-1.5 transform -translate-x-1/2">
+                <div className="w-8 h-8 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center border-2 border-slate-200 dark:border-gray-700">
+                  <Briefcase className="w-4 h-4 text-blue-500 dark:text-blue-300" />
+                </div>
+              </div> */}
+
+              {/* Job Content */}
+              <div className="space-y-2">
+                <div className="flex flex-col sm:flex-row justify-between items-start">
+                  <div>
+                    <h3
+                      className="text-slate-900 dark:text-white font-semibold text-lg"
+                      dangerouslySetInnerHTML={{ __html: job.role }}
+                    ></h3>
+                    <p className="text-blue-600 dark:text-blue-300">
+                      {job.company}
+                    </p>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">
+                      {job.location}
+                    </p>
+                  </div>
+                  <span className="text-gray-500 dark:text-gray-400 text-sm mt-2 sm:mt-0 font-mono">
+                    {job.date}
+                  </span>
+                </div>
+                <ul className="list-disc list-inside space-y-2 pt-2 pl-2 text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+                  {job.points.map((point, i) => (
+                    <li key={i}>{point}</li>
+                  ))}
+                </ul>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </>
   );
 };
 

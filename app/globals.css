@@ -47,13 +47,10 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-body {
-  cursor: none;
-}
-
-a,
-button {
-  cursor: none;
+body.custom-cursor-active,
+body.custom-cursor-active a,
+body.custom-cursor-active button {
+  cursor: none !important;
 }
 
 .animate-glow {
@@ -149,11 +146,30 @@ button {
 body {
   background-color: var(--background);
   color: var(--foreground);
-  cursor: none;
 }
 
-a, button {
-  cursor: none;
+.mobile-scrollbar-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.mobile-scrollbar-hidden::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .mobile-scrollbar-hidden {
+    -ms-overflow-style: auto;
+    scrollbar-width: auto;
+  }
+
+  .mobile-scrollbar-hidden::-webkit-scrollbar {
+    display: initial;
+    width: initial;
+    height: initial;
+  }
 }
 
 

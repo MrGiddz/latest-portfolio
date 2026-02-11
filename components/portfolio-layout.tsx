@@ -4,8 +4,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
-import { Mail, ArrowDown, CircleHelp } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { Mail, ArrowDown, CircleHelp, Mouse } from "lucide-react";
 import { SiGithub, SiFacebook, SiInstagram } from "react-icons/si";
 import { FaTwitter } from "react-icons/fa";
 import Image from "next/image";
@@ -113,6 +113,8 @@ export default function PortfolioLayout({
   });
 
   const currentTheme = sectionThemes[pathname] || sectionThemes["/"];
+  const prefersReducedMotion = useReducedMotion();
+  const enableAmbientAnimation = isDesktop && !prefersReducedMotion;
   const isBlogRoute = pathname === "/blog" || pathname.startsWith("/blog/");
   const isAdminRoute = pathname === "/admin";
   const isWideRoute = isBlogRoute || isAdminRoute;
@@ -646,8 +648,9 @@ export default function PortfolioLayout({
           className="flex items-center gap-2 rounded-full border border-slate-300/70 dark:border-white/20 bg-slate-100/70 dark:bg-white/10 backdrop-blur-md px-3 py-2 shadow-lg select-none"
           title="Toggle scroll navigation"
         >
-          <span className="text-[11px] md:text-xs font-semibold text-slate-700 dark:text-gray-200 whitespace-nowrap">
-            Scroll Navigate
+          <span className="flex items-center gap-1 text-[11px] md:text-xs font-semibold text-slate-700 dark:text-gray-200 whitespace-nowrap">
+            <Mouse size={14} />
+            <span className="hidden md:inline">Scroll</span>
           </span>
           <button
             onClick={() => setScrollNavigationEnabled((prev) => !prev)}
@@ -678,14 +681,6 @@ export default function PortfolioLayout({
           backgroundSize: "100% 100%, 2rem 2rem, 2rem 2rem",
         }}
       >
-        <div
-          className="fixed inset-0 -z-10 dark:bg-neutral-950"
-          style={{
-            // backgroundColor: "#111827",
-            backgroundImage: `radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.4) 100%),linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px)`,
-            backgroundSize: "100% 100%, 2rem 2rem, 2rem 2rem",
-          }}
-        />
         {/* Layer 1: Thematic Base Color (Driven by section change) */}
         <motion.div
           className="absolute inset-0"
@@ -696,36 +691,42 @@ export default function PortfolioLayout({
           transition={{ duration: 1.5, ease: "easeInOut" }}
         />
 
-        {/* Layer 2: NEW! Continuously moving light blobs */}
-        <motion.div
-          className="absolute inset-0"
-          animate={{
-            background: [
-              "radial-gradient(ellipse at 70% 20%, rgba(255,255,255,0.15) 0%, transparent 40%)",
-              "radial-gradient(ellipse at 30% 80%, rgba(255,255,255,0.12) 0%, transparent 35%)",
-              "radial-gradient(ellipse at 80% 90%, rgba(255,255,255,0.10) 0%, transparent 40%)",
-              "radial-gradient(ellipse at 20% 10%, rgba(255,255,255,0.18) 0%, transparent 35%)",
-              "radial-gradient(ellipse at 70% 20%, rgba(255,255,255,0.15) 0%, transparent 40%)",
-            ],
-          }}
-          transition={{
-            duration: 25, // Very slow and subtle
-            repeat: Infinity,
-            ease: "linear",
-          }}
-        />
+        {enableAmbientAnimation ? (
+          <>
+            {/* Layer 2: Continuously moving light blobs (desktop only) */}
+            <motion.div
+              className="absolute inset-0"
+              animate={{
+                background: [
+                  "radial-gradient(ellipse at 70% 20%, rgba(255,255,255,0.15) 0%, transparent 40%)",
+                  "radial-gradient(ellipse at 30% 80%, rgba(255,255,255,0.12) 0%, transparent 35%)",
+                  "radial-gradient(ellipse at 80% 90%, rgba(255,255,255,0.10) 0%, transparent 40%)",
+                  "radial-gradient(ellipse at 20% 10%, rgba(255,255,255,0.18) 0%, transparent 35%)",
+                  "radial-gradient(ellipse at 70% 20%, rgba(255,255,255,0.15) 0%, transparent 40%)",
+                ],
+              }}
+              transition={{
+                duration: 25,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+            />
 
-        {/* Layer 3: Subtle "breathing" texture*/}
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent"
-          animate={{ opacity: [0.1, 0.8, 0.1] }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
-            repeatType: "reverse",
-          }}
-        />
+            {/* Layer 3: Subtle "breathing" texture (desktop only) */}
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent"
+              animate={{ opacity: [0.1, 0.8, 0.1] }}
+              transition={{
+                duration: 8,
+                repeat: Infinity,
+                ease: "easeInOut",
+                repeatType: "reverse",
+              }}
+            />
+          </>
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent opacity-20" />
+        )}
       </div>
 
       <div className="flex flex-col lg:flex-row">
@@ -966,7 +967,7 @@ export default function PortfolioLayout({
         <main
           ref={contentRef}
           id="page-content"
-            className={`w-full pb-24 lg:pb-0 relative ${
+            className={`w-full pb-24 lg:pb-0 relative mobile-scrollbar-hidden ${
             isWideRoute
               ? `${isBlogRoute ? "pt-20 lg:pt-24" : ""} lg:w-full lg:ml-0 lg:h-auto lg:overflow-visible`
               : "lg:w-1/2 lg:ml-[50%] lg:h-screen lg:overflow-y-auto"

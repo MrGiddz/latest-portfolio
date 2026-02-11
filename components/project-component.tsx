@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { LayoutGrid, Link as LinkIcon } from "lucide-react";
+import { Link as LinkIcon } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
 import { motion, useScroll, useTransform } from "framer-motion";
 import FallbackImage from "@/components/ui/fallback-image";
@@ -271,6 +271,88 @@ const projectsData = [
   },
 ];
 
+const ProjectCard = ({
+  project,
+  compact = false,
+}: {
+  project: (typeof projectsData)[number];
+  compact?: boolean;
+}) => (
+  <div className="space-y-4">
+    <div className="group relative rounded-lg overflow-hidden border border-slate-200 dark:border-white/10 shadow-lg">
+      <div
+        className={`overflow-hidden ${
+          compact ? "aspect-[4/3] max-h-52" : "aspect-video"
+        }`}
+      >
+        <FallbackImage
+          src={project.image}
+          alt={`${project.title} screenshot`}
+          className="h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
+          fallbackSrc="/images/test-img.png"
+          fallbackText="Project image unavailable"
+          loading="lazy"
+        />
+      </div>
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -translate-x-full transition-transform duration-700 ease-in-out group-hover:translate-x-full"></div>
+    </div>
+
+    <h3
+      className={`text-slate-900 dark:text-white font-semibold ${
+        compact ? "text-lg" : "text-xl pt-2"
+      }`}
+    >
+      {project.title}
+    </h3>
+    {compact ? (
+      <details className="group rounded-xl border border-slate-300/70 dark:border-white/15 bg-white/40 dark:bg-white/5 p-3">
+        <summary className="cursor-pointer list-none text-xs font-semibold uppercase tracking-wide text-slate-700 dark:text-slate-200">
+          About Project
+        </summary>
+        <p className="mt-2 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+          {project.desc}
+        </p>
+      </details>
+    ) : (
+      <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+        {project.desc}
+      </p>
+    )}
+    <div className="flex flex-wrap gap-2">
+      {project.tech.map((tech) => (
+        <span
+          key={tech}
+          className={`px-2.5 py-1 rounded text-xs font-mono border ${getTechColor(
+            tech
+          )}`}
+        >
+          {tech}
+        </span>
+      ))}
+    </div>
+    <div className="flex items-center gap-4 pt-2">
+      <a
+        href={project.liveLink}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-2 text-sm text-sky-600 dark:text-sky-400 hover:text-sky-500 dark:hover:text-sky-300 transition-colors"
+      >
+        <LinkIcon size={16} />
+        Live Demo
+      </a>
+      <a
+        href={project.sourceLink}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+      >
+        <FaGithub size={16} />
+        Source Code
+      </a>
+    </div>
+  </div>
+);
+
 const ProjectsContent = () => {
   const ref = useRef<HTMLDivElement>(null);
   const [scrollContainer, setScrollContainer] = useState<HTMLElement | null>(
@@ -292,101 +374,57 @@ const ProjectsContent = () => {
   const opacity = useTransform(scrollYProgress, [0, 0.1], [0, 1]);
 
   return (
-    <div ref={ref} className="relative">
-      {/* The static background timeline bar */}
-      <div className="absolute left-4 top-0 h-full w-0.5 bg-slate-200 dark:bg-gray-700/50"></div>
-      {/* The animated, colored timeline bar */}
-      <motion.div
-        className="absolute left-4 top-0 w-0.5 bg-sky-500 dark:bg-sky-400"
-        style={{ height, opacity }}
-      />
-
-      <div className="space-y-12">
+    <>
+      <div className="md:hidden space-y-4">
         {projectsData.map((project, index) => (
           <motion.div
             key={index}
-            className="relative pl-12"
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{
-              root: scrollContainer ? { current: scrollContainer } : undefined,
-              amount: 0.3,
-            }}
-            transition={{ duration: 0.5 }}
+            className="rounded-2xl border border-slate-200 dark:border-white/20 bg-slate-100/80 dark:bg-white/5 p-4"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ amount: 0.2, once: true }}
+            transition={{ duration: 0.35, delay: index * 0.04 }}
           >
-            {/* The dot on the timeline */}
-            {/* <div className="absolute -left-0.5 top-1.5 transform -translate-x-1/2">
-              <div className="w-8 h-8 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center border-2 border-slate-200 dark:border-gray-700">
-                <LayoutGrid className="w-4 h-4 text-sky-500 dark:text-sky-300" />
-              </div>
-            </div> */}
-
-            {/* Project Content */}
-            <div className="space-y-4">
-              <div className="group relative rounded-lg overflow-hidden border border-slate-200 dark:border-white/10 shadow-lg">
-                <div className="aspect-video overflow-hidden">
-                  <FallbackImage
-                    src={project.image}
-                    alt={`${project.title} screenshot`}
-                    className="h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
-                    fallbackSrc="/images/test-img.png"
-                    fallbackText="Project image unavailable"
-                    loading="lazy"
-                  />
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -translate-x-full transition-transform duration-700 ease-in-out group-hover:translate-x-full"></div>
-              </div>
-
-              <h3 className="text-slate-900 dark:text-white font-semibold text-xl pt-2">
-                {project.title}
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-                {project.desc}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {project.tech.map((tech) => (
-                  <span
-                    key={tech}
-                    className={`px-2.5 py-1 rounded text-xs font-mono border ${getTechColor(
-                      tech
-                    )}`}
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
-              <div className="flex items-center gap-4 pt-2">
-                <a
-                  href={project.liveLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-sm text-sky-600 dark:text-sky-400 hover:text-sky-500 dark:hover:text-sky-300 transition-colors"
-                >
-                  <LinkIcon size={16} />
-                  Live Demo
-                </a>
-                <a
-                  href={project.sourceLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors"
-                >
-                  <FaGithub size={16} />
-                  Source Code
-                </a>
-              </div>
-            </div>
+            <ProjectCard project={project} compact />
           </motion.div>
         ))}
       </div>
-    </div>
+
+      <div ref={ref} className="relative hidden md:block">
+        <div className="absolute left-4 top-0 h-full w-0.5 bg-slate-200 dark:bg-gray-700/50"></div>
+        <motion.div
+          className="absolute left-4 top-0 w-0.5 bg-sky-500 dark:bg-sky-400"
+          style={{ height, opacity }}
+        />
+
+        <div className="space-y-12">
+          {projectsData.map((project, index) => (
+            <motion.div
+              key={index}
+              className="relative pl-12"
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{
+                root: scrollContainer
+                  ? { current: scrollContainer }
+                  : undefined,
+                amount: 0.3,
+              }}
+              transition={{ duration: 0.5 }}
+            >
+              <ProjectCard project={project} />
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </>
   );
 };
 
 const ProjectComponent = () => {
   return (
     <motion.div
-      className="w-full max-w-2xl mx-auto backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl my-16"
+      className="w-full max-w-2xl mx-auto backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl md:rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl my-8 md:my-16"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{

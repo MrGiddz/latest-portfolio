@@ -3,13 +3,15 @@
 Canonical URL: https://mideolaniyi.com
 Primary Language: en
 Author: Olaniyi Gideon Olamide
-Role: Senior Software Engineer
+Role: Senior Software Engineer, Freelance Consultant, SEO Optimization Specialist
 Contact: me@mideolaniyi.com
 
 ## What This Site Is
 This is a personal portfolio and engineering blog for Olaniyi Gideon Olamide.
 It contains professional background, technical skills, project case studies,
 experience, credentials, contact information, and technical blog posts.
+It also represents freelance and consulting services including technical SEO,
+website performance optimization, and end-to-end product engineering delivery.
 
 ## Canonical Content Map
 - Home: https://mideolaniyi.com/
@@ -50,7 +52,8 @@ and delivery impact.
 Education/certification and professional validation details.
 
 ### Contact
-Primary conversion page for collaboration, consulting, and role inquiries.
+Primary conversion page for freelance projects, technical consulting, SEO
+optimization support, and role inquiries.
 
 ### Blog
 Technical writing focused on practical software engineering delivery, including

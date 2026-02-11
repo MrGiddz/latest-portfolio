@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   motion,
   useSpring,
@@ -155,25 +155,43 @@ const CursorVisual = ({ state }: { state: string }) => {
 export default function CustomCursor() {
   const [cursorState, setCursorState] = useState("default");
   const [isClient, setIsClient] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [isEnabled, setIsEnabled] = useState(false);
 
   const mouseX = useMotionValue(-100);
   const mouseY = useMotionValue(-100);
+  const cursorStateRef = useRef(cursorState);
   const springConfig = { damping: 30, stiffness: 500, mass: 0.5 };
   const mouseXSpring = useSpring(mouseX, springConfig);
   const mouseYSpring = useSpring(mouseY, springConfig);
 
   useEffect(() => {
+    cursorStateRef.current = cursorState;
+  }, [cursorState]);
+
+  useEffect(() => {
     setIsClient(true);
-    const move = (e: MouseEvent) => {
+    const finePointer =
+      typeof window !== "undefined" &&
+      window.matchMedia("(pointer: fine)").matches;
+
+    if (!finePointer) {
+      setIsEnabled(false);
+      return;
+    }
+
+    setIsEnabled(true);
+    document.body.classList.add("custom-cursor-active");
+
+    const move = (e: PointerEvent) => {
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
-    };
-
-    const handleMouseOver = (e: MouseEvent) => {
       const target = e.target;
       if (!(target instanceof HTMLElement)) return;
 
-      if (target.closest("button")) {
+      if (cursorStateRef.current === "dragging") return;
+
+      if (target.closest("button, [role='button']")) {
         setCursorState("button");
       } else if (target.closest("a")) {
         setCursorState("link");
@@ -182,35 +200,69 @@ export default function CustomCursor() {
       } else {
         setCursorState("default");
       }
+      setIsVisible(true);
     };
 
-    const handleMouseOut = () => {
-      setCursorState("default");
-    };
-
-    const handleMouseDown = () => {
+    const handlePointerDown = () => {
       setCursorState("dragging");
     };
-    const handleMouseUp = () => {
+
+    const handlePointerUp = (e: PointerEvent) => {
+      const nextTarget = document.elementFromPoint(
+        e.clientX,
+        e.clientY
+      ) as HTMLElement | null;
+
+      if (nextTarget?.closest("button, [role='button']")) {
+        setCursorState("button");
+        return;
+      }
+      if (nextTarget?.closest("a")) {
+        setCursorState("link");
+        return;
+      }
+
       setCursorState("default");
     };
 
-    window.addEventListener("mousemove", move);
-    document.addEventListener("mouseover", handleMouseOver);
-    document.addEventListener("mouseout", handleMouseOut);
-    window.addEventListener("mousedown", handleMouseDown);
-    window.addEventListener("mouseup", handleMouseUp);
+    const handlePointerEnter = () => setIsVisible(true);
+    const handlePointerLeave = () => setIsVisible(false);
+    const handleWindowBlur = () => setIsVisible(false);
+    const handleWindowFocus = () => setIsVisible(true);
+
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerdown", handlePointerDown);
+    window.addEventListener("pointerup", handlePointerUp);
+    window.addEventListener("pointerenter", handlePointerEnter);
+    window.addEventListener("pointerleave", handlePointerLeave);
+    window.addEventListener("blur", handleWindowBlur);
+    window.addEventListener("focus", handleWindowFocus);
 
     return () => {
-      window.removeEventListener("mousemove", move);
-      document.removeEventListener("mouseover", handleMouseOver);
-      document.removeEventListener("mouseout", handleMouseOut);
-      window.removeEventListener("mousedown", handleMouseDown);
-      document.removeEventListener("mouseup", handleMouseUp);
+      document.body.classList.remove("custom-cursor-active");
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerdown", handlePointerDown);
+      window.removeEventListener("pointerup", handlePointerUp);
+      window.removeEventListener("pointerenter", handlePointerEnter);
+      window.removeEventListener("pointerleave", handlePointerLeave);
+      window.removeEventListener("blur", handleWindowBlur);
+      window.removeEventListener("focus", handleWindowFocus);
     };
-  }, []);
+  }, [mouseX, mouseY]);
 
-  if (!isClient || "ontouchstart" in window) {
+  useEffect(() => {
+    if (!isEnabled) {
+      document.body.classList.remove("custom-cursor-active");
+      return;
+    }
+    if (isVisible) {
+      document.body.classList.add("custom-cursor-active");
+    } else {
+      document.body.classList.remove("custom-cursor-active");
+    }
+  }, [isEnabled, isVisible]);
+
+  if (!isClient || !isEnabled) {
     return null;
   }
 
@@ -220,7 +272,13 @@ export default function CustomCursor() {
   return (
     <motion.div
       className="fixed pointer-events-none z-[9999]"
-      style={{ left: mouseXSpring, top: mouseYSpring, x: "-50%", y: "-50%" }}
+      style={{
+        left: mouseXSpring,
+        top: mouseYSpring,
+        x: "-50%",
+        y: "-50%",
+        opacity: isVisible ? 1 : 0,
+      }}
     >
       <motion.div
         className="relative"

@@ -6,14 +6,14 @@ import { absoluteUrl, DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from "@/lib/seo";
 export const metadata: Metadata = {
   title: "Home",
   description:
-    "Senior Software Engineer portfolio showcasing production-grade web, mobile, and backend systems built with React, Next.js, Node.js, and Java.",
+    "Senior Software Engineer portfolio showcasing freelance development, technical consulting, SEO optimization, and production-grade web, mobile, and backend systems.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
     title: "Olamide Olaniyi | Senior Software Engineer",
     description:
-      "Explore featured projects, technical skills, and engineering experience across web, mobile, and backend.",
+      "Explore featured freelance projects, consulting expertise, SEO optimization capabilities, and engineering delivery across web, mobile, and backend.",
     url: SITE_URL,
     siteName: SITE_NAME,
     type: "website",
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Olamide Olaniyi | Senior Software Engineer",
     description:
-      "Explore featured projects, technical skills, and engineering experience across web, mobile, and backend.",
+      "Freelance software engineer offering consulting, SEO optimization, and web/mobile/backend delivery.",
     images: [absoluteUrl(DEFAULT_OG_IMAGE)],
   },
 };

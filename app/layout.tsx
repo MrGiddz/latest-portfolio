@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     template: "%s | Olamide Olaniyi",
   },
   description:
-    "Explore the portfolio of Olaniyi Olamide, a multi-talented Senior Software Engineer building high-performance web apps, native mobile apps for Android & iOS, and robust backend systems with Node.js, React, and Java.",
+    "Explore the portfolio of Olaniyi Olamide, a Senior Software Engineer offering freelance development, consulting, SEO optimization, and high-performance web, mobile, and backend engineering services.",
   keywords: [
     "Olaniyi Olamide",
     "Gideon Olaniyi",
@@ -59,6 +59,13 @@ export const metadata: Metadata = {
     "MongoDB",
     "Next.js",
     "Software Engineer Portfolio",
+    "Freelance Software Developer",
+    "Technical Consultant",
+    "SEO Optimization Consultant",
+    "Technical SEO",
+    "Website Performance Optimization",
+    "Freelance Developer Nigeria",
+    "Software Consulting Lagos",
     "AWS",
     "Docker",
     "TypeScript",
@@ -94,7 +101,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Olamide Olaniyi - Senior Software Engineer",
     description:
-      "Portfolio of a multi-talented software engineer building seamless digital experiences across web, mobile (Android/iOS), and backend with Node.js, React, and Java.",
+      "Freelance software engineer and consultant delivering web, mobile, backend, and SEO optimization solutions for growth-focused businesses.",
     url: SITE_URL,
     siteName: SITE_NAME,
     images: [
@@ -112,7 +119,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Olamide Olaniyi - Senior Software Engineer",
     description:
-      "Explore the portfolio of a multi-talented software engineer building web apps, mobile apps, and backend systems with React, Node.js, and Java.",
+      "Freelance software engineer and consultant for web, mobile, backend, and SEO optimization projects.",
     images: [new URL(DEFAULT_OG_IMAGE, SITE_URL).toString()],
     creator: "@mide_niyi",
   },
@@ -131,6 +138,49 @@ export default function RootLayout({
     url: SITE_URL,
     image: new URL("/profile.jpg", SITE_URL).toString(),
     sameAs: AUTHOR_SOCIALS,
+    worksFor: {
+      "@type": "Organization",
+      name: "Independent / Freelance",
+    },
+    knowsAbout: [
+      "Freelance software development",
+      "Technical consulting",
+      "SEO optimization",
+      "Technical SEO",
+      "Web performance optimization",
+      "React",
+      "Next.js",
+      "Node.js",
+      "TypeScript",
+      "Java",
+      "Cloud and DevOps",
+    ],
+    makesOffer: [
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "Freelance Software Development",
+          serviceType: "Web, mobile, and backend development",
+        },
+      },
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "Technical Consulting",
+          serviceType: "Architecture, delivery, and system optimization consulting",
+        },
+      },
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "SEO Optimization",
+          serviceType: "Technical SEO and performance optimization",
+        },
+      },
+    ],
   };
 
   const organizationSchema = {
