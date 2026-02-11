@@ -4,6 +4,11 @@ import React from "react";
 
 export const metadata: Metadata = {
   title: "Projects",
+  description:
+    "Selected software projects with implementation details, architecture decisions, and delivered outcomes.",
+  alternates: {
+    canonical: "/projects",
+  },
 };
 
 // Main Page Component

@@ -5,11 +5,10 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { Mail, ArrowDown } from "lucide-react";
+import { Mail, ArrowDown, CircleHelp } from "lucide-react";
 import { SiGithub, SiFacebook, SiInstagram } from "react-icons/si";
 import { FaTwitter } from "react-icons/fa";
 import Image from "next/image";
-import Typewriter from "typewriter-effect";
 import {
   navLinks,
   sectionBackgrounds,
@@ -76,20 +75,21 @@ export default function PortfolioLayout({
   const [isNavigating, setIsNavigating] = useState(false);
   const [showScrollIndicator, setShowScrollIndicator] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [scrollNavigationEnabled, setScrollNavigationEnabled] = useState(true);
+  const [hasLoadedScrollPreference, setHasLoadedScrollPreference] = useState(false);
+  const [isTopNavVisible, setIsTopNavVisible] = useState(true);
   const contentRef = useRef<HTMLElement>(null);
   const [scrollHint, setScrollHint] = useState<"up" | "down" | null>(null);
   const [tappedButton, setTappedButton] = useState<string | null>(null);
 
   const [showNavHint, setShowNavHint] = useState(false);
-
-  const navState = useRef({
-    isPrimed: false,
-    targetHref: "",
-    scrollAccumulator: 0,
-    debounceTimeout: null as NodeJS.Timeout | null,
-    holdTimeout: null as NodeJS.Timeout | null,
-    overscroll: 0,
-  });
+  const boundaryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const notificationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastScrollTopRef = useRef(0);
+  const lastDirectionRef = useRef<"up" | "down" | null>(null);
+  const wheelIntentTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const autoNavTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const autoNavIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const [navPrompt, setNavPrompt] = useState<NavPromptProps>({ visible: false, direction: "down", href: "", pageName: "" });
 
@@ -98,11 +98,94 @@ export default function PortfolioLayout({
     direction: "up" | "down";
     pageName: string;
   }>({ visible: false, direction: "down", pageName: "" });
+  const [autoNavState, setAutoNavState] = useState<{
+    active: boolean;
+    direction: "up" | "down";
+    pageName: string;
+    href: string;
+    secondsLeft: number;
+  }>({
+    active: false,
+    direction: "down",
+    pageName: "",
+    href: "",
+    secondsLeft: 0,
+  });
 
   const currentTheme = sectionThemes[pathname] || sectionThemes["/"];
+  const isBlogRoute = pathname === "/blog" || pathname.startsWith("/blog/");
+  const isAdminRoute = pathname === "/admin";
+  const isWideRoute = isBlogRoute || isAdminRoute;
+  const topNavLastScrollRef = useRef(0);
+
+  const clearBoundaryTimeout = () => {
+    if (boundaryTimeoutRef.current) {
+      clearTimeout(boundaryTimeoutRef.current);
+      boundaryTimeoutRef.current = null;
+    }
+  };
+
+  const clearAutoNavigation = () => {
+    if (autoNavTimeoutRef.current) {
+      clearTimeout(autoNavTimeoutRef.current);
+      autoNavTimeoutRef.current = null;
+    }
+    if (autoNavIntervalRef.current) {
+      clearInterval(autoNavIntervalRef.current);
+      autoNavIntervalRef.current = null;
+    }
+    setAutoNavState((prev) => ({ ...prev, active: false, secondsLeft: 0 }));
+  };
+
+  const startAutoNavigation = (prompt: NavPromptProps) => {
+    if (!prompt.visible || !prompt.href) return;
+
+    clearAutoNavigation();
+
+    const totalMs = 3000;
+    const start = Date.now();
+    setAutoNavState({
+      active: true,
+      direction: prompt.direction,
+      pageName: prompt.pageName,
+      href: prompt.href,
+      secondsLeft: Math.ceil(totalMs / 1000),
+    });
+
+    autoNavIntervalRef.current = setInterval(() => {
+      const elapsed = Date.now() - start;
+      const remaining = Math.max(totalMs - elapsed, 0);
+      setAutoNavState((prev) => ({
+        ...prev,
+        secondsLeft: Math.max(Math.ceil(remaining / 1000), 0),
+      }));
+    }, 200);
+
+    autoNavTimeoutRef.current = setTimeout(() => {
+      clearAutoNavigation();
+      handleNavClick(prompt.href);
+    }, totalMs);
+  };
+
+  const hideNavNotificationSoon = () => {
+    if (notificationTimeoutRef.current) {
+      clearTimeout(notificationTimeoutRef.current);
+    }
+    notificationTimeoutRef.current = setTimeout(() => {
+      setNavNotification((prev) => ({ ...prev, visible: false }));
+      notificationTimeoutRef.current = null;
+    }, 1200);
+  };
+
+  const setDirectionFromWheel = (deltaY: number) => {
+    if (Math.abs(deltaY) < 0.5) return;
+    lastDirectionRef.current = deltaY > 0 ? "down" : "up";
+  };
 
   const handleNavClick = (href: string) => {
     if (isNavigating) return;
+    clearAutoNavigation();
+    clearBoundaryTimeout();
 
     // Show the loader and apply the glowing class immediately
     setIsNavigating(true);
@@ -113,6 +196,22 @@ export default function PortfolioLayout({
       router.push(href);
     }, 400); // 400ms delay
   };
+
+  useEffect(() => {
+    const stored = localStorage.getItem("scroll_navigation_enabled");
+    if (stored !== null) {
+      setScrollNavigationEnabled(stored === "true");
+    }
+    setHasLoadedScrollPreference(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hasLoadedScrollPreference) return;
+    localStorage.setItem(
+      "scroll_navigation_enabled",
+      String(scrollNavigationEnabled)
+    );
+  }, [scrollNavigationEnabled, hasLoadedScrollPreference]);
 
   useEffect(() => {
     setShowScrollIndicator(pathname === "/");
@@ -127,27 +226,93 @@ export default function PortfolioLayout({
     return () => window.removeEventListener("scroll", handleScroll);
   }, [pathname]);
 
-  //   const pageVariants = {
-  //     initial: { opacity: 0, x: "-100vw" },
-  //     animate: { opacity: 1, x: 0 },
-  //     exit: { opacity: 0, x: "100vw" },
-  //   };
+  useEffect(() => {
+    const setViewportMode = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+
+    setViewportMode();
+    window.addEventListener("resize", setViewportMode);
+    return () => window.removeEventListener("resize", setViewportMode);
+  }, []);
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (isNavigating) return;
+    const getScrollTop = () => {
+      if (isDesktop && !isWideRoute && contentRef.current) {
+        return contentRef.current.scrollTop;
+      }
+      return window.scrollY || document.documentElement.scrollTop || 0;
+    };
 
+    topNavLastScrollRef.current = getScrollTop();
+    setIsTopNavVisible(true);
+
+    const handleTopNavVisibility = () => {
+      const current = getScrollTop();
+      const delta = current - topNavLastScrollRef.current;
+      topNavLastScrollRef.current = current;
+
+      if (Math.abs(delta) < 2) return;
+      if (delta < 0) {
+        setIsTopNavVisible(false);
+      } else {
+        setIsTopNavVisible(true);
+      }
+    };
+
+    const scrollEl: Window | HTMLElement =
+      isDesktop && !isWideRoute && contentRef.current ? contentRef.current : window;
+
+    scrollEl.addEventListener("scroll", handleTopNavVisibility, { passive: true });
+
+    return () => {
+      scrollEl.removeEventListener("scroll", handleTopNavVisibility);
+    };
+  }, [isDesktop, isWideRoute, pathname]);
+
+  useEffect(() => {
+    if (isWideRoute || !scrollNavigationEnabled) {
+      setNavPrompt({
+        visible: false,
+        direction: "down",
+        href: "",
+        pageName: "",
+      });
+      clearBoundaryTimeout();
+      clearAutoNavigation();
+      return;
+    }
+
+    const getMetrics = () => {
       const scrollContainer = isDesktop
         ? contentRef.current
         : document.documentElement;
-      if (!scrollContainer) return;
+
+      if (!scrollContainer) return null;
 
       const { scrollTop, clientHeight, scrollHeight } = scrollContainer;
-
-      // Use a small buffer for floating point inaccuracies
       const isAtBottom = clientHeight + scrollTop >= scrollHeight - 5;
       const isAtTop = scrollTop <= 5;
+
+      return {
+        scrollTop,
+        clientHeight,
+        scrollHeight,
+        isAtBottom,
+        isAtTop,
+      };
+    };
+
+    const handleScroll = () => {
+      if (isNavigating) return;
+
+      const metrics = getMetrics();
+      if (!metrics) return;
+
+      const { scrollTop, clientHeight, scrollHeight, isAtBottom, isAtTop } =
+        metrics;
       const currentIndex = navLinks.findIndex((link) => link.href === pathname);
+      const canScroll = scrollHeight > clientHeight + 20;
 
       let newPromptState: NavPromptProps = {
         visible: false,
@@ -156,7 +321,38 @@ export default function PortfolioLayout({
         pageName: "",
       };
 
-      if (isAtBottom && currentIndex < navLinks.length - 1) {
+      if (currentIndex === -1) {
+        setNavPrompt(newPromptState);
+        clearBoundaryTimeout();
+        clearAutoNavigation();
+        return;
+      }
+
+      const delta = scrollTop - lastScrollTopRef.current;
+      if (Math.abs(delta) > 0.5) {
+        lastDirectionRef.current = delta > 0 ? "down" : "up";
+      }
+      lastScrollTopRef.current = scrollTop;
+
+      if (!canScroll) {
+        if (lastDirectionRef.current === "down" && currentIndex < navLinks.length - 1) {
+          const nextPage = navLinks[currentIndex + 1];
+          newPromptState = {
+            visible: true,
+            direction: "down",
+            href: nextPage.href,
+            pageName: nextPage.label,
+          };
+        } else if (lastDirectionRef.current === "up" && currentIndex > 0) {
+          const prevPage = navLinks[currentIndex - 1];
+          newPromptState = {
+            visible: true,
+            direction: "up",
+            href: prevPage.href,
+            pageName: prevPage.label,
+          };
+        }
+      } else if (isAtBottom && currentIndex < navLinks.length - 1) {
         const nextPage = navLinks[currentIndex + 1];
         newPromptState = {
           visible: true,
@@ -175,24 +371,86 @@ export default function PortfolioLayout({
       }
 
       setNavPrompt(newPromptState);
+
+      if (!newPromptState.visible) {
+        clearBoundaryTimeout();
+        clearAutoNavigation();
+        return;
+      }
+
+      const isCorrectDirection =
+        (newPromptState.direction === "down" && lastDirectionRef.current === "down") ||
+        (newPromptState.direction === "up" && lastDirectionRef.current === "up");
+
+      if (!isCorrectDirection) {
+        clearBoundaryTimeout();
+        clearAutoNavigation();
+        return;
+      }
+
+      clearBoundaryTimeout();
+      boundaryTimeoutRef.current = setTimeout(() => {
+        if (isNavigating) return;
+        const latest = getMetrics();
+        if (!latest) return;
+
+        const stillAtBoundary =
+          (newPromptState.direction === "down" && latest.isAtBottom) ||
+          (newPromptState.direction === "up" && latest.isAtTop);
+
+        if (!stillAtBoundary) return;
+
+        setNavNotification({
+          visible: true,
+          direction: newPromptState.direction,
+          pageName: newPromptState.pageName,
+        });
+        hideNavNotificationSoon();
+        startAutoNavigation(newPromptState);
+      }, 450);
     };
 
     const scrollEl = isDesktop ? contentRef.current : window;
-    // scrollEl?.addEventListener("scroll", handleScroll, { passive: true });
+    scrollEl?.addEventListener("scroll", handleScroll, { passive: true });
+    const handleWheel = (event: WheelEvent) => {
+      setDirectionFromWheel(event.deltaY);
+      if (wheelIntentTimeoutRef.current) {
+        clearTimeout(wheelIntentTimeoutRef.current);
+      }
+      wheelIntentTimeoutRef.current = setTimeout(() => {
+        handleScroll();
+      }, 40);
+    };
+    scrollEl?.addEventListener("wheel", handleWheel, { passive: true });
 
-    // Initial check on page load to see if it's already at the top/bottom
-    // const timer = setTimeout(handleScroll, 500);
+    const timer = setTimeout(() => {
+      const metrics = getMetrics();
+      if (metrics) {
+        lastScrollTopRef.current = metrics.scrollTop;
+      }
+      handleScroll();
+    }, 250);
 
     return () => {
-      // scrollEl?.removeEventListener("scroll", handleScroll);
-      // clearTimeout(timer);
+      scrollEl?.removeEventListener("scroll", handleScroll);
+      scrollEl?.removeEventListener("wheel", handleWheel);
+      clearBoundaryTimeout();
+      clearAutoNavigation();
+      clearTimeout(timer);
+      if (wheelIntentTimeoutRef.current) {
+        clearTimeout(wheelIntentTimeoutRef.current);
+      }
     };
-  }, [pathname, isNavigating, isDesktop]);
+  }, [pathname, isNavigating, isDesktop, isWideRoute, scrollNavigationEnabled]);
 
   // Effect to reset navigation lock after page changes
   useEffect(() => {
     setIsNavigating(false);
     setTappedButton(null);
+    clearBoundaryTimeout();
+    clearAutoNavigation();
+    setNavPrompt({ visible: false, direction: "down", href: "", pageName: "" });
+    lastDirectionRef.current = null;
   }, [pathname]);
 
   useEffect(() => {
@@ -211,20 +469,30 @@ export default function PortfolioLayout({
   }, [pathname, isDesktop]);
 
   useEffect(() => {
-    const isCurrentlyDesktop = window.innerWidth >= 1024;
     const hasSeenHint = sessionStorage.getItem("hasSeenNavHint");
 
-    if (hasSeenHint || !isCurrentlyDesktop) {
+    if (hasSeenHint || !isDesktop || !scrollNavigationEnabled) {
       return;
     }
-
-    console.log("Hint conditions met. Setting timer...");
 
     const showHintTimer = setTimeout(() => {
       setShowNavHint(true);
     }, 2000);
 
     return () => clearTimeout(showHintTimer);
+  }, [isDesktop, scrollNavigationEnabled]);
+
+  useEffect(() => {
+    return () => {
+      clearBoundaryTimeout();
+      clearAutoNavigation();
+      if (notificationTimeoutRef.current) {
+        clearTimeout(notificationTimeoutRef.current);
+      }
+      if (wheelIntentTimeoutRef.current) {
+        clearTimeout(wheelIntentTimeoutRef.current);
+      }
+    };
   }, []);
 
   const handleDismissHint = () => {
@@ -303,9 +571,104 @@ export default function PortfolioLayout({
 
       <CustomCursor />
 
-      <div className="fixed top-6 right-6 z-50">
+      {isBlogRoute && (
+        <motion.header
+          className="fixed top-0 left-0 right-0 z-40"
+          animate={{ opacity: isTopNavVisible ? 1 : 0, y: isTopNavVisible ? 0 : -20 }}
+          transition={{ duration: 0.25, ease: "easeOut" }}
+        >
+          <div className="max-w-6xl mx-auto mt-3 px-4 md:px-8">
+            <div className="px-4 md:px-6 py-3 flex items-center justify-between gap-4 rounded-2xl border border-slate-200/70 dark:border-white/20 bg-slate-100/55 dark:bg-white/10 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.16)]">
+            <Link href="/" className="flex items-center gap-3 min-w-0">
+              <Image
+                src="/profile.jpg"
+                alt="Olaniyi Olamide"
+                width={40}
+                height={40}
+                className="rounded-full border border-white/20 object-cover"
+              />
+              <Image
+                src="/favicon.png"
+                alt="Olamide logo"
+                width={28}
+                height={28}
+                className="rounded-sm"
+              />
+              <div className="min-w-0">
+                <p className="text-white text-sm md:text-base font-semibold truncate">
+                  Olamide Olaniyi
+                </p>
+                <p className="text-gray-300 text-xs truncate">
+                  Personal Website
+                </p>
+              </div>
+            </Link>
+
+            <nav className="flex items-center gap-2 md:gap-3 text-sm">
+              <Link
+                href="/"
+                className="text-gray-200 hover:text-white px-3 py-1.5 rounded-md hover:bg-white/10 transition-colors"
+              >
+                Home
+              </Link>
+              <Link
+                href="/blog"
+                className="text-gray-200 hover:text-white px-3 py-1.5 rounded-md hover:bg-white/10 transition-colors"
+              >
+                Blog
+              </Link>
+              <Link
+                href="/contact"
+                className="text-gray-200 hover:text-white px-3 py-1.5 rounded-md hover:bg-white/10 transition-colors"
+              >
+                Contact
+              </Link>
+            </nav>
+            </div>
+          </div>
+        </motion.header>
+      )}
+
+      <motion.div
+        className="fixed top-6 right-6 z-50 flex items-center gap-3"
+        animate={{ opacity: isTopNavVisible ? 1 : 0, y: isTopNavVisible ? 0 : -18 }}
+        transition={{ duration: 0.25, ease: "easeOut" }}
+      >
+        <button
+          onClick={() => setShowNavHint(true)}
+          className="h-10 w-10 rounded-full border border-slate-300/70 dark:border-white/20 bg-slate-100/70 dark:bg-white/10 backdrop-blur-md shadow-lg flex items-center justify-center text-slate-700 dark:text-gray-200"
+          aria-label="Open navigation help"
+          title="How to navigate"
+        >
+          <CircleHelp size={18} />
+        </button>
+        <label
+          className="flex items-center gap-2 rounded-full border border-slate-300/70 dark:border-white/20 bg-slate-100/70 dark:bg-white/10 backdrop-blur-md px-3 py-2 shadow-lg select-none"
+          title="Toggle scroll navigation"
+        >
+          <span className="text-[11px] md:text-xs font-semibold text-slate-700 dark:text-gray-200 whitespace-nowrap">
+            Scroll Navigate
+          </span>
+          <button
+            onClick={() => setScrollNavigationEnabled((prev) => !prev)}
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${
+              scrollNavigationEnabled
+                ? "bg-emerald-500"
+                : "bg-slate-300 dark:bg-slate-600"
+            }`}
+            aria-pressed={scrollNavigationEnabled}
+            aria-label="Toggle scroll navigation"
+            type="button"
+          >
+            <span
+              className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-md transition-transform duration-300 ${
+                scrollNavigationEnabled ? "translate-x-5" : "translate-x-0.5"
+              }`}
+            />
+          </button>
+        </label>
         <ThemeSwitcher />
-      </div>
+      </motion.div>
 
       <div
         className="fixed inset-0 -z-10 dark:bg-neutral-950"
@@ -367,14 +730,15 @@ export default function PortfolioLayout({
 
       <div className="flex flex-col lg:flex-row">
         {/* --- Left Side (Profile) --- */}
-        <div className="w-full lg:w-1/2 lg:h-screen lg:fixed lg:top-0 lg:left-0 flex flex-col justify-center items-center p-8 lg:p-12 min-h-screen">
-          <motion.div
-            className="text-center space-y-6"
-            key={pathname}
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-          >
+        {!isWideRoute && (
+          <div className="w-full lg:w-1/2 lg:h-screen lg:fixed lg:top-0 lg:left-0 flex flex-col justify-center items-center p-8 lg:p-12 min-h-screen">
+            <motion.div
+              className="text-center space-y-6"
+              key={pathname}
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1 }}
+            >
             <motion.div
               className="w-32 h-32 mx-auto rounded-full overflow-hidden border-4 border-white/20 backdrop-blur-sm"
               whileHover={{ scale: 1.1, rotate: 5 }}
@@ -576,32 +940,37 @@ export default function PortfolioLayout({
                 items={socialLinks}
               />
             </motion.div>
-          </motion.div>
+            </motion.div>
 
-          <motion.footer
-            className="hidden lg:block fixed bottom-6 left-0 w-1/2 text-center text-xs text-gray-500 dark:text-gray-400"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.5, duration: 1 }}
-          >
-            <FooterContent />
-          </motion.footer>
+            <motion.footer
+              className="hidden lg:block fixed bottom-6 left-0 w-1/2 text-center text-xs text-gray-500 dark:text-gray-400"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.5, duration: 1 }}
+            >
+              <FooterContent />
+            </motion.footer>
 
-          <motion.footer
-            className="block md:hidden left-0 w-1/2 text-center text-xs text-gray-500 dark:text-gray-400"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.5, duration: 1 }}
-          >
-            <FooterContent />
-          </motion.footer>
-        </div>
+            <motion.footer
+              className="block md:hidden left-0 w-1/2 text-center text-xs text-gray-500 dark:text-gray-400"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.5, duration: 1 }}
+            >
+              <FooterContent />
+            </motion.footer>
+          </div>
+        )}
 
         {/* --- Right Side (Page Content) --- */}
         <main
           ref={contentRef}
           id="page-content"
-          className="w-full lg:w-1/2 lg:ml-[50%] pb-24 lg:pb-0 relative lg:h-screen lg:overflow-y-auto"
+            className={`w-full pb-24 lg:pb-0 relative ${
+            isWideRoute
+              ? `${isBlogRoute ? "pt-20 lg:pt-24" : ""} lg:w-full lg:ml-0 lg:h-auto lg:overflow-visible`
+              : "lg:w-1/2 lg:ml-[50%] lg:h-screen lg:overflow-y-auto"
+          }`}
         >
           <AnimatePresence>
             <motion.main
@@ -625,6 +994,7 @@ export default function PortfolioLayout({
 
       <FloatingDock items={socialLinks} variant="mobile" />
       {/* --- ADDITION 1: Desktop Section Indicators --- */}
+      {!isAdminRoute && (
       <div className="fixed right-6 top-1/2 transform -translate-y-1/2 space-y-4 z-10 hidden lg:flex flex-col">
         {navLinks.map((link) => {
           const Icon = link.icon;
@@ -662,8 +1032,10 @@ export default function PortfolioLayout({
           );
         })}
       </div>
+      )}
 
       {/* --- ADDITION 2: Mobile Bottom Navigation Bar --- */}
+      {!isAdminRoute && (
       <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 bg-slate-900/50 backdrop-blur-md block lg:hidden">
         <div className="flex justify-around items-center p-2">
           {navLinks.map((link) => {
@@ -694,6 +1066,7 @@ export default function PortfolioLayout({
           })}
         </div>
       </div>
+      )}
 
       <AnimatePresence>
         {showScrollIndicator && (
@@ -746,11 +1119,15 @@ export default function PortfolioLayout({
       </AnimatePresence>
 
       <AnimatePresence>
-        {navPrompt.visible && (
+        {scrollNavigationEnabled && navPrompt.visible && (
           <NavigationButton
-            direction={navPrompt.direction}
-            pageName={navPrompt.pageName}
-            onClick={() => handleNavClick(navPrompt.href)}
+            direction={autoNavState.active ? autoNavState.direction : navPrompt.direction}
+            pageName={autoNavState.active ? autoNavState.pageName : navPrompt.pageName}
+            onClick={() =>
+              handleNavClick(autoNavState.active ? autoNavState.href : navPrompt.href)
+            }
+            countdownSeconds={autoNavState.active ? autoNavState.secondsLeft : null}
+            onCancel={autoNavState.active ? clearAutoNavigation : undefined}
           />
         )}
       </AnimatePresence>
@@ -758,7 +1135,13 @@ export default function PortfolioLayout({
       <AnimatePresence>{isNavigating && <NavigationLoader />}</AnimatePresence>
 
       <AnimatePresence>
-        {showNavHint && <NavigationHint onDismiss={handleDismissHint} />}
+        {showNavHint && (
+          <NavigationHint
+            onDismiss={handleDismissHint}
+            scrollNavigationEnabled={scrollNavigationEnabled}
+            onEnableScrollNavigation={() => setScrollNavigationEnabled(true)}
+          />
+        )}
       </AnimatePresence>
     </div>
   );

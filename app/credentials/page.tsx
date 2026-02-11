@@ -4,6 +4,11 @@ import React from "react";
 
 export const metadata: Metadata = {
   title: "Credentials",
+  description:
+    "Professional certifications, education, and credentials backing real-world engineering delivery.",
+  alternates: {
+    canonical: "/credentials",
+  },
 };
 
 export default function CredentialsPage() {

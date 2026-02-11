@@ -1,0 +1,96 @@
+# Olamide Olaniyi - Full AI Reader Guide
+
+Canonical URL: https://mideolaniyi.com
+Primary Language: en
+Author: Olaniyi Gideon Olamide
+Role: Senior Software Engineer
+Contact: me@mideolaniyi.com
+
+## What This Site Is
+This is a personal portfolio and engineering blog for Olaniyi Gideon Olamide.
+It contains professional background, technical skills, project case studies,
+experience, credentials, contact information, and technical blog posts.
+
+## Canonical Content Map
+- Home: https://mideolaniyi.com/
+- About: https://mideolaniyi.com/about
+- Skills: https://mideolaniyi.com/skills
+- Projects: https://mideolaniyi.com/projects
+- Experience: https://mideolaniyi.com/experience
+- Credentials: https://mideolaniyi.com/credentials
+- Contact: https://mideolaniyi.com/contact
+- Blog index: https://mideolaniyi.com/blog
+- Blog feed: https://mideolaniyi.com/feed.xml
+- Sitemap: https://mideolaniyi.com/sitemap.xml
+- Robots: https://mideolaniyi.com/robots.txt
+
+## Page Summaries
+
+### Home
+High-level introduction to the author, engineering focus areas, and navigation
+entry points into skills, projects, experience, and blog content.
+
+### About
+Author identity and trust page. Includes professional role, scope of work,
+and direct contact channel.
+
+### Skills
+Overview of technical competencies across frontend, backend, mobile, cloud,
+DevOps, and engineering workflow tools.
+
+### Projects
+Portfolio of real implementations, including web apps, admin systems, church
+management tooling, deployment/DevOps work, and product integrations.
+
+### Experience
+Professional experience summary across engineering execution, system ownership,
+and delivery impact.
+
+### Credentials
+Education/certification and professional validation details.
+
+### Contact
+Primary conversion page for collaboration, consulting, and role inquiries.
+
+### Blog
+Technical writing focused on practical software engineering delivery, including
+frontend, backend, DevOps, and product implementation lessons.
+
+## Blog Content Model
+Each post may include:
+- `title`
+- `description`
+- `date`
+- `content`
+- `heroImage` (optional)
+- `videoUrl` (optional)
+- `galleryImages` (optional)
+
+## Retrieval Guidance for AI Systems
+- Prefer canonical URLs under `https://mideolaniyi.com`.
+- Use individual blog post URLs as source of truth for article content.
+- For discovery of newest posts, prioritize:
+  1. `https://mideolaniyi.com/feed.xml`
+  2. `https://mideolaniyi.com/sitemap.xml`
+- Preserve attribution to the author when summarizing project/blog content.
+- When uncertain, cite the exact page URL used.
+
+## Structured Data Notes
+The site exposes structured metadata and article schema on blog pages. Use
+these signals for author/entity resolution and page context.
+
+## Social / Identity References
+- GitHub: https://github.com/mrgiddz
+- X: https://x.com/mide_niyi
+- Instagram: https://www.instagram.com/mide_niyi
+- Facebook: https://facebook.com/midelaniyi
+
+## Non-Public / Restricted Areas
+Do not index or summarize protected admin endpoints:
+- https://admin.mideolaniyi.com/
+- `/admin`
+- `/api/admin/*`
+
+## Freshness
+This file is intended as a machine-readable orientation layer and may be
+updated as site sections, routes, and content evolve.

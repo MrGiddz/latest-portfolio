@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export function ThemeSwitcher() {
   const [mounted, setMounted] = React.useState(false);
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
 
   React.useEffect(() => {
     setMounted(true);
@@ -18,7 +18,7 @@ export function ThemeSwitcher() {
   }
 
   const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
+    setTheme(resolvedTheme === "dark" ? "light" : "dark");
   };
 
   return (
@@ -30,7 +30,7 @@ export function ThemeSwitcher() {
       aria-label="Toggle theme"
     >
       <AnimatePresence mode="wait" initial={false}>
-        {theme === "dark" ? (
+        {resolvedTheme === "dark" ? (
           <motion.div
             key="sun"
             initial={{ y: -20, opacity: 0 }}

@@ -4,6 +4,11 @@ import React from "react";
 
 export const metadata: Metadata = {
   title: "Skills",
+  description:
+    "Technical skills across frontend, backend, mobile, cloud infrastructure, and software architecture.",
+  alternates: {
+    canonical: "/skills",
+  },
 };
 
 export default function SkillsPage() {

@@ -5,6 +5,7 @@ import {
   MessageSquare,
   Home,
   Rss, // Assuming you still want the Blog link
+  UserCircle2,
 } from "lucide-react";
 
 export const navLinks = [
@@ -12,7 +13,8 @@ export const navLinks = [
   { href: "/skills", label: "Skills", icon: Wrench },
   { href: "/projects", label: "Projects", icon: LayoutGrid },
   { href: "/credentials", label: "Credentials", icon: GraduationCap },
-  // { href: "/blog", label: "Blog", icon: Rss },
+  { href: "/blog", label: "Blog", icon: Rss },
+  { href: "/about", label: "About", icon: UserCircle2 },
   { href: "/contact", label: "Contact", icon: MessageSquare },
 ];
 
@@ -22,6 +24,7 @@ export const sectionBackgrounds: { [key: string]: string } = {
   "/projects": "linear-gradient(45deg, #0f172a, #1e40af)",
   "/credentials": "linear-gradient(45deg, #4c1111, #7f1d1d)",
   "/blog": "linear-gradient(45deg, #b45309, #78350f)", // Added a theme for blog
+  "/about": "linear-gradient(45deg, #164e63, #155e75)",
   "/contact": "linear-gradient(45deg, #3f3f46, #1f2937)",
 };
 
@@ -78,7 +81,7 @@ export const sectionThemes: {
     glowColorDark: "#ef4444",
     glowColorLight: "#f87171",
   },
-   "/blog": {
+  "/blog": {
     text: "text-orange-400",
     border: "border-orange-500/30",
     hoverBg: "hover:bg-orange-500/10 active:bg-orange-500/10",
@@ -87,6 +90,16 @@ export const sectionThemes: {
     activeBorder: "border-orange-400",
     glowColorDark: "#f97316",
     glowColorLight: "#fb923c",
+  },
+  "/about": {
+    text: "text-cyan-400",
+    border: "border-cyan-500/30",
+    hoverBg: "hover:bg-cyan-500/10 active:bg-cyan-500/10",
+    hoverBgSolid: "hover:bg-cyan-400/80 active:bg-cyan-400/80",
+    activeBg: "bg-cyan-500/20",
+    activeBorder: "border-cyan-400",
+    glowColorDark: "#06b6d4",
+    glowColorLight: "#22d3ee",
   },
   "/contact": {
     text: "text-gray-400",

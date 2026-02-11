@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import { LayoutGrid, Link as LinkIcon } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
 import { motion, useScroll, useTransform } from "framer-motion";
+import FallbackImage from "@/components/ui/fallback-image";
 
 // Helper component for syntax highlighting within paragraphs
 const Highlight = ({
@@ -42,6 +42,44 @@ const getTechColor = (tech: string): string => {
 
 // Data for Projects with images and links
 const projectsData = [
+  {
+    title: "ERPGo – All-in-One Business ERP Deployment",
+    image: "/erpgo.png", // add a screenshot of the ERP dashboard to /public
+    desc: (
+      <>
+        Deployed and hosted a full-featured enterprise ERP solution,
+        <Highlight>ERPGo – All-in-One Business ERP</Highlight>, designed to
+        support core business operations including{" "}
+        <Highlight>Accounting</Highlight>,{" "}
+        <Highlight>Project Management</Highlight>, <Highlight>HRM</Highlight>,{" "}
+        <Highlight>CRM</Highlight>, and{" "}
+        <Highlight>Point of Sale (POS)</Highlight>.
+        <br />
+        <br />
+        My role focused on procurement, deployment, configuration, and
+        production hosting of the system. I handled server setup, environment
+        configuration, domain and SSL management, and ensured the application
+        was production-ready, stable, and secure. This project demonstrates
+        strong experience in{" "}
+        <Highlight>enterprise software deployment</Highlight>,{" "}
+        <Highlight>system administration</Highlight>, and{" "}
+        <Highlight>hosting management</Highlight>.
+      </>
+    ),
+    tech: [
+      "Laravel (PHP)",
+      "MySQL",
+      "ERP System",
+      "Linux Server",
+      "Web Hosting",
+      "Domain & SSL Configuration",
+      "Production Deployment",
+    ],
+    liveLink:
+      "http://modamaestros.com",
+    sourceLink:
+      "https://codecanyon.net/item/erpgo-all-in-one-business-erp-with-project-account-hrm-crm-pos/33263435",
+  },
   {
     title: "KrestCore Hub - All-in-One Church Management System",
     image: "/rccg-client.png", // Replace with the actual path to your project image
@@ -184,14 +222,15 @@ const projectsData = [
       "PM2",
       "Digital Ocean",
     ],
-    liveLink: "https://play.google.com/store/apps/details?id=com.exampadi&pcampaignid=web_share",
+    liveLink:
+      "https://play.google.com/store/apps/details?id=com.exampadi&pcampaignid=web_share",
     sourceLink: "https://exampadi.ng/",
   },
   {
-    "title": "OmololasTalksTv - A Cultural Storytelling Platform",
-    "image": "/omolola-client.png",
-    "desc": "Developed a complete, production-ready website for 'Yoruba Narratives', a platform dedicated to preserving and promoting African heritage through authentic storytelling. The entire application is driven by a backend API, allowing for dynamic content management of blog posts, videos, categories, team members, and the hero banner. Key features include a dynamic hero section with a carousel supporting both images and videos, a comprehensive blog with featured posts, recent articles, and category-based similar posts, an API-driven video library with an embedded YouTube player, and an interactive comment system with an admin approval workflow. The site also includes a robust contact form and basic analytics tracking.",
-    "tech": [
+    title: "OmololasTalksTv - A Cultural Storytelling Platform",
+    image: "/omolola-client.png",
+    desc: "Developed a complete, production-ready website for 'Yoruba Narratives', a platform dedicated to preserving and promoting African heritage through authentic storytelling. The entire application is driven by a backend API, allowing for dynamic content management of blog posts, videos, categories, team members, and the hero banner. Key features include a dynamic hero section with a carousel supporting both images and videos, a comprehensive blog with featured posts, recent articles, and category-based similar posts, an API-driven video library with an embedded YouTube player, and an interactive comment system with an admin approval workflow. The site also includes a robust contact form and basic analytics tracking.",
+    tech: [
       "Next.js",
       "React",
       "TypeScript",
@@ -201,36 +240,35 @@ const projectsData = [
       "Zod",
       "Lucide React",
       "Embla Carousel",
-      "CMS Integration"
+      "CMS Integration",
     ],
-    "liveLink": "https://omololastalkstv.com",
-    "sourceLink": "#"
+    liveLink: "https://omololastalkstv.com",
+    sourceLink: "#",
   },
 
-{
-  "title": "Omolola Talks TV Hub - Headless CMS & Content Dashboard",
-  "image": "/omolola-admin.png",
-  "desc": "Developed a full-featured, production-ready headless CMS and admin dashboard designed to manage a modern blog and its associated content. This powerful application provides a central hub for content creation, media management, user administration, and community engagement. The dashboard is built with a robust, API-driven architecture, enabling seamless integration with any front-end application. Key features include a comprehensive post management system with a rich text editor, dynamic categories, and tags; a complete media library with Cloudinary integration for image and video uploads; a full user and role-based access control (RBAC) system with email invitations; a content moderation queue for blog comments; an inbox for managing contact form submissions; integration with the YouTube API to fetch and manage channel videos; a complete newsletter and subscriber management system; and a customizable theming engine for appearance. The dashboard also includes a dedicated analytics section to track website traffic, top pages, referrers, and visitor geography.",
-  "tech": [
-    "Next.js (App Router)",
-    "React",
-    "TypeScript",
-    "Tailwind CSS",
-    "ShadCN UI",
-    "NextAuth.js",
-    "MongoDB",
-    "Mongoose",
-    "Genkit (AI)",
-    "Cloudinary",
-    "Nodemailer",
-    "Recharts",
-    "Zod",
-    "React Hook Form"
-  ],
-  "liveLink": "#",
-  "sourceLink": "#"
-}
-
+  {
+    title: "Omolola Talks TV Hub - Headless CMS & Content Dashboard",
+    image: "/omolola-admin.png",
+    desc: "Developed a full-featured, production-ready headless CMS and admin dashboard designed to manage a modern blog and its associated content. This powerful application provides a central hub for content creation, media management, user administration, and community engagement. The dashboard is built with a robust, API-driven architecture, enabling seamless integration with any front-end application. Key features include a comprehensive post management system with a rich text editor, dynamic categories, and tags; a complete media library with Cloudinary integration for image and video uploads; a full user and role-based access control (RBAC) system with email invitations; a content moderation queue for blog comments; an inbox for managing contact form submissions; integration with the YouTube API to fetch and manage channel videos; a complete newsletter and subscriber management system; and a customizable theming engine for appearance. The dashboard also includes a dedicated analytics section to track website traffic, top pages, referrers, and visitor geography.",
+    tech: [
+      "Next.js (App Router)",
+      "React",
+      "TypeScript",
+      "Tailwind CSS",
+      "ShadCN UI",
+      "NextAuth.js",
+      "MongoDB",
+      "Mongoose",
+      "Genkit (AI)",
+      "Cloudinary",
+      "Nodemailer",
+      "Recharts",
+      "Zod",
+      "React Hook Form",
+    ],
+    liveLink: "#",
+    sourceLink: "#",
+  },
 ];
 
 const ProjectsContent = () => {
@@ -286,17 +324,16 @@ const ProjectsContent = () => {
             {/* Project Content */}
             <div className="space-y-4">
               <div className="group relative rounded-lg overflow-hidden border border-slate-200 dark:border-white/10 shadow-lg">
-                <Image
-                  src={project.image}
-                  alt={`${project.title} screenshot`}
-                  width={800}
-                  height={450}
-                  className="w-full h-auto object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
-                  onError={(e) => {
-                    e.currentTarget.src =
-                      "https://placehold.co/800x450/111827/e2e8f0?text=Image+Not+Found";
-                  }}
-                />
+                <div className="aspect-video overflow-hidden">
+                  <FallbackImage
+                    src={project.image}
+                    alt={`${project.title} screenshot`}
+                    className="h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
+                    fallbackSrc="/images/test-img.png"
+                    fallbackText="Project image unavailable"
+                    loading="lazy"
+                  />
+                </div>
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -translate-x-full transition-transform duration-700 ease-in-out group-hover:translate-x-full"></div>
               </div>
 

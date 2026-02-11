@@ -4,6 +4,11 @@ import React from "react";
 
 export const metadata: Metadata = {
   title: "Experience",
+  description:
+    "Engineering experience across product development, team collaboration, and production system ownership.",
+  alternates: {
+    canonical: "/experience",
+  },
 };
 
 
