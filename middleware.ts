@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(request: NextRequest) {
+  const forwardedHost = request.headers.get("x-forwarded-host") || "";
   const host = request.headers.get("host") || "";
-  const hostWithoutPort = host.split(":")[0].toLowerCase();
+  const rawHost = (forwardedHost || host).split(",")[0]?.trim() || "";
+  const hostWithoutPort = rawHost.split(":")[0].toLowerCase();
   const configuredHosts = (process.env.ADMIN_HOSTS || "admin.mideolaniyi.com")
     .split(",")
     .map((item) => item.trim().toLowerCase())
@@ -20,7 +22,7 @@ export function middleware(request: NextRequest) {
   if (pathname === "/" || !pathname.startsWith("/admin")) {
     const url = request.nextUrl.clone();
     url.pathname = "/admin";
-    return NextResponse.rewrite(url);
+    return NextResponse.redirect(url);
   }
 
   return NextResponse.next();
