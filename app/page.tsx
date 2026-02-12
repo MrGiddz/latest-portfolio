@@ -4,9 +4,9 @@ import React from "react";
 import { absoluteUrl, DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Home",
+  title: "Senior Software Engineer Portfolio",
   description:
-    "Senior Software Engineer portfolio showcasing freelance development, technical consulting, SEO optimization, and production-grade web, mobile, and backend systems.",
+    "Senior software engineer for freelance web, mobile, and backend development, technical consulting, and SEO optimization.",
   alternates: {
     canonical: "/",
   },

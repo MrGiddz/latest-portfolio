@@ -118,6 +118,7 @@ export default function PortfolioLayout({
   const isBlogRoute = pathname === "/blog" || pathname.startsWith("/blog/");
   const isAdminRoute = pathname === "/admin";
   const isWideRoute = isBlogRoute || isAdminRoute;
+  const IntroHeadingTag: React.ElementType = pathname === "/" ? "h1" : "h2";
   const topNavLastScrollRef = useRef(0);
 
   const clearBoundaryTimeout = () => {
@@ -768,7 +769,7 @@ export default function PortfolioLayout({
               </div>
 
               <div className="flex justify-center items-center">
-                <h2 className="text-white text-center  text-2xl md:text-3xl font-bold leading-tight font-code h-28 lg:h-auto">
+                <IntroHeadingTag className="text-white text-center text-2xl md:text-3xl font-bold leading-tight font-code h-28 lg:h-auto">
                   {/* <Typewriter
                   options={{
                     loop: true,
@@ -806,7 +807,7 @@ export default function PortfolioLayout({
                   }}
                 /> */}
                   <FlipWords words={words} />
-                </h2>
+                </IntroHeadingTag>
               </div>
             </div>
 

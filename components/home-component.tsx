@@ -223,10 +223,20 @@ const testimonials = [
 const ExperienceContent = () => {
   const ref = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLElement | null>(null);
+  const [isMobileView, setIsMobileView] = useState(false);
 
   useEffect(() => {
     // Find the correct scroll container when the component mounts
     containerRef.current = document.getElementById("page-content");
+
+    const setViewport = () => {
+      setIsMobileView(window.innerWidth < 768);
+    };
+
+    setViewport();
+    window.addEventListener("resize", setViewport);
+
+    return () => window.removeEventListener("resize", setViewport);
   }, []);
 
   const { scrollYProgress } = useScroll({
@@ -240,35 +250,36 @@ const ExperienceContent = () => {
 
   return (
     <>
-      <div className="md:hidden space-y-4">
-        {experienceData.map((job, index) => (
-          <div
-            key={index}
-            className="rounded-2xl border border-slate-300/70 dark:border-white/20 bg-slate-50/70 dark:bg-white/5 p-4"
-          >
-            <p className="inline-flex rounded-full border border-blue-300/60 dark:border-blue-400/30 bg-blue-500/10 px-2.5 py-1 text-xs font-medium text-blue-700 dark:text-blue-200">
-              {job.date}
-            </p>
-            <h3
-              className="mt-3 text-slate-900 dark:text-white font-semibold text-base"
-              dangerouslySetInnerHTML={{ __html: job.role }}
-            ></h3>
-            <p className="text-blue-600 dark:text-blue-300 text-sm">
-              {job.company}
-            </p>
-            <p className="text-gray-500 dark:text-gray-400 text-xs mt-1">
-              {job.location}
-            </p>
-            <ul className="list-disc list-inside space-y-1.5 pt-2 text-gray-600 dark:text-gray-300 text-xs leading-relaxed">
-              {job.points.map((point, i) => (
-                <li key={i}>{point}</li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
-
-      <div ref={ref} className="relative hidden md:block">
+      {isMobileView ? (
+        <div className="space-y-4">
+          {experienceData.map((job, index) => (
+            <div
+              key={index}
+              className="rounded-2xl border border-slate-300/70 dark:border-white/20 bg-slate-50/70 dark:bg-white/5 p-4"
+            >
+              <p className="inline-flex rounded-full border border-blue-300/60 dark:border-blue-400/30 bg-blue-500/10 px-2.5 py-1 text-xs font-medium text-blue-700 dark:text-blue-200">
+                {job.date}
+              </p>
+              <h3
+                className="mt-3 text-slate-900 dark:text-white font-semibold text-base"
+                dangerouslySetInnerHTML={{ __html: job.role }}
+              ></h3>
+              <p className="text-blue-600 dark:text-blue-300 text-sm">
+                {job.company}
+              </p>
+              <p className="text-gray-500 dark:text-gray-400 text-xs mt-1">
+                {job.location}
+              </p>
+              <ul className="list-disc list-inside space-y-1.5 pt-2 text-gray-600 dark:text-gray-300 text-xs leading-relaxed">
+                {job.points.map((point, i) => (
+                  <li key={i}>{point}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div ref={ref} className="relative">
         {/* The static background timeline bar */}
         <div className="absolute left-4 top-0 h-full w-0.5 bg-slate-200 dark:bg-gray-700/50"></div>
         {/* The animated, colored timeline bar */}
@@ -323,7 +334,8 @@ const ExperienceContent = () => {
             </motion.div>
           ))}
         </div>
-      </div>
+        </div>
+      )}
     </>
   );
 };

@@ -5,6 +5,15 @@ export function middleware(request: NextRequest) {
   const host = request.headers.get("host") || "";
   const rawHost = (forwardedHost || host).split(",")[0]?.trim() || "";
   const hostWithoutPort = rawHost.split(":")[0].toLowerCase();
+  const preferredHost = "mideolaniyi.com";
+
+  // Keep a single canonical hostname to avoid duplicate content signals.
+  if (hostWithoutPort === `www.${preferredHost}`) {
+    const url = request.nextUrl.clone();
+    url.host = preferredHost;
+    return NextResponse.redirect(url, 308);
+  }
+
   const configuredHosts = (process.env.ADMIN_HOSTS || "admin.mideolaniyi.com")
     .split(",")
     .map((item) => item.trim().toLowerCase())
