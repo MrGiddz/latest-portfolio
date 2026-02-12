@@ -78,6 +78,7 @@ export const metadata: Metadata = {
     canonical: "/",
     types: {
       "application/rss+xml": "/feed.xml",
+      "text/plain": "/llms.txt",
     },
   },
   referrer: "origin-when-cross-origin",

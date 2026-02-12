@@ -10,7 +10,6 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "postbuild": "next-sitemap",
     "start": "next start",
     "lint": "next lint",
     "migrate:blog:mongo": "node scripts/migrate-blog-json-to-mongo.mjs"

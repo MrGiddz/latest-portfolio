@@ -37,6 +37,17 @@ Notes:
 - Use `SMTP_SECURE=false` for STARTTLS (often port `587`).
 - Keep `.env` private; it is git-ignored.
 
+## SEO Generators
+
+This project generates SEO machine-readable resources with App Router routes:
+
+- `GET /robots.txt` from `app/robots.ts`
+- `GET /sitemap.xml` from `app/sitemap.ts`
+- `GET /llms.txt` from `app/llms.txt/route.ts`
+- `GET /llms-full.txt` from `app/llms-full.txt/route.ts`
+
+The sitemap includes static routes, blog post URLs, and machine-readable endpoints.
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.

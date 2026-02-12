@@ -12,6 +12,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/blog",
     "/contact",
     "/about",
+    "/feed.xml",
+    "/robots.txt",
+    "/llms.txt",
+    "/llms-full.txt",
   ];
 
   const now = new Date();
