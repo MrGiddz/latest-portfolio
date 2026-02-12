@@ -159,7 +159,19 @@ type UpsertPayload = {
   status?: BlogPostStatus;
 };
 
-function sanitizePayload(payload: UpsertPayload) {
+type SanitizedPayload = {
+  title: string;
+  description: string;
+  content: string;
+  slug: string;
+  date: string;
+  status: BlogPostStatus;
+  heroImage?: string;
+  videoUrl?: string;
+  galleryImages: string[];
+};
+
+function sanitizePayload(payload: UpsertPayload): SanitizedPayload {
   const title = payload.title?.trim();
   const description = payload.description?.trim() || "";
   const content = payload.content?.trim() || "";
@@ -203,7 +215,7 @@ function ensureMongoWritesEnabled() {
   }
 }
 
-function toCustomDoc(post: ReturnType<typeof sanitizePayload>): CustomBlogPostDoc {
+function toCustomDoc(post: SanitizedPayload): CustomBlogPostDoc {
   return {
     slug: post.slug,
     title: post.title,
