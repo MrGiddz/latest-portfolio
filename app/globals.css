@@ -1,6 +1,4 @@
 @import "tailwindcss";
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700&family=Space+Mono:wght@400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Fira+Code:wght@300..700&display=swap");
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
@@ -66,12 +64,6 @@ body.custom-cursor-active button {
   }
 }
 
-@property --angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
-}
-
 @keyframes rotate-shine {
   to {
     --angle: 360deg;
@@ -95,6 +87,7 @@ body.custom-cursor-active button {
   position: relative;
   padding: 2px;
   border-radius: 9999px;
+  border: 1px solid rgba(148, 163, 184, 0.5);
 }
 
 .animated-border-button::before {
@@ -131,6 +124,12 @@ body.custom-cursor-active button {
   animation: rotate-border-animation 4s linear infinite;
 }
 
+@supports not (background: conic-gradient(from 0deg, #000, #fff)) {
+  .animated-border-button::before {
+    display: none;
+  }
+}
+
 /* Define your light and dark mode colors using CSS variables */
 :root {
   --background: #ffffff;
@@ -146,6 +145,38 @@ body.custom-cursor-active button {
 body {
   background-color: var(--background);
   color: var(--foreground);
+}
+
+/* Baseline fallback when advanced utility CSS is unavailable in older engines */
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Plus Jakarta Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
 }
 
 .mobile-scrollbar-hidden {

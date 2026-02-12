@@ -16,6 +16,27 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Contact Form Email Setup
+
+The `/contact` form posts to `POST /api/contact` and sends mail over SMTP.
+Set these variables in your local `.env` and deployment environment:
+
+```bash
+SMTP_HOST=smtp.your-provider.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your-smtp-username
+SMTP_PASS=your-smtp-password
+MAIL_TO=you@yourdomain.com
+# Optional override for sender header (defaults to SMTP_USER)
+MAIL_FROM=no-reply@yourdomain.com
+```
+
+Notes:
+- Use `SMTP_SECURE=true` when your provider expects implicit TLS (often port `465`).
+- Use `SMTP_SECURE=false` for STARTTLS (often port `587`).
+- Keep `.env` private; it is git-ignored.
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.

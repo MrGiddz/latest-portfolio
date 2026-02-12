@@ -274,15 +274,19 @@ const projectsData = [
 const ProjectCard = ({
   project,
   compact = false,
+  isExpanded = false,
+  onToggleExpanded,
 }: {
   project: (typeof projectsData)[number];
   compact?: boolean;
+  isExpanded?: boolean;
+  onToggleExpanded?: () => void;
 }) => (
   <div className="space-y-4">
     <div className="group relative rounded-lg overflow-hidden border border-slate-200 dark:border-white/10 shadow-lg">
       <div
         className={`overflow-hidden ${
-          compact ? "aspect-[4/3] max-h-52" : "aspect-video"
+          compact ? "h-52" : "h-56 md:h-64"
         }`}
       >
         <FallbackImage
@@ -305,14 +309,21 @@ const ProjectCard = ({
       {project.title}
     </h3>
     {compact ? (
-      <details className="group rounded-xl border border-slate-300/70 dark:border-white/15 bg-white/40 dark:bg-white/5 p-3">
-        <summary className="cursor-pointer list-none text-xs font-semibold uppercase tracking-wide text-slate-700 dark:text-slate-200">
-          About Project
-        </summary>
-        <p className="mt-2 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-          {project.desc}
-        </p>
-      </details>
+      <div className="rounded-xl border border-slate-300/70 dark:border-white/15 bg-white/40 dark:bg-white/5 p-3">
+        <button
+          type="button"
+          onClick={onToggleExpanded}
+          className="text-xs font-semibold uppercase tracking-wide text-slate-700 dark:text-slate-200"
+          aria-expanded={isExpanded}
+        >
+          {isExpanded ? "Hide Project Details" : "About Project"}
+        </button>
+        {isExpanded ? (
+          <p className="mt-2 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+            {project.desc}
+          </p>
+        ) : null}
+      </div>
     ) : (
       <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
         {project.desc}
@@ -358,6 +369,7 @@ const ProjectsContent = () => {
   const [scrollContainer, setScrollContainer] = useState<HTMLElement | null>(
     null
   );
+  const [expandedProjects, setExpandedProjects] = useState<number[]>([]);
 
   useEffect(() => {
     // Find the correct scroll container when the component mounts
@@ -373,6 +385,12 @@ const ProjectsContent = () => {
   const height = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
   const opacity = useTransform(scrollYProgress, [0, 0.1], [0, 1]);
 
+  const toggleExpandedProject = (index: number) => {
+    setExpandedProjects((prev) =>
+      prev.includes(index) ? prev.filter((item) => item !== index) : [...prev, index]
+    );
+  };
+
   return (
     <>
       <div className="md:hidden space-y-4">
@@ -380,12 +398,16 @@ const ProjectsContent = () => {
           <motion.div
             key={index}
             className="rounded-2xl border border-slate-200 dark:border-white/20 bg-slate-100/80 dark:bg-white/5 p-4"
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ amount: 0.2, once: true }}
-            transition={{ duration: 0.35, delay: index * 0.04 }}
+            initial={false}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2, delay: index * 0.02 }}
           >
-            <ProjectCard project={project} compact />
+            <ProjectCard
+              project={project}
+              compact
+              isExpanded={expandedProjects.includes(index)}
+              onToggleExpanded={() => toggleExpandedProject(index)}
+            />
           </motion.div>
         ))}
       </div>
@@ -402,15 +424,9 @@ const ProjectsContent = () => {
             <motion.div
               key={index}
               className="relative pl-12"
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{
-                root: scrollContainer
-                  ? { current: scrollContainer }
-                  : undefined,
-                amount: 0.3,
-              }}
-              transition={{ duration: 0.5 }}
+              initial={false}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.2 }}
             >
               <ProjectCard project={project} />
             </motion.div>
@@ -424,7 +440,7 @@ const ProjectsContent = () => {
 const ProjectComponent = () => {
   return (
     <motion.div
-      className="w-full max-w-2xl mx-auto backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl md:rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl my-8 md:my-16"
+      className="w-full max-w-2xl mx-auto bg-slate-100/90 dark:bg-slate-900/90 md:supports-[backdrop-filter]:bg-white/10 md:supports-[backdrop-filter]:backdrop-blur-md border border-slate-200 dark:border-white/20 rounded-2xl md:rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl my-8 md:my-16"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{
@@ -433,7 +449,7 @@ const ProjectComponent = () => {
         delay: 0.4,
       }}
     >
-      <h2 className="text-3xl md:text-4xl font-bold text-white mb-8 text-center font-mono">
+      <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-8 text-center font-mono">
         Projects
       </h2>
       <ProjectsContent />

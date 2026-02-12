@@ -25,19 +25,40 @@ export default function ContactForm() {
     subject: string;
     message: string;
   }>({ name: "", email: "", subject: "", message: "" });
+  const [error, setError] = useState<string>("");
+  const [success, setSuccess] = useState<string>("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log({ payload });
-   return new Promise((resolve) => {
-      setTimeout(resolve, 4000);
+  const handleSubmit = async () => {
+    setError("");
+    setSuccess("");
+
+    const response = await fetch("/api/contact", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
     });
+
+    const data = (await response.json().catch(() => ({}))) as { error?: string };
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to send message. Please try again.");
+    }
+
+    setSuccess("Your message has been sent successfully.");
+    setPayload({ name: "", email: "", subject: "", message: "" });
   };
 
-    const handleClick = () => {
-    return new Promise((resolve) => {
-      setTimeout(resolve, 4000);
-    });
+  const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+
+    try {
+      await handleSubmit();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to send message.";
+      setError(message);
+      throw err;
+    }
   };
 
   return (
@@ -83,7 +104,7 @@ export default function ContactForm() {
         </motion.div>
 
         <motion.form
-          onSubmit={handleSubmit}
+          onSubmit={(e) => e.preventDefault()}
           className="space-y-8"
           variants={formContainerVariants}
           initial="hidden"
@@ -159,8 +180,26 @@ export default function ContactForm() {
             variants={fieldVariants}
             className="flex justify-center pt-4"
           >
-                  <Button onClick={handleClick}>Send message</Button>
+            <Button onClick={handleClick}>Send message</Button>
           </motion.div>
+
+          {error ? (
+            <motion.p
+              variants={fieldVariants}
+              className="text-center text-sm text-red-600 dark:text-red-400"
+            >
+              {error}
+            </motion.p>
+          ) : null}
+
+          {success ? (
+            <motion.p
+              variants={fieldVariants}
+              className="text-center text-sm text-green-600 dark:text-green-400"
+            >
+              {success}
+            </motion.p>
+          ) : null}
         </motion.form>
       </motion.div>
     </div>
