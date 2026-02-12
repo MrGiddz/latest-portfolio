@@ -1,6 +1,6 @@
 import "server-only";
 
-import type { BlogPost } from "@/lib/blog-types";
+import type { BlogPost, BlogPostStatus } from "@/lib/blog-types";
 import { getMongoDb, isMongoConfigured } from "@/lib/mongodb";
 
 type CustomBlogPostDoc = {
@@ -12,6 +12,12 @@ type CustomBlogPostDoc = {
   heroImage?: string;
   videoUrl?: string;
   galleryImages?: string[];
+  status?: BlogPostStatus;
+};
+
+type DeletedDefaultPostDoc = {
+  slug: string;
+  deletedAt: string;
 };
 
 export const defaultBlogPosts: BlogPost[] = [
@@ -25,6 +31,7 @@ export const defaultBlogPosts: BlogPost[] = [
       "The useEffect hook is one of the most powerful tools in a React developer's arsenal, but it's also one of the most misunderstood.\n\nThe dependency array controls when an effect runs. If you pass an empty array, the effect runs once after initial render. If omitted, it runs on every render.\n\nA good rule of thumb is to keep effects focused, cleanup subscriptions, and avoid mixing unrelated side effects in one hook.",
     heroImage: "/images/test-img.png",
     source: "default",
+    status: "published",
   },
   {
     slug: "devops-on-a-budget",
@@ -37,11 +44,16 @@ export const defaultBlogPosts: BlogPost[] = [
     heroImage: "/big.png",
     videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
     source: "default",
+    status: "published",
   },
 ];
 
 function customPostsCollectionName() {
   return process.env.BLOG_POSTS_COLLECTION || "blog_posts_custom";
+}
+
+function deletedDefaultsCollectionName() {
+  return process.env.BLOG_DELETED_DEFAULTS_COLLECTION || "blog_posts_deleted_defaults";
 }
 
 function sortByDateDesc(posts: BlogPost[]): BlogPost[] {
@@ -69,12 +81,25 @@ function normalizeCustomPost(post: Partial<CustomBlogPostDoc>): BlogPost {
     videoUrl: post.videoUrl?.trim(),
     galleryImages,
     source: "custom",
+    status: post.status === "draft" ? "draft" : "published",
   };
 }
 
 async function getCustomPostsCollection() {
   const db = await getMongoDb();
   return db.collection<CustomBlogPostDoc>(customPostsCollectionName());
+}
+
+async function getDeletedDefaultsCollection() {
+  const db = await getMongoDb();
+  return db.collection<DeletedDefaultPostDoc>(deletedDefaultsCollectionName());
+}
+
+async function getDeletedDefaultSlugs(): Promise<Set<string>> {
+  if (!isMongoConfigured()) return new Set();
+  const collection = await getDeletedDefaultsCollection();
+  const docs = await collection.find({}, { projection: { slug: 1 } }).toArray();
+  return new Set(docs.map((doc) => doc.slug));
 }
 
 export async function getCustomBlogPosts(): Promise<BlogPost[]> {
@@ -86,11 +111,18 @@ export async function getCustomBlogPosts(): Promise<BlogPost[]> {
 }
 
 export async function getAllBlogPosts(): Promise<BlogPost[]> {
+  const posts = await getAdminBlogPosts();
+  return posts.filter((post) => (post.status || "published") === "published");
+}
+
+export async function getAdminBlogPosts(): Promise<BlogPost[]> {
   const customPosts = await getCustomBlogPosts();
+  const deletedDefaultSlugs = await getDeletedDefaultSlugs();
   const defaults = defaultBlogPosts.map((post) => ({
     ...post,
     source: "default" as const,
-  }));
+    status: post.status || "published",
+  })).filter((post) => !deletedDefaultSlugs.has(post.slug));
 
   const bySlug = new Map<string, BlogPost>();
   for (const post of defaults) bySlug.set(post.slug, post);
@@ -124,15 +156,17 @@ type UpsertPayload = {
   heroImage?: string;
   videoUrl?: string;
   galleryImages?: string[] | string;
+  status?: BlogPostStatus;
 };
 
 function sanitizePayload(payload: UpsertPayload) {
   const title = payload.title?.trim();
-  const description = payload.description?.trim();
-  const content = payload.content?.trim();
+  const description = payload.description?.trim() || "";
+  const content = payload.content?.trim() || "";
   const slugBase = payload.slug?.trim() || title;
   const slug = slugify(slugBase || "");
   const date = payload.date?.trim() || new Date().toISOString().slice(0, 10);
+  const status = payload.status === "draft" ? "draft" : "published";
   const heroImage = payload.heroImage?.trim() || undefined;
   const videoUrl = payload.videoUrl?.trim() || undefined;
   const galleryRaw = Array.isArray(payload.galleryImages)
@@ -140,8 +174,12 @@ function sanitizePayload(payload: UpsertPayload) {
     : payload.galleryImages?.split("\n") ?? [];
   const galleryImages = galleryRaw.map((item) => item.trim()).filter(Boolean);
 
-  if (!title || !description || !content || !slug) {
-    throw new Error("title, description, and content are required");
+  if (!title || !slug) {
+    throw new Error("title is required");
+  }
+
+  if (status === "published" && (!description || !content)) {
+    throw new Error("description and content are required for published posts");
   }
 
   return {
@@ -150,6 +188,7 @@ function sanitizePayload(payload: UpsertPayload) {
     content,
     slug,
     date,
+    status,
     heroImage,
     videoUrl,
     galleryImages,
@@ -171,6 +210,7 @@ function toCustomDoc(post: ReturnType<typeof sanitizePayload>): CustomBlogPostDo
     description: post.description,
     date: post.date,
     content: post.content,
+    status: post.status,
     heroImage: post.heroImage,
     videoUrl: post.videoUrl,
     galleryImages: post.galleryImages,
@@ -180,7 +220,7 @@ function toCustomDoc(post: ReturnType<typeof sanitizePayload>): CustomBlogPostDo
 export async function createCustomBlogPost(payload: UpsertPayload): Promise<BlogPost> {
   ensureMongoWritesEnabled();
   const clean = sanitizePayload(payload);
-  const existing = await getAllBlogPosts();
+  const existing = await getAdminBlogPosts();
   if (existing.some((post) => post.slug === clean.slug)) {
     throw new Error("A post with this slug already exists");
   }
@@ -199,11 +239,17 @@ export async function updateCustomBlogPost(
   const collection = await getCustomPostsCollection();
 
   const existing = await collection.findOne({ slug });
-  if (!existing) {
-    throw new Error("Only custom posts can be updated");
+  const isDefaultPost = defaultBlogPosts.some((post) => post.slug === slug);
+
+  if (!existing && !isDefaultPost) {
+    throw new Error("Post not found");
   }
 
   if (clean.slug !== slug) {
+    if (isDefaultPost && !existing) {
+      throw new Error("Default posts must keep their original slug");
+    }
+
     const duplicateCustom = await collection.findOne({ slug: clean.slug });
     if (duplicateCustom) {
       throw new Error("A post with this slug already exists");
@@ -213,7 +259,11 @@ export async function updateCustomBlogPost(
     }
   }
 
-  await collection.updateOne({ slug }, { $set: toCustomDoc(clean) });
+  await collection.updateOne(
+    { slug },
+    { $set: toCustomDoc(clean) },
+    { upsert: true }
+  );
   return { ...clean, source: "custom" };
 }
 
@@ -221,7 +271,22 @@ export async function deleteCustomBlogPost(slug: string): Promise<void> {
   ensureMongoWritesEnabled();
   const collection = await getCustomPostsCollection();
   const result = await collection.deleteOne({ slug });
-  if (!result.deletedCount) {
-    throw new Error("Only custom posts can be deleted");
+  if (result.deletedCount) return;
+
+  if (defaultBlogPosts.some((post) => post.slug === slug)) {
+    const deletedDefaults = await getDeletedDefaultsCollection();
+    await deletedDefaults.updateOne(
+      { slug },
+      {
+        $set: {
+          slug,
+          deletedAt: new Date().toISOString(),
+        },
+      },
+      { upsert: true }
+    );
+    return;
   }
+
+  throw new Error("Post not found");
 }

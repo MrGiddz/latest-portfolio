@@ -34,13 +34,6 @@ const BlogPageComponent = ({ posts }: BlogPageComponentProps) => {
         <div className="mb-12 rounded-2xl border border-slate-300/70 dark:border-white/20 bg-white/70 dark:bg-black/20 p-5 md:p-6">
           <div className="flex items-center gap-4 mb-4">
             <Image
-              src="/profile.jpg"
-              alt="Olaniyi Olamide"
-              width={52}
-              height={52}
-              className="rounded-full object-cover border border-slate-300 dark:border-white/20"
-            />
-            <Image
               src="/favicon.png"
               alt="Website logo"
               width={30}
@@ -56,7 +49,7 @@ const BlogPageComponent = ({ posts }: BlogPageComponentProps) => {
           </p>
         </div>
 
-        <div className="space-y-10">
+        <div className="space-y-14">
           {posts.map((post) => (
             <Link href={`/blog/${post.slug}`} key={post.slug} passHref>
               <motion.div

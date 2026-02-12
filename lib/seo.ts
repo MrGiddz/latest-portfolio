@@ -1,6 +1,6 @@
 export const SITE_URL = "https://mideolaniyi.com";
 export const SITE_NAME = "Olamide Olaniyi";
-export const DEFAULT_OG_IMAGE = "/favicon.png";
+export const DEFAULT_OG_IMAGE = "/profile.jpg";
 export const AUTHOR_NAME = "Olaniyi Gideon Olamide";
 export const AUTHOR_ROLE =
   "Senior Software Engineer, Freelance Consultant, and SEO Optimization Specialist";

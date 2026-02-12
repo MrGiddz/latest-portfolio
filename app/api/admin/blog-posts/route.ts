@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createCustomBlogPost, getAllBlogPosts } from "@/lib/blog";
+import { createCustomBlogPost, getAdminBlogPosts } from "@/lib/blog";
 import { revalidatePath } from "next/cache";
 
 function validateAdminToken(request: NextRequest) {
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
   const authError = validateAdminToken(request);
   if (authError) return authError;
 
-  const posts = await getAllBlogPosts();
+  const posts = await getAdminBlogPosts();
   return NextResponse.json({ posts });
 }
 

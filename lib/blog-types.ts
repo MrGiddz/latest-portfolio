@@ -1,3 +1,5 @@
+export type BlogPostStatus = "draft" | "published";
+
 export type BlogPost = {
   slug: string;
   title: string;
@@ -8,4 +10,5 @@ export type BlogPost = {
   videoUrl?: string;
   galleryImages?: string[];
   source?: "default" | "custom";
+  status?: BlogPostStatus;
 };

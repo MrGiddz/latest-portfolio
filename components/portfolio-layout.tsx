@@ -582,22 +582,15 @@ export default function PortfolioLayout({
         >
           <div className="max-w-6xl mx-auto mt-3 px-4 md:px-8">
             <div className="px-4 md:px-6 py-3 flex items-center justify-between gap-4 rounded-2xl border border-slate-200/70 dark:border-white/20 bg-slate-100/55 dark:bg-white/10 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.16)]">
-            <Link href="/" className="flex items-center gap-3 min-w-0">
-              <Image
-                src="/profile.jpg"
-                alt="Olaniyi Olamide"
-                width={40}
-                height={40}
-                className="rounded-full border border-white/20 object-cover"
-              />
+            <Link href="/" className="flex items-center gap-2 min-w-0">
               <Image
                 src="/favicon.png"
                 alt="Olamide logo"
-                width={28}
-                height={28}
+                width={30}
+                height={30}
                 className="rounded-sm"
               />
-              <div className="min-w-0">
+              <div className="min-w-0 hidden sm:block">
                 <p className="text-white text-sm md:text-base font-semibold truncate">
                   Olamide Olaniyi
                 </p>
@@ -607,7 +600,7 @@ export default function PortfolioLayout({
               </div>
             </Link>
 
-            <nav className="flex items-center gap-2 md:gap-3 text-sm">
+            <nav className="flex items-center gap-2 text-sm">
               <Link
                 href="/"
                 className="text-gray-200 hover:text-white px-3 py-1.5 rounded-md hover:bg-white/10 transition-colors"
@@ -615,14 +608,8 @@ export default function PortfolioLayout({
                 Home
               </Link>
               <Link
-                href="/blog"
-                className="text-gray-200 hover:text-white px-3 py-1.5 rounded-md hover:bg-white/10 transition-colors"
-              >
-                Blog
-              </Link>
-              <Link
                 href="/contact"
-                className="text-gray-200 hover:text-white px-3 py-1.5 rounded-md hover:bg-white/10 transition-colors"
+                className="hidden sm:inline-block text-gray-200 hover:text-white px-3 py-1.5 rounded-md hover:bg-white/10 transition-colors"
               >
                 Contact
               </Link>
@@ -633,7 +620,7 @@ export default function PortfolioLayout({
       )}
 
       <motion.div
-        className="fixed top-6 right-6 z-50 flex items-center gap-3"
+        className="fixed top-6 right-6 z-50 hidden md:flex items-center gap-3"
         animate={{ opacity: isTopNavVisible ? 1 : 0, y: isTopNavVisible ? 0 : -18 }}
         transition={{ duration: 0.25, ease: "easeOut" }}
       >
@@ -1038,8 +1025,47 @@ export default function PortfolioLayout({
 
       {/* --- ADDITION 2: Mobile Bottom Navigation Bar --- */}
       {!isAdminRoute && (
-      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 bg-slate-900/50 backdrop-blur-md block lg:hidden">
-        <div className="flex justify-around items-center p-2">
+      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 bg-slate-900/50 backdrop-blur-md block lg:hidden overflow-x-hidden">
+        <div className="mx-auto flex max-w-screen-sm items-center justify-center gap-2 px-2 pt-2 pb-1 md:hidden">
+          <button
+            onClick={() => setShowNavHint(true)}
+            className="h-8 w-8 rounded-full border border-slate-300/70 dark:border-white/20 bg-slate-100/70 dark:bg-white/10 backdrop-blur-md shadow-lg flex items-center justify-center text-slate-700 dark:text-gray-200"
+            aria-label="Open navigation help"
+            title="How to navigate"
+          >
+            <CircleHelp size={14} />
+          </button>
+          <label
+            className="flex items-center gap-1.5 rounded-full border border-slate-300/70 dark:border-white/20 bg-slate-100/70 dark:bg-white/10 backdrop-blur-md px-2 py-1.5 shadow-lg select-none"
+            title="Toggle scroll navigation"
+          >
+            <span className="flex items-center gap-1 text-[10px] font-semibold text-slate-700 dark:text-gray-200 whitespace-nowrap">
+              <Mouse size={12} />
+              Scroll
+            </span>
+            <button
+              onClick={() => setScrollNavigationEnabled((prev) => !prev)}
+              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-300 ${
+                scrollNavigationEnabled
+                  ? "bg-emerald-500"
+                  : "bg-slate-300 dark:bg-slate-600"
+              }`}
+              aria-pressed={scrollNavigationEnabled}
+              aria-label="Toggle scroll navigation"
+              type="button"
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-md transition-transform duration-300 ${
+                  scrollNavigationEnabled ? "translate-x-[18px]" : "translate-x-0.5"
+                }`}
+              />
+            </button>
+          </label>
+          <div className="[&>button]:h-8 [&>button]:w-8 [&>button_svg]:h-4 [&>button_svg]:w-4">
+            <ThemeSwitcher />
+          </div>
+        </div>
+        <div className="mx-auto grid max-w-screen-sm grid-cols-7 items-center gap-0.5 px-1 pt-1 pb-[calc(env(safe-area-inset-bottom)+0.35rem)]">
           {navLinks.map((link) => {
             const Icon = link.icon;
             const isActive = pathname === link.href;
@@ -1049,9 +1075,9 @@ export default function PortfolioLayout({
                 href={link.href}
                 passHref
               >
-                <div className="flex flex-col items-center justify-center gap-1 cursor-pointer w-16 h-14 rounded-lg">
+                <div className="flex min-w-0 flex-col items-center justify-center gap-1 cursor-pointer h-12 rounded-lg">
                   <Icon
-                    className={`w-6 h-6 transition-all duration-300 ${
+                    className={`w-5 h-5 transition-all duration-300 ${
                       isActive ? "text-white" : "text-white/60"
                     }`}
                   />

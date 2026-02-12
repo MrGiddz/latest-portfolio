@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { BlogPost } from "@/lib/blog-types";
 
 type EditorState = {
@@ -9,9 +9,17 @@ type EditorState = {
   description: string;
   date: string;
   content: string;
+  status: "draft" | "published";
   heroImage: string;
   videoUrl: string;
   galleryImages: string;
+};
+
+type NoticeTone = "success" | "error" | "info";
+
+type Notice = {
+  message: string;
+  tone: NoticeTone;
 };
 
 const initialEditor: EditorState = {
@@ -20,6 +28,7 @@ const initialEditor: EditorState = {
   description: "",
   date: new Date().toISOString().slice(0, 10),
   content: "",
+  status: "draft",
   heroImage: "",
   videoUrl: "",
   galleryImages: "",
@@ -32,6 +41,10 @@ export default function AdminBlogManager() {
   const [editor, setEditor] = useState<EditorState>(initialEditor);
   const [status, setStatus] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
+  const [descriptionManuallyEdited, setDescriptionManuallyEdited] = useState(false);
+  const [notice, setNotice] = useState<Notice | null>(null);
+  const contentRef = useRef<HTMLTextAreaElement | null>(null);
 
   const activePost = useMemo(
     () => posts.find((post) => post.slug === activeSlug),
@@ -42,6 +55,12 @@ export default function AdminBlogManager() {
     const saved = localStorage.getItem("blog-admin-token");
     if (saved) setToken(saved);
   }, []);
+
+  useEffect(() => {
+    if (!notice) return;
+    const timeout = window.setTimeout(() => setNotice(null), 2800);
+    return () => window.clearTimeout(timeout);
+  }, [notice]);
 
   async function fetchPosts(adminToken: string) {
     setLoading(true);
@@ -61,19 +80,28 @@ export default function AdminBlogManager() {
     }
   }
 
+  function showNotice(message: string, tone: NoticeTone) {
+    setNotice({ message, tone });
+  }
+
   function startCreate() {
     setActiveSlug("");
     setEditor(initialEditor);
+    setSlugManuallyEdited(false);
+    setDescriptionManuallyEdited(false);
   }
 
   function startEdit(post: BlogPost) {
     setActiveSlug(post.slug);
+    setSlugManuallyEdited(true);
+    setDescriptionManuallyEdited(true);
     setEditor({
       slug: post.slug,
       title: post.title,
       description: post.description,
       date: post.date,
       content: post.content,
+      status: post.status || "published",
       heroImage: post.heroImage || "",
       videoUrl: post.videoUrl || "",
       galleryImages: (post.galleryImages || []).join("\n"),
@@ -109,10 +137,21 @@ export default function AdminBlogManager() {
       if (!res.ok) throw new Error(data.error || "Unable to save post");
 
       setStatus(isEditing ? "Post updated." : "Post created.");
+      showNotice(
+        isEditing
+          ? "Post updated successfully."
+          : editor.status === "draft"
+            ? "Draft saved successfully."
+            : "Post published successfully.",
+        "success"
+      );
       setActiveSlug(data.post.slug);
       await fetchPosts(token);
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "Unable to save post");
+      const message =
+        error instanceof Error ? error.message : "Unable to save post";
+      setStatus(message);
+      showNotice(message, "error");
     } finally {
       setLoading(false);
     }
@@ -137,17 +176,89 @@ export default function AdminBlogManager() {
       if (!res.ok) throw new Error(data.error || "Unable to delete post");
 
       setStatus("Post deleted.");
+      showNotice("Post deleted.", "info");
       if (activeSlug === slug) startCreate();
       await fetchPosts(token);
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "Unable to delete post");
+      const message =
+        error instanceof Error ? error.message : "Unable to delete post";
+      setStatus(message);
+      showNotice(message, "error");
     } finally {
       setLoading(false);
     }
   }
 
+  function applyWrap(prefix: string, suffix = prefix, placeholder = "text") {
+    const textarea = contentRef.current;
+    if (!textarea) return;
+
+    const { selectionStart, selectionEnd } = textarea;
+    const selectedText = editor.content.slice(selectionStart, selectionEnd);
+    const insertText = selectedText || placeholder;
+    const nextValue =
+      editor.content.slice(0, selectionStart) +
+      prefix +
+      insertText +
+      suffix +
+      editor.content.slice(selectionEnd);
+
+    setEditor((state) => ({ ...state, content: nextValue }));
+
+    requestAnimationFrame(() => {
+      textarea.focus();
+      const start = selectionStart + prefix.length;
+      const end = start + insertText.length;
+      textarea.setSelectionRange(start, end);
+    });
+  }
+
+  function applyList(marker: "-" | "1.") {
+    const textarea = contentRef.current;
+    if (!textarea) return;
+
+    const { selectionStart, selectionEnd } = textarea;
+    const selectedText = editor.content.slice(selectionStart, selectionEnd);
+    const lines = (selectedText || "List item")
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+
+    const listText =
+      marker === "-"
+        ? lines.map((line) => `- ${line}`).join("\n")
+        : lines.map((line, index) => `${index + 1}. ${line}`).join("\n");
+
+    const nextValue =
+      editor.content.slice(0, selectionStart) +
+      listText +
+      editor.content.slice(selectionEnd);
+
+    setEditor((state) => ({ ...state, content: nextValue }));
+
+    requestAnimationFrame(() => {
+      textarea.focus();
+      textarea.setSelectionRange(selectionStart, selectionStart + listText.length);
+    });
+  }
+
   return (
     <div className="min-h-screen w-full p-6 md:p-10">
+      {notice && (
+        <div
+          className={`fixed right-6 top-6 z-50 rounded-xl px-4 py-3 shadow-lg border text-sm ${
+            notice.tone === "success"
+              ? "bg-emerald-50 border-emerald-300 text-emerald-900"
+              : notice.tone === "error"
+                ? "bg-red-50 border-red-300 text-red-900"
+                : "bg-blue-50 border-blue-300 text-blue-900"
+          }`}
+          role="status"
+          aria-live="polite"
+        >
+          {notice.message}
+        </div>
+      )}
       <div className="max-w-6xl mx-auto backdrop-blur-md bg-slate-100/80 dark:bg-white/10 border border-slate-200 dark:border-white/20 rounded-3xl p-6 md:p-8 shadow-2xl my-24">
         <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white font-mono">
           Blog Admin
@@ -204,6 +315,9 @@ export default function AdminBlogManager() {
                   <p className="text-xs text-slate-600 dark:text-gray-300">
                     {post.date} - {post.source}
                   </p>
+                  <p className="text-[11px] text-slate-500 dark:text-gray-400 mt-0.5">
+                    {(post.status || "published").toUpperCase()}
+                  </p>
                 </button>
               ))}
             </div>
@@ -212,21 +326,47 @@ export default function AdminBlogManager() {
           <section className="lg:col-span-2 rounded-2xl border border-slate-300/70 dark:border-white/20 bg-white/70 dark:bg-black/20 p-4 md:p-5 space-y-3">
             <input
               value={editor.title}
-              onChange={(e) => setEditor((s) => ({ ...s, title: e.target.value }))}
+              onChange={(e) =>
+                setEditor((state) => {
+                  const nextTitle = e.target.value;
+                  return {
+                    ...state,
+                    title: nextTitle,
+                    slug: slugManuallyEdited
+                      ? state.slug
+                      : slugifyTitle(nextTitle),
+                    description: descriptionManuallyEdited
+                      ? state.description
+                      : generateDescription(nextTitle, state.content),
+                  };
+                })
+              }
               placeholder="Post title"
               className="w-full rounded-xl border border-slate-300 dark:border-white/20 bg-white/80 dark:bg-black/20 px-4 py-3 text-slate-900 dark:text-white"
             />
             <input
               value={editor.slug}
-              onChange={(e) => setEditor((s) => ({ ...s, slug: e.target.value }))}
-              placeholder="Slug (optional on create)"
+              onChange={(e) => {
+                const value = e.target.value;
+                setSlugManuallyEdited(Boolean(value.trim()));
+                setEditor((state) => ({ ...state, slug: value }));
+              }}
+              placeholder="Slug (auto-generated from title, editable)"
               className="w-full rounded-xl border border-slate-300 dark:border-white/20 bg-white/80 dark:bg-black/20 px-4 py-3 text-slate-900 dark:text-white"
             />
             <input
               value={editor.description}
-              onChange={(e) =>
-                setEditor((s) => ({ ...s, description: e.target.value }))
-              }
+              onChange={(e) => {
+                const value = e.target.value;
+                const manual = Boolean(value.trim());
+                setDescriptionManuallyEdited(manual);
+                setEditor((state) => ({
+                  ...state,
+                  description: manual
+                    ? value
+                    : generateDescription(state.title, state.content),
+                }));
+              }}
               placeholder="Short description"
               className="w-full rounded-xl border border-slate-300 dark:border-white/20 bg-white/80 dark:bg-black/20 px-4 py-3 text-slate-900 dark:text-white"
             />
@@ -236,13 +376,85 @@ export default function AdminBlogManager() {
               onChange={(e) => setEditor((s) => ({ ...s, date: e.target.value }))}
               className="w-full rounded-xl border border-slate-300 dark:border-white/20 bg-white/80 dark:bg-black/20 px-4 py-3 text-slate-900 dark:text-white"
             />
+            <select
+              value={editor.status}
+              onChange={(e) =>
+                setEditor((state) => ({
+                  ...state,
+                  status: e.target.value as "draft" | "published",
+                }))
+              }
+              className="w-full rounded-xl border border-slate-300 dark:border-white/20 bg-white/80 dark:bg-black/20 px-4 py-3 text-slate-900 dark:text-white"
+            >
+              <option value="draft">Draft (hidden from public blog)</option>
+              <option value="published">Published (visible publicly)</option>
+            </select>
             <textarea
+              ref={contentRef}
               value={editor.content}
-              onChange={(e) => setEditor((s) => ({ ...s, content: e.target.value }))}
+              onChange={(e) =>
+                setEditor((state) => {
+                  const nextContent = e.target.value;
+                  return {
+                    ...state,
+                    content: nextContent,
+                    description: descriptionManuallyEdited
+                      ? state.description
+                      : generateDescription(state.title, nextContent),
+                  };
+                })
+              }
               rows={12}
-              placeholder="Write your post content. Use blank lines to separate paragraphs."
+              placeholder="Write your post content. Use blank lines for paragraphs and the toolbar for formatting."
               className="w-full rounded-xl border border-slate-300 dark:border-white/20 bg-white/80 dark:bg-black/20 px-4 py-3 text-slate-900 dark:text-white"
             />
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => applyWrap("**")}
+                title="Bold: wraps selected text with **bold**"
+                className="rounded-lg px-3 py-1.5 text-sm border border-slate-300 dark:border-white/20 text-slate-800 dark:text-white"
+              >
+                Bold
+              </button>
+              <button
+                onClick={() => applyWrap("*")}
+                title="Italic: wraps selected text with *italic*"
+                className="rounded-lg px-3 py-1.5 text-sm border border-slate-300 dark:border-white/20 text-slate-800 dark:text-white"
+              >
+                Italic
+              </button>
+              <button
+                onClick={() => applyWrap("__")}
+                title="Underline: wraps selected text with __underline__"
+                className="rounded-lg px-3 py-1.5 text-sm border border-slate-300 dark:border-white/20 text-slate-800 dark:text-white"
+              >
+                Underline
+              </button>
+              <button
+                onClick={() => applyList("-")}
+                title="Bullet list: turns selected lines into - list items"
+                className="rounded-lg px-3 py-1.5 text-sm border border-slate-300 dark:border-white/20 text-slate-800 dark:text-white"
+              >
+                Bullet List
+              </button>
+              <button
+                onClick={() => applyList("1.")}
+                title="Numbered list: turns selected lines into 1. 2. 3."
+                className="rounded-lg px-3 py-1.5 text-sm border border-slate-300 dark:border-white/20 text-slate-800 dark:text-white"
+              >
+                Numbered List
+              </button>
+              <button
+                onClick={() => applyWrap("[", "](https://example.com)", "link text")}
+                title="Link: wraps selected text as [text](https://...)"
+                className="rounded-lg px-3 py-1.5 text-sm border border-slate-300 dark:border-white/20 text-slate-800 dark:text-white"
+              >
+                Link
+              </button>
+            </div>
+            <p className="text-xs text-slate-600 dark:text-gray-300">
+              Formatting: <code>**bold**</code>, <code>*italic*</code>, <code>__underline__</code>, <code>- list</code>, <code>1. list</code>, <code>[text](url)</code>.
+            </p>
             <input
               value={editor.heroImage}
               onChange={(e) =>
@@ -275,9 +487,15 @@ export default function AdminBlogManager() {
                 disabled={loading}
                 className="rounded-xl px-5 py-2.5 bg-blue-600 text-white disabled:opacity-50"
               >
-                {activeSlug ? "Update Post" : "Create Post"}
+                {activeSlug
+                  ? editor.status === "draft"
+                    ? "Update Draft"
+                    : "Update & Publish"
+                  : editor.status === "draft"
+                    ? "Save Draft"
+                    : "Publish Post"}
               </button>
-              {activePost?.source === "custom" && (
+              {activePost && (
                 <button
                   onClick={() => deletePost(activePost.slug)}
                   disabled={loading}
@@ -292,4 +510,28 @@ export default function AdminBlogManager() {
       </div>
     </div>
   );
+}
+
+function slugifyTitle(value: string) {
+  return value
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
+function generateDescription(title: string, content: string) {
+  const normalized = content
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, "$1")
+    .replace(/[*_`>#-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const source = normalized || title.trim();
+  if (!source) return "";
+  if (source.length <= 160) return source;
+  return `${source.slice(0, 157).trimEnd()}...`;
 }

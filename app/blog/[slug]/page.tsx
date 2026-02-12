@@ -2,6 +2,7 @@ import { Calendar, ChevronLeft } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { ReactNode } from "react";
 import {
   absoluteUrl,
   AUTHOR_EMAIL,
@@ -206,9 +207,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </div>
 
         <div className="text-slate-700 dark:text-gray-200 leading-relaxed space-y-4">
-          {post.content.split(/\n{2,}/).map((paragraph, index) => (
-            <p key={`${post.slug}-${index}`}>{paragraph}</p>
-          ))}
+          {renderPostContent(post.content, post.slug)}
         </div>
 
         <div className="mt-10">
@@ -259,6 +258,145 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       </article>
     </div>
   );
+}
+
+function renderPostContent(content: string, slug: string) {
+  const lines = content.split("\n");
+  const blocks: ReactNode[] = [];
+  let paragraphLines: string[] = [];
+  let bulletItems: string[] = [];
+  let numberedItems: string[] = [];
+  let keyIndex = 0;
+
+  const pushParagraph = () => {
+    if (!paragraphLines.length) return;
+    const text = paragraphLines.join(" ");
+    blocks.push(
+      <p key={`${slug}-p-${keyIndex++}`}>{renderInline(text, slug, keyIndex)}</p>
+    );
+    paragraphLines = [];
+  };
+
+  const pushBullets = () => {
+    if (!bulletItems.length) return;
+    blocks.push(
+      <ul key={`${slug}-ul-${keyIndex++}`} className="list-disc pl-6 space-y-1">
+        {bulletItems.map((item, index) => (
+          <li key={`${slug}-ul-item-${keyIndex}-${index}`}>
+            {renderInline(item, slug, keyIndex + index)}
+          </li>
+        ))}
+      </ul>
+    );
+    bulletItems = [];
+  };
+
+  const pushNumbered = () => {
+    if (!numberedItems.length) return;
+    blocks.push(
+      <ol key={`${slug}-ol-${keyIndex++}`} className="list-decimal pl-6 space-y-1">
+        {numberedItems.map((item, index) => (
+          <li key={`${slug}-ol-item-${keyIndex}-${index}`}>
+            {renderInline(item, slug, keyIndex + index)}
+          </li>
+        ))}
+      </ol>
+    );
+    numberedItems = [];
+  };
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+
+    if (!trimmed) {
+      pushParagraph();
+      pushBullets();
+      pushNumbered();
+      continue;
+    }
+
+    if (trimmed.startsWith("- ")) {
+      pushParagraph();
+      pushNumbered();
+      bulletItems.push(trimmed.slice(2).trim());
+      continue;
+    }
+
+    const numberedMatch = trimmed.match(/^\d+\.\s+(.*)$/);
+    if (numberedMatch) {
+      pushParagraph();
+      pushBullets();
+      numberedItems.push(numberedMatch[1].trim());
+      continue;
+    }
+
+    pushBullets();
+    pushNumbered();
+    paragraphLines.push(trimmed);
+  }
+
+  pushParagraph();
+  pushBullets();
+  pushNumbered();
+
+  return blocks.length
+    ? blocks
+    : [<p key={`${slug}-empty`}>No content provided.</p>];
+}
+
+function renderInline(text: string, slug: string, seed: number) {
+  const regex =
+    /(\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|\*\*([^*]+)\*\*|__([^_]+)__|\*([^*]+)\*|`([^`]+)`)/g;
+  const nodes: ReactNode[] = [];
+  let lastIndex = 0;
+  let token = 0;
+  let match: RegExpExecArray | null = regex.exec(text);
+
+  while (match) {
+    if (match.index > lastIndex) {
+      nodes.push(text.slice(lastIndex, match.index));
+    }
+
+    if (match[2] && match[3]) {
+      nodes.push(
+        <a
+          key={`${slug}-link-${seed}-${token++}`}
+          href={match[3]}
+          className="text-blue-600 dark:text-blue-400 hover:underline"
+          target="_blank"
+          rel="noreferrer"
+        >
+          {match[2]}
+        </a>
+      );
+    } else if (match[4]) {
+      nodes.push(
+        <strong key={`${slug}-bold-${seed}-${token++}`}>{match[4]}</strong>
+      );
+    } else if (match[5]) {
+      nodes.push(<u key={`${slug}-underline-${seed}-${token++}`}>{match[5]}</u>);
+    } else if (match[6]) {
+      nodes.push(<em key={`${slug}-italic-${seed}-${token++}`}>{match[6]}</em>);
+    } else if (match[7]) {
+      nodes.push(
+        <code
+          key={`${slug}-code-${seed}-${token++}`}
+          className="px-1.5 py-0.5 rounded bg-slate-200/70 dark:bg-slate-700/60 text-[0.95em]"
+        >
+          {match[7]}
+        </code>
+      );
+    }
+
+    lastIndex = regex.lastIndex;
+    match = regex.exec(text);
+  }
+
+  if (lastIndex < text.length) {
+    nodes.push(text.slice(lastIndex));
+  }
+
+  return nodes.length ? nodes : text;
 }
 
 function toISODate(date: string) {
