@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function ExperiencePage() {
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center p-4 md:p-10">
+    <div className="min-h-screen w-full flex flex-col items-center p-4 md:p-10">
       {/* 2. Wrap the content card in a motion.div */}
      <ExperienceComponent/>
     </div>

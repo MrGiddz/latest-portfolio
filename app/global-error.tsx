@@ -17,7 +17,7 @@ export default function GlobalErrorPage({
   return (
     <html lang="en">
       <body className="min-h-screen bg-slate-950 text-white">
-        <main className="min-h-screen w-full p-6 md:p-10 flex items-center justify-center">
+        <main className="min-h-screen w-full p-4 md:p-8 flex items-center justify-center">
           <section className="w-full max-w-xl rounded-3xl border border-white/20 bg-white/10 backdrop-blur-md p-6 md:p-8 shadow-2xl text-center">
             <p className="text-xs tracking-[0.2em] uppercase text-gray-400">
               Critical Error

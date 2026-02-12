@@ -955,7 +955,7 @@ export default function PortfolioLayout({
         <main
           ref={contentRef}
           id="page-content"
-            className={`w-full pb-24 lg:pb-0 relative mobile-scrollbar-hidden ${
+            className={`w-full pb-[calc(env(safe-area-inset-bottom)+8.5rem)] md:pb-24 lg:pb-0 relative mobile-scrollbar-hidden ${
             isWideRoute
               ? `${isBlogRoute ? "pt-20 lg:pt-24" : ""} lg:w-full lg:ml-0 lg:h-auto lg:overflow-visible`
               : "lg:w-1/2 lg:ml-[50%] lg:h-screen lg:overflow-y-auto"
@@ -964,7 +964,7 @@ export default function PortfolioLayout({
           <AnimatePresence>
             <motion.main
               key={pathname}
-              className="absolute inset-0"
+              className="relative min-h-full lg:absolute lg:inset-0"
               variants={pageVariants}
               transition={{
                 type: "tween",

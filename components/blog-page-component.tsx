@@ -16,9 +16,9 @@ type BlogPageComponentProps = {
 
 const BlogPageComponent = ({ posts }: BlogPageComponentProps) => {
   return (
-      <div className="min-h-screen w-full p-6 md:p-10">
+      <div className="min-h-screen w-full p-4 md:p-8">
       <motion.div
-        className="w-full max-w-3xl mx-auto backdrop-blur-md bg-slate-100/80 dark:bg-white/10 border border-slate-200 dark:border-white/20 rounded-3xl p-8 shadow-2xl my-24"
+        className="w-full max-w-3xl mx-auto backdrop-blur-md bg-slate-100/80 dark:bg-white/10 border border-slate-200 dark:border-white/20 rounded-3xl p-5 md:p-8 shadow-2xl my-16 md:my-24"
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{

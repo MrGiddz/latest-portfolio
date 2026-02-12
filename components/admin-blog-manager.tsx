@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { KeyboardEvent } from "react";
 import type { BlogPost } from "@/lib/blog-types";
 
 type EditorState = {
@@ -242,8 +243,43 @@ export default function AdminBlogManager() {
     });
   }
 
+  function handleEditorKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
+    const hasModifier = event.metaKey || event.ctrlKey;
+    if (!hasModifier) return;
+
+    const key = event.key.toLowerCase();
+
+    // Keep native editing shortcuts intact.
+    if (["c", "v", "x", "a", "z", "y"].includes(key)) {
+      return;
+    }
+
+    if (key === "b") {
+      event.preventDefault();
+      applyWrap("**");
+      return;
+    }
+
+    if (key === "i") {
+      event.preventDefault();
+      applyWrap("*");
+      return;
+    }
+
+    if (key === "u") {
+      event.preventDefault();
+      applyWrap("__");
+      return;
+    }
+
+    if (key === "k") {
+      event.preventDefault();
+      applyWrap("[", "](https://example.com)", "link text");
+    }
+  }
+
   return (
-    <div className="min-h-screen w-full p-6 md:p-10">
+    <div className="min-h-screen w-full p-4 md:p-8">
       {notice && (
         <div
           className={`fixed right-6 top-6 z-50 rounded-xl px-4 py-3 shadow-lg border text-sm ${
@@ -259,7 +295,7 @@ export default function AdminBlogManager() {
           {notice.message}
         </div>
       )}
-      <div className="max-w-6xl mx-auto backdrop-blur-md bg-slate-100/80 dark:bg-white/10 border border-slate-200 dark:border-white/20 rounded-3xl p-6 md:p-8 shadow-2xl my-24">
+      <div className="max-w-6xl mx-auto backdrop-blur-md bg-slate-100/80 dark:bg-white/10 border border-slate-200 dark:border-white/20 rounded-3xl p-4 md:p-8 shadow-2xl my-16 md:my-24">
         <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white font-mono">
           Blog Admin
         </h1>
@@ -392,6 +428,7 @@ export default function AdminBlogManager() {
             <textarea
               ref={contentRef}
               value={editor.content}
+              onKeyDown={handleEditorKeyDown}
               onChange={(e) =>
                 setEditor((state) => {
                   const nextContent = e.target.value;

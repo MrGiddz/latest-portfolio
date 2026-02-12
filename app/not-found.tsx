@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function NotFoundPage() {
   return (
-    <main className="min-h-screen w-full p-6 md:p-10 flex items-center justify-center">
+    <main className="min-h-screen w-full p-4 md:p-8 flex items-center justify-center">
       <section className="w-full max-w-xl rounded-3xl border border-slate-200 dark:border-white/20 bg-slate-100/85 dark:bg-white/10 backdrop-blur-md p-6 md:p-8 shadow-2xl text-center">
         <p className="text-xs tracking-[0.2em] uppercase text-slate-500 dark:text-gray-400">
           Error 404
