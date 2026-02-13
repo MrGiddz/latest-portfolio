@@ -346,7 +346,7 @@ function renderPostContent(content: string, slug: string) {
 
 function renderInline(text: string, slug: string, seed: number) {
   const regex =
-    /(\{color:([^}]+)\}([\s\S]*?)\{\/color\}|\{size:([^}]+)\}([\s\S]*?)\{\/size\}|\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|\*\*([^*]+)\*\*|__([^_]+)__|\*([^*]+)\*|`([^`]+)`)/g;
+    /(\{color:\s*([^}]+?)\s*\}([\s\S]*?)\{\\?\/color\}|\{size:\s*([^}]+?)\s*\}([\s\S]*?)\{\\?\/size\}|\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|\*\*([^*]+)\*\*|__([^_]+)__|\*([^*]+)\*|`([^`]+)`)/g;
   const nodes: ReactNode[] = [];
   let lastIndex = 0;
   let token = 0;

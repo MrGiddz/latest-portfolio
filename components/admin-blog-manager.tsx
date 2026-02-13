@@ -616,7 +616,7 @@ function slugifyTitle(value: string) {
 function generateDescription(title: string, content: string) {
   const normalized = content
     .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, "$1")
-    .replace(/\{\/?(?:color|size)(?::[^}]+)?\}/g, " ")
+    .replace(/\{\\?\/?(?:color|size)(?::[^}]+)?\}/g, " ")
     .replace(/[*_`>#-]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
