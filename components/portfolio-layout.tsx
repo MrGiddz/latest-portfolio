@@ -115,6 +115,7 @@ export default function PortfolioLayout({
   const currentTheme = sectionThemes[pathname] || sectionThemes["/"];
   const prefersReducedMotion = useReducedMotion();
   const enableAmbientAnimation = isDesktop && !prefersReducedMotion;
+  const desktopScrollNavigationEnabled = isDesktop && scrollNavigationEnabled;
   const isBlogRoute = pathname === "/blog" || pathname.startsWith("/blog/");
   const isAdminRoute = pathname === "/admin";
   const isWideRoute = isBlogRoute || isAdminRoute;
@@ -274,7 +275,7 @@ export default function PortfolioLayout({
   }, [isDesktop, isWideRoute, pathname]);
 
   useEffect(() => {
-    if (isWideRoute || !scrollNavigationEnabled) {
+    if (isWideRoute || !desktopScrollNavigationEnabled) {
       setNavPrompt({
         visible: false,
         direction: "down",
@@ -425,7 +426,7 @@ export default function PortfolioLayout({
         handleScroll();
       }, 40);
     };
-    scrollEl?.addEventListener("wheel", handleWheel, { passive: true });
+    window.addEventListener("wheel", handleWheel, { passive: true });
 
     const timer = setTimeout(() => {
       const metrics = getMetrics();
@@ -437,7 +438,7 @@ export default function PortfolioLayout({
 
     return () => {
       scrollEl?.removeEventListener("scroll", handleScroll);
-      scrollEl?.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("wheel", handleWheel);
       clearBoundaryTimeout();
       clearAutoNavigation();
       clearTimeout(timer);
@@ -445,7 +446,7 @@ export default function PortfolioLayout({
         clearTimeout(wheelIntentTimeoutRef.current);
       }
     };
-  }, [pathname, isNavigating, isDesktop, isWideRoute, scrollNavigationEnabled]);
+  }, [pathname, isNavigating, isDesktop, isWideRoute, desktopScrollNavigationEnabled]);
 
   // Effect to reset navigation lock after page changes
   useEffect(() => {
@@ -475,7 +476,7 @@ export default function PortfolioLayout({
   useEffect(() => {
     const hasSeenHint = sessionStorage.getItem("hasSeenNavHint");
 
-    if (hasSeenHint || !isDesktop || !scrollNavigationEnabled) {
+    if (hasSeenHint || !desktopScrollNavigationEnabled) {
       return;
     }
 
@@ -484,7 +485,7 @@ export default function PortfolioLayout({
     }, 2000);
 
     return () => clearTimeout(showHintTimer);
-  }, [isDesktop, scrollNavigationEnabled]);
+  }, [desktopScrollNavigationEnabled]);
 
   useEffect(() => {
     return () => {
@@ -627,7 +628,7 @@ export default function PortfolioLayout({
       )}
 
       <motion.div
-        className="fixed top-6 right-6 z-50 hidden md:flex items-center gap-3"
+        className="fixed top-6 right-6 z-50 hidden lg:flex items-center gap-3"
         animate={{ opacity: isTopNavVisible ? 1 : 0, y: isTopNavVisible ? 0 : -18 }}
         transition={{ duration: 0.25, ease: "easeOut" }}
       >
@@ -1033,41 +1034,7 @@ export default function PortfolioLayout({
       {/* --- ADDITION 2: Mobile Bottom Navigation Bar --- */}
       {!isAdminRoute && (
       <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 bg-slate-900/50 backdrop-blur-md block lg:hidden overflow-x-hidden">
-        <div className="mx-auto flex max-w-screen-sm items-center justify-center gap-2 px-2 pt-2 pb-1 md:hidden">
-          <button
-            onClick={() => setShowNavHint(true)}
-            className="h-8 w-8 rounded-full border border-slate-300/70 dark:border-white/20 bg-slate-100/70 dark:bg-white/10 backdrop-blur-md shadow-lg flex items-center justify-center text-slate-700 dark:text-gray-200"
-            aria-label="Open navigation help"
-            title="How to navigate"
-          >
-            <CircleHelp size={14} />
-          </button>
-          <label
-            className="flex items-center gap-1.5 rounded-full border border-slate-300/70 dark:border-white/20 bg-slate-100/70 dark:bg-white/10 backdrop-blur-md px-2 py-1.5 shadow-lg select-none"
-            title="Toggle scroll navigation"
-          >
-            <span className="flex items-center gap-1 text-[10px] font-semibold text-slate-700 dark:text-gray-200 whitespace-nowrap">
-              <Mouse size={12} />
-              Scroll
-            </span>
-            <button
-              onClick={() => setScrollNavigationEnabled((prev) => !prev)}
-              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-300 ${
-                scrollNavigationEnabled
-                  ? "bg-emerald-500"
-                  : "bg-slate-300 dark:bg-slate-600"
-              }`}
-              aria-pressed={scrollNavigationEnabled}
-              aria-label="Toggle scroll navigation"
-              type="button"
-            >
-              <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-md transition-transform duration-300 ${
-                  scrollNavigationEnabled ? "translate-x-[18px]" : "translate-x-0.5"
-                }`}
-              />
-            </button>
-          </label>
+        <div className="mx-auto flex max-w-screen-sm items-center justify-end gap-2 px-2 pt-2 pb-1 md:hidden">
           <div className="[&>button]:h-8 [&>button]:w-8 [&>button_svg]:h-4 [&>button_svg]:w-4">
             <ThemeSwitcher />
           </div>
@@ -1154,7 +1121,7 @@ export default function PortfolioLayout({
       </AnimatePresence>
 
       <AnimatePresence>
-        {scrollNavigationEnabled && navPrompt.visible && (
+        {desktopScrollNavigationEnabled && navPrompt.visible && (
           <NavigationButton
             direction={autoNavState.active ? autoNavState.direction : navPrompt.direction}
             pageName={autoNavState.active ? autoNavState.pageName : navPrompt.pageName}
@@ -1170,10 +1137,10 @@ export default function PortfolioLayout({
       <AnimatePresence>{isNavigating && <NavigationLoader />}</AnimatePresence>
 
       <AnimatePresence>
-        {showNavHint && (
+        {showNavHint && isDesktop && (
           <NavigationHint
             onDismiss={handleDismissHint}
-            scrollNavigationEnabled={scrollNavigationEnabled}
+            scrollNavigationEnabled={desktopScrollNavigationEnabled}
             onEnableScrollNavigation={() => setScrollNavigationEnabled(true)}
           />
         )}
