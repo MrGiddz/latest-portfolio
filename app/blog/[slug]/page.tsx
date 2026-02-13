@@ -346,7 +346,7 @@ function renderPostContent(content: string, slug: string) {
 
 function renderInline(text: string, slug: string, seed: number) {
   const regex =
-    /(\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|\*\*([^*]+)\*\*|__([^_]+)__|\*([^*]+)\*|`([^`]+)`)/g;
+    /(\{color:([^}]+)\}([\s\S]*?)\{\/color\}|\{size:([^}]+)\}([\s\S]*?)\{\/size\}|\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|\*\*([^*]+)\*\*|__([^_]+)__|\*([^*]+)\*|`([^`]+)`)/g;
   const nodes: ReactNode[] = [];
   let lastIndex = 0;
   let token = 0;
@@ -358,32 +358,54 @@ function renderInline(text: string, slug: string, seed: number) {
     }
 
     if (match[2] && match[3]) {
+      const color = sanitizeColor(match[2]);
+      if (color) {
+        nodes.push(
+          <span key={`${slug}-color-${seed}-${token++}`} style={{ color }}>
+            {renderInline(match[3], slug, seed + token + 1)}
+          </span>
+        );
+      } else {
+        nodes.push(renderInline(match[3], slug, seed + token + 1));
+      }
+    } else if (match[4] && match[5]) {
+      const size = sanitizeFontSize(match[4]);
+      if (size) {
+        nodes.push(
+          <span key={`${slug}-size-${seed}-${token++}`} style={{ fontSize: size }}>
+            {renderInline(match[5], slug, seed + token + 1)}
+          </span>
+        );
+      } else {
+        nodes.push(renderInline(match[5], slug, seed + token + 1));
+      }
+    } else if (match[6] && match[7]) {
       nodes.push(
         <a
           key={`${slug}-link-${seed}-${token++}`}
-          href={match[3]}
+          href={match[7]}
           className="text-blue-600 dark:text-blue-400 hover:underline"
           target="_blank"
           rel="noreferrer"
         >
-          {match[2]}
+          {match[6]}
         </a>
       );
-    } else if (match[4]) {
+    } else if (match[8]) {
       nodes.push(
-        <strong key={`${slug}-bold-${seed}-${token++}`}>{match[4]}</strong>
+        <strong key={`${slug}-bold-${seed}-${token++}`}>{match[8]}</strong>
       );
-    } else if (match[5]) {
-      nodes.push(<u key={`${slug}-underline-${seed}-${token++}`}>{match[5]}</u>);
-    } else if (match[6]) {
-      nodes.push(<em key={`${slug}-italic-${seed}-${token++}`}>{match[6]}</em>);
-    } else if (match[7]) {
+    } else if (match[9]) {
+      nodes.push(<u key={`${slug}-underline-${seed}-${token++}`}>{match[9]}</u>);
+    } else if (match[10]) {
+      nodes.push(<em key={`${slug}-italic-${seed}-${token++}`}>{match[10]}</em>);
+    } else if (match[11]) {
       nodes.push(
         <code
           key={`${slug}-code-${seed}-${token++}`}
           className="px-1.5 py-0.5 rounded bg-slate-200/70 dark:bg-slate-700/60 text-[0.95em]"
         >
-          {match[7]}
+          {match[11]}
         </code>
       );
     }
@@ -397,6 +419,24 @@ function renderInline(text: string, slug: string, seed: number) {
   }
 
   return nodes.length ? nodes : text;
+}
+
+function sanitizeColor(value: string) {
+  const trimmed = value.trim();
+  const hexPattern = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
+  return hexPattern.test(trimmed) ? trimmed : null;
+}
+
+function sanitizeFontSize(value: string) {
+  const trimmed = value.trim().toLowerCase();
+  const pxPattern = /^(\d{1,3})px$/;
+  const match = trimmed.match(pxPattern);
+  if (!match) return null;
+
+  const size = Number(match[1]);
+  if (Number.isNaN(size)) return null;
+  if (size < 10 || size > 72) return null;
+  return `${size}px`;
 }
 
 function toISODate(date: string) {

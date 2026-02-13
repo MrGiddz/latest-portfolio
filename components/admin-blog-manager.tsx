@@ -45,6 +45,8 @@ export default function AdminBlogManager() {
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
   const [descriptionManuallyEdited, setDescriptionManuallyEdited] = useState(false);
   const [notice, setNotice] = useState<Notice | null>(null);
+  const [textColor, setTextColor] = useState("#2563eb");
+  const [fontSize, setFontSize] = useState("16px");
   const contentRef = useRef<HTMLTextAreaElement | null>(null);
 
   const activePost = useMemo(
@@ -241,6 +243,14 @@ export default function AdminBlogManager() {
       textarea.focus();
       textarea.setSelectionRange(selectionStart, selectionStart + listText.length);
     });
+  }
+
+  function applyTextColor() {
+    applyWrap(`{color:${textColor}}`, "{/color}");
+  }
+
+  function applyFontSize() {
+    applyWrap(`{size:${fontSize}}`, "{/size}");
   }
 
   function handleEditorKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
@@ -488,9 +498,52 @@ export default function AdminBlogManager() {
               >
                 Link
               </button>
+              <label className="inline-flex items-center gap-2 rounded-lg px-2 py-1.5 border border-slate-300 dark:border-white/20 text-sm text-slate-800 dark:text-white">
+                Color
+                <input
+                  type="color"
+                  value={textColor}
+                  onChange={(e) => setTextColor(e.target.value)}
+                  className="h-7 w-9 cursor-pointer rounded border border-slate-300 dark:border-white/20 bg-transparent"
+                  aria-label="Select text color"
+                  title="Select text color"
+                />
+              </label>
+              <button
+                onClick={applyTextColor}
+                title="Text color: wraps selected text with {color:#2563eb}text{/color}"
+                className="rounded-lg px-3 py-1.5 text-sm border border-slate-300 dark:border-white/20 text-slate-800 dark:text-white"
+              >
+                Apply Color
+              </button>
+              <label className="inline-flex items-center gap-2 rounded-lg px-2 py-1.5 border border-slate-300 dark:border-white/20 text-sm text-slate-800 dark:text-white">
+                Size
+                <select
+                  value={fontSize}
+                  onChange={(e) => setFontSize(e.target.value)}
+                  className="rounded-md border border-slate-300 dark:border-white/20 bg-white/90 dark:bg-black/30 px-2 py-1 text-sm text-slate-900 dark:text-white"
+                  aria-label="Select font size"
+                  title="Select font size"
+                >
+                  {["12px", "14px", "16px", "18px", "20px", "24px", "28px", "32px"].map(
+                    (size) => (
+                      <option key={size} value={size}>
+                        {size}
+                      </option>
+                    )
+                  )}
+                </select>
+              </label>
+              <button
+                onClick={applyFontSize}
+                title="Font size: wraps selected text with {size:18px}text{/size}"
+                className="rounded-lg px-3 py-1.5 text-sm border border-slate-300 dark:border-white/20 text-slate-800 dark:text-white"
+              >
+                Apply Size
+              </button>
             </div>
             <p className="text-xs text-slate-600 dark:text-gray-300">
-              Formatting: <code>**bold**</code>, <code>*italic*</code>, <code>__underline__</code>, <code>- list</code>, <code>1. list</code>, <code>[text](url)</code>.
+              Formatting: <code>**bold**</code>, <code>*italic*</code>, <code>__underline__</code>, <code>- list</code>, <code>1. list</code>, <code>[text](url)</code>, <code>{"{color:#2563eb}text{/color}"}</code>, <code>{"{size:18px}text{/size}"}</code>.
             </p>
             <input
               value={editor.heroImage}
@@ -563,6 +616,7 @@ function slugifyTitle(value: string) {
 function generateDescription(title: string, content: string) {
   const normalized = content
     .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, "$1")
+    .replace(/\{\/?(?:color|size)(?::[^}]+)?\}/g, " ")
     .replace(/[*_`>#-]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
