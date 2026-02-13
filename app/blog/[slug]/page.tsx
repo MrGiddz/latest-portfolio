@@ -221,7 +221,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           </h3>
           <p className="text-slate-700 dark:text-gray-200">{AUTHOR_ROLE}</p>
           <p className="mt-2 text-sm text-slate-700 dark:text-gray-200">
-            Contact:{" "}
+            Contact me:{" "}
             <a className="text-blue-500 hover:underline" href={`mailto:${AUTHOR_EMAIL}`}>
               {AUTHOR_EMAIL}
             </a>{" "}

@@ -521,32 +521,32 @@ export default function PortfolioLayout({
   };
 
   const words = [
-    "I build scalable SaaS applications for growing businesses.",
-    "I take software products from idea to production and support.",
-    "I deliver web, mobile, and backend systems with my team.",
-    "I design reliable architectures with clean API-first workflows.",
-    "I ship fast with CI/CD, cloud infrastructure, and observability.",
+    "I help businesses launch products customers actually enjoy using.",
+    "I turn ideas into reliable web and mobile experiences.",
+    "I improve conversion, speed, and day-to-day product performance.",
+    "I build digital systems that support growth, not stress.",
+    "I partner with teams from strategy to launch and support.",
   ];
 
   const typewriterWords = [
     {
-      text: "SaaS",
+      text: "Product",
     },
     {
-      text: "Engineer",
+      text: "Partner",
     },
     {
       text: "for",
     },
     {
-      text: "End-to-End",
+      text: "Customer-Focused",
       className: "text-blue-500 dark:text-blue-500",
     },
     {
-      text: "Product",
+      text: "Digital",
     },
     {
-      text: "Delivery",
+      text: "Growth",
     },
   ];
 
@@ -896,7 +896,7 @@ export default function PortfolioLayout({
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  Let&apos;s Work
+                  Start a Project
                 </motion.button>
               </Link>
             </motion.div>

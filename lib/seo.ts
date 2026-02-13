@@ -3,7 +3,7 @@ export const SITE_NAME = "Olamide Olaniyi";
 export const DEFAULT_OG_IMAGE = "/profile.jpg";
 export const AUTHOR_NAME = "Olaniyi Gideon Olamide";
 export const AUTHOR_ROLE =
-  "Senior Software Engineer, Freelance Consultant, and SEO Optimization Specialist";
+  "Product Consultant Helping Businesses Launch, Improve, and Scale Digital Products";
 export const AUTHOR_EMAIL = "me@mideolaniyi.com";
 export const AUTHOR_SOCIALS = [
   "https://github.com/mrgiddz",

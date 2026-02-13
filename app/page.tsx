@@ -4,16 +4,16 @@ import React from "react";
 import { absoluteUrl, DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Senior Software Engineer Portfolio",
+  title: "Olamide Olaniyi | Product-Focused Software Consultant",
   description:
-    "Senior software engineer for SaaS application development, end-to-end web/mobile/backend delivery, technical consulting, and SEO optimization.",
+    "I help founders and teams turn ideas into reliable digital products that grow revenue and improve customer experience.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "Olamide Olaniyi | Senior Software Engineer",
+    title: "Olamide Olaniyi | Product-Focused Software Consultant",
     description:
-      "Explore featured SaaS and product delivery projects, consulting expertise, and engineering execution across web, mobile, and backend.",
+      "Explore how I help businesses launch and improve web and mobile products with clear strategy, strong execution, and measurable outcomes.",
     url: SITE_URL,
     siteName: SITE_NAME,
     type: "website",
@@ -28,9 +28,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Olamide Olaniyi | Senior Software Engineer",
+    title: "Olamide Olaniyi | Product-Focused Software Consultant",
     description:
-      "Software engineer offering SaaS builds, end-to-end delivery, team-based execution, and SEO optimization.",
+      "Software consultant helping businesses ship better products, faster.",
     images: [absoluteUrl(DEFAULT_OG_IMAGE)],
   },
 };

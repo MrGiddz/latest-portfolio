@@ -21,36 +21,32 @@ const Highlight = ({
 const AboutContent = () => (
   <div className="space-y-6 text-gray-600 dark:text-gray-300 leading-relaxed">
     <p>
-      Building things with code is my passion. For{" "}
+      I help businesses turn ideas into practical digital products that create
+      real value. For{" "}
       <Highlight color="text-purple-500 dark:text-purple-400">
         over 8 years
       </Highlight>
-      , I&apos;ve been on a journey from writing my first lines of code to
-      leading projects as a <Highlight>Senior Software Engineer</Highlight>,
-      always focused on architecting high-performance, scalable digital
-      solutions and creating seamless user experiences.
+      , I&apos;ve worked with teams to launch, improve, and scale products in a
+      way that balances speed, quality, and customer experience.
     </p>
     <p>
-      I am proficient across the full stack, with a deep expertise in frontend
-      development using <Highlight>React</Highlight>,{" "}
-      <Highlight>Next.js</Highlight>, and <Highlight>TypeScript</Highlight> to
-      build dynamic and responsive user interfaces. On the backend, I leverage{" "}
-      <Highlight>Nest.js</Highlight>, <Highlight>Node.js</Highlight>, and{" "}
-      <Highlight color="text-orange-500 dark:text-orange-400">Java</Highlight>{" "}
-      to engineer secure REST APIs and real-time communication systems with Web
-      Sockets. My experience also extends to native mobile development for both{" "}
+      My work covers the full delivery journey, from shaping product direction
+      to building reliable systems and refining the experience after launch. I
+      design and ship modern web products with <Highlight>React</Highlight>,{" "}
+      <Highlight>Next.js</Highlight>, and <Highlight>TypeScript</Highlight>,
+      and I build solid backend services with <Highlight>Nest.js</Highlight>,{" "}
+      <Highlight>Node.js</Highlight>, and{" "}
+      <Highlight color="text-orange-500 dark:text-orange-400">Java</Highlight>.
+      I also support native mobile development for{" "}
       <Highlight color="text-purple-500 dark:text-purple-400">
-        Android & iOS
+        Android and iOS
       </Highlight>
-      .
+      when the product requires it.
     </p>
     <p>
-      I work with several programming languages, including{" "}
-      <Highlight>TypeScript</Highlight>, <Highlight>JavaScript</Highlight>,{" "}
-      <Highlight>Java</Highlight> and <Highlight>PHP</Highlight>, and I am
-      currently learning <Highlight>Python</Highlight>. I constantly keep
-      learning new tools and best practices to stay up to date with modern
-      software engineering standards.
+      Clients work with me when they need clarity, ownership, and consistent
+      delivery, not just code. I communicate clearly, make tradeoffs visible,
+      and keep projects moving from idea to working product.
     </p>
     <div className="rounded-2xl border border-slate-300/70 dark:border-white/20 bg-slate-50/80 dark:bg-white/5 p-4">
       <p className="text-sm uppercase tracking-wide font-semibold text-slate-700 dark:text-gray-200 mb-3">
@@ -68,24 +64,20 @@ const AboutContent = () => (
       </div>
     </div>
     <p>
-      A core part of my skill set involves deploying and managing applications
-      on major cloud platforms like{" "}
+      I deploy and manage applications on major cloud platforms like{" "}
       <Highlight color="text-yellow-500 dark:text-yellow-400">AWS</Highlight>{" "}
       and{" "}
-      <Highlight color="text-yellow-500 dark:text-yellow-400">GCP</Highlight>. I
-      have a strong command of DevOps practices, using tools like{" "}
+      <Highlight color="text-yellow-500 dark:text-yellow-400">GCP</Highlight>,
+      with strong DevOps practices using tools like{" "}
       <Highlight>Docker</Highlight> and <Highlight>GitHub Actions</Highlight> to
-      create and manage efficient CI/CD pipelines, ensuring smooth and rapid
-      deployment cycles.
+      keep releases stable and frequent.
     </p>
     <p>
-      I also work as a <Highlight>freelance engineer and consultant</Highlight>,
-      building <Highlight>SaaS applications</Highlight>, leading software
-      projects from <Highlight>discovery to launch and scale</Highlight>, and
-      delivering with a <Highlight>trusted cross-functional team</Highlight>{" "}
-      when scope requires it. I also help teams with{" "}
-      <Highlight>SEO optimization</Highlight>, technical SEO, website
-      performance improvements, and architecture reviews.
+      As a <Highlight>freelance consultant</Highlight>, I partner with founders
+      and teams to build and grow <Highlight>SaaS products</Highlight>, from
+      discovery to launch and beyond. I can also support{" "}
+      <Highlight>SEO optimization</Highlight>, technical SEO, and performance
+      improvements to help your product get found and convert better.
     </p>
   </div>
 );
