@@ -345,16 +345,17 @@ function renderPostContent(content: string, slug: string) {
 }
 
 function renderInline(text: string, slug: string, seed: number) {
+  const normalizedText = normalizeStyleMarkup(text);
   const regex =
     /(\{color:\s*([^}]+?)\s*\}([\s\S]*?)\{\\?\/color\}|\{size:\s*([^}]+?)\s*\}([\s\S]*?)\{\\?\/size\}|\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|\*\*([^*]+)\*\*|__([^_]+)__|\*([^*]+)\*|`([^`]+)`)/g;
   const nodes: ReactNode[] = [];
   let lastIndex = 0;
   let token = 0;
-  let match: RegExpExecArray | null = regex.exec(text);
+  let match: RegExpExecArray | null = regex.exec(normalizedText);
 
   while (match) {
     if (match.index > lastIndex) {
-      nodes.push(text.slice(lastIndex, match.index));
+      nodes.push(normalizedText.slice(lastIndex, match.index));
     }
 
     if (match[2] && match[3]) {
@@ -411,14 +412,25 @@ function renderInline(text: string, slug: string, seed: number) {
     }
 
     lastIndex = regex.lastIndex;
-    match = regex.exec(text);
+    match = regex.exec(normalizedText);
   }
 
-  if (lastIndex < text.length) {
-    nodes.push(text.slice(lastIndex));
+  if (lastIndex < normalizedText.length) {
+    nodes.push(normalizedText.slice(lastIndex));
   }
 
   return nodes.length ? nodes : text;
+}
+
+function normalizeStyleMarkup(value: string) {
+  return value
+    .replace(/[\u200B-\u200D\uFEFF]/g, "")
+    .replace(/\\\{/g, "{")
+    .replace(/\\\}/g, "}")
+    .replace(/\{\s*size\s*:\s*([^}]+?)\s*\}/gi, "{size:$1}")
+    .replace(/\{\s*\\?\/\s*size\s*\}/gi, "{/size}")
+    .replace(/\{\s*color\s*:\s*([^}]+?)\s*\}/gi, "{color:$1}")
+    .replace(/\{\s*\\?\/\s*color\s*\}/gi, "{/color}");
 }
 
 function sanitizeColor(value: string) {
