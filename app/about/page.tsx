@@ -5,7 +5,7 @@ import { AUTHOR_EMAIL, AUTHOR_NAME, AUTHOR_ROLE, SITE_NAME } from "@/lib/seo";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Learn about Olamide Olaniyi, a senior software engineer building scalable web, mobile, and backend systems.",
+    "Learn about Olamide Olaniyi, a senior software engineer building SaaS products and delivering end-to-end software projects with a trusted team.",
   alternates: {
     canonical: "/about",
   },
@@ -19,8 +19,22 @@ export default function AboutPage() {
           About {AUTHOR_NAME}
         </h1>
         <p className="mt-5 text-slate-700 dark:text-gray-200 leading-relaxed">
-          I am a {AUTHOR_ROLE} focused on building production-grade products
-          across frontend, backend, mobile, and DevOps workflows. This website
+          I am a {AUTHOR_ROLE} focused on building scalable SaaS applications
+          and shipping production-grade products across frontend, backend,
+          mobile, and DevOps workflows. I take software projects from product
+          planning and architecture through implementation, deployment, and
+          post-launch support.
+        </p>
+        <p className="mt-4 text-slate-700 dark:text-gray-200 leading-relaxed">
+          I work with several programming languages in real projects, including
+          TypeScript, JavaScript, Java, and PHP, and I am currently learning
+          Python. I constantly keep learning to stay current with modern tools,
+          frameworks, and engineering practices.
+        </p>
+        <p className="mt-4 text-slate-700 dark:text-gray-200 leading-relaxed">
+          I work independently and also deliver with a trusted
+          cross-functional team for larger scopes, helping businesses execute
+          faster without sacrificing engineering quality. This website
           ({SITE_NAME}) documents my work, projects, and technical writing.
         </p>
         <p className="mt-4 text-slate-700 dark:text-gray-200 leading-relaxed">

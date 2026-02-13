@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Contact Me",
   description:
-    "Get in touch for software engineering roles, product builds, consulting, and technical collaboration.",
+    "Get in touch for SaaS application development, end-to-end software delivery, consulting, and team-based project execution.",
   alternates: {
     canonical: "/contact",
   },

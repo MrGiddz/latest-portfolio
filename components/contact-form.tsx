@@ -84,7 +84,12 @@ export default function ContactForm() {
           animate="visible"
           transition={{ delay: 0.2 }}
         >
-          <p>Or reach me directly via:</p>
+          <p>
+            Available for SaaS builds, end-to-end software projects, and
+            team-supported delivery for larger product scopes.
+          </p>
+          <p className="mt-2">Let&apos;s discuss your goals and timeline.</p>
+          <p className="mt-3">Or reach me directly via:</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-x-6 gap-y-2 mt-2">
             <a
               href="mailto:mideolaniyi@outlook.com"

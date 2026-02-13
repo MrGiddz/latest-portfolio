@@ -45,6 +45,29 @@ const AboutContent = () => (
       .
     </p>
     <p>
+      I work with several programming languages, including{" "}
+      <Highlight>TypeScript</Highlight>, <Highlight>JavaScript</Highlight>,{" "}
+      <Highlight>Java</Highlight> and <Highlight>PHP</Highlight>, and I am
+      currently learning <Highlight>Python</Highlight>. I constantly keep
+      learning new tools and best practices to stay up to date with modern
+      software engineering standards.
+    </p>
+    <div className="rounded-2xl border border-slate-300/70 dark:border-white/20 bg-slate-50/80 dark:bg-white/5 p-4">
+      <p className="text-sm uppercase tracking-wide font-semibold text-slate-700 dark:text-gray-200 mb-3">
+        Core Languages
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {["TypeScript", "JavaScript", "Java", "PHP", "Python"].map((language) => (
+          <span
+            key={language}
+            className="px-2.5 py-1 rounded-md border border-slate-300 dark:border-white/20 bg-white/70 dark:bg-white/10 text-xs font-mono text-slate-800 dark:text-gray-200"
+          >
+            {language}
+          </span>
+        ))}
+      </div>
+    </div>
+    <p>
       A core part of my skill set involves deploying and managing applications
       on major cloud platforms like{" "}
       <Highlight color="text-yellow-500 dark:text-yellow-400">AWS</Highlight>{" "}
@@ -57,9 +80,12 @@ const AboutContent = () => (
     </p>
     <p>
       I also work as a <Highlight>freelance engineer and consultant</Highlight>,
-      helping teams with <Highlight>SEO optimization</Highlight>, technical SEO,
-      website performance improvements, architecture reviews, and end-to-end
-      product delivery.
+      building <Highlight>SaaS applications</Highlight>, leading software
+      projects from <Highlight>discovery to launch and scale</Highlight>, and
+      delivering with a <Highlight>trusted cross-functional team</Highlight>{" "}
+      when scope requires it. I also help teams with{" "}
+      <Highlight>SEO optimization</Highlight>, technical SEO, website
+      performance improvements, and architecture reviews.
     </p>
   </div>
 );

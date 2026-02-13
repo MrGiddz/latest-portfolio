@@ -520,26 +520,32 @@ export default function PortfolioLayout({
   };
 
   const words = [
-    "Building React & React Native Apps.",
-    "Robust Backends in Node.js & Nest.js.",
-    "Automated CI/CD with Docker & GitHub Actions.",
-    "Managing VPS Servers & Nginx.",
-    "Cloud-Native Deployments on AWS & GCP.",
+    "I build scalable SaaS applications for growing businesses.",
+    "I take software products from idea to production and support.",
+    "I deliver web, mobile, and backend systems with my team.",
+    "I design reliable architectures with clean API-first workflows.",
+    "I ship fast with CI/CD, cloud infrastructure, and observability.",
   ];
 
   const typewriterWords = [
     {
-      text: "Hello,",
+      text: "SaaS",
     },
     {
-      text: "I'm",
+      text: "Engineer",
     },
     {
-      text: "Olaniyi",
+      text: "for",
     },
     {
-      text: "Olamide",
+      text: "End-to-End",
       className: "text-blue-500 dark:text-blue-500",
+    },
+    {
+      text: "Product",
+    },
+    {
+      text: "Delivery",
     },
   ];
 

@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     template: "%s | Olamide Olaniyi",
   },
   description:
-    "Explore the portfolio of Olaniyi Olamide, a Senior Software Engineer offering freelance development, consulting, SEO optimization, and high-performance web, mobile, and backend engineering services.",
+    "Explore the portfolio of Olaniyi Olamide, a Senior Software Engineer offering SaaS development, consulting, SEO optimization, and end-to-end web, mobile, and backend engineering services.",
   keywords: [
     "Olaniyi Olamide",
     "Gideon Olaniyi",
@@ -59,7 +59,10 @@ export const metadata: Metadata = {
     "MongoDB",
     "Next.js",
     "Software Engineer Portfolio",
+    "SaaS Application Developer",
     "Freelance Software Developer",
+    "End-to-End Product Development",
+    "Software Delivery Team",
     "Technical Consultant",
     "SEO Optimization Consultant",
     "Technical SEO",
@@ -102,7 +105,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Olamide Olaniyi - Senior Software Engineer",
     description:
-      "Freelance software engineer and consultant delivering web, mobile, backend, and SEO optimization solutions for growth-focused businesses.",
+      "Senior software engineer delivering SaaS applications, end-to-end product execution, team-based delivery, and SEO optimization solutions.",
     url: SITE_URL,
     siteName: SITE_NAME,
     images: [
@@ -120,7 +123,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Olamide Olaniyi - Senior Software Engineer",
     description:
-      "Freelance software engineer and consultant for web, mobile, backend, and SEO optimization projects.",
+      "SaaS-focused software engineer and consultant for end-to-end web, mobile, backend, and SEO optimization projects.",
     images: [new URL(DEFAULT_OG_IMAGE, SITE_URL).toString()],
     creator: "@mide_niyi",
   },
@@ -145,6 +148,9 @@ export default function RootLayout({
     },
     knowsAbout: [
       "Freelance software development",
+      "SaaS application development",
+      "End-to-end product delivery",
+      "Team-based software execution",
       "Technical consulting",
       "SEO optimization",
       "Technical SEO",
@@ -163,6 +169,32 @@ export default function RootLayout({
           "@type": "Service",
           name: "Freelance Software Development",
           serviceType: "Web, mobile, and backend development",
+        },
+      },
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "SaaS Application Development",
+          serviceType: "Design and engineering of scalable SaaS products",
+        },
+      },
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "End-to-End Product Delivery",
+          serviceType:
+            "Product discovery, architecture, implementation, deployment, and post-launch support",
+        },
+      },
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "Team-Based Project Execution",
+          serviceType:
+            "Delivery with a coordinated cross-functional team for larger scopes",
         },
       },
       {
