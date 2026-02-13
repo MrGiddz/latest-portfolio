@@ -16,6 +16,11 @@ const getMissingEnvVars = () => {
 };
 
 const sanitize = (value: unknown) => (typeof value === "string" ? value.trim() : "");
+const parseRecipients = (value: string) =>
+  value
+    .split(",")
+    .map((email) => email.trim())
+    .filter(Boolean);
 const escapeHtml = (value: string) =>
   value
     .replace(/&/g, "&amp;")
@@ -86,7 +91,13 @@ export async function POST(request: Request) {
     await transporter.verify();
 
     const fromAddress = process.env.MAIL_FROM || process.env.SMTP_USER!;
-    const toAddress = process.env.MAIL_TO!;
+    const toAddresses = parseRecipients(process.env.MAIL_TO!);
+    if (!toAddresses.length) {
+      return NextResponse.json(
+        { error: "MAIL_TO must include at least one recipient email." },
+        { status: 500 }
+      );
+    }
     const name = escapeHtml(body.name);
     const email = escapeHtml(body.email);
     const subject = escapeHtml(body.subject);
@@ -94,7 +105,7 @@ export async function POST(request: Request) {
 
     await transporter.sendMail({
       from: fromAddress,
-      to: toAddress,
+      to: toAddresses,
       replyTo: body.email,
       subject: `Portfolio contact: ${body.subject}`,
       text: [
