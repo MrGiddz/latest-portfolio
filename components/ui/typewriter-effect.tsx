@@ -121,7 +121,7 @@ export const TypewriterEffectSmooth = ({
   });
   const renderWords = () => {
     return (
-      <div>
+      <div className="w-full">
         {wordsArray.map((word, idx) => {
           return (
             <div key={`word-${idx}`} className="inline-block">
@@ -143,28 +143,28 @@ export const TypewriterEffectSmooth = ({
   };
 
   return (
-    <div className={cn("flex justify-center items-center space-x-1 my-6", className)}>
+    <div
+      className={cn(
+        "w-full max-w-full flex justify-center items-center gap-1 my-3 overflow-hidden",
+        className
+      )}
+    >
       <motion.div
-        key={pathname} 
-        className="overflow-hidden pb-2"
+        key={pathname}
+        className="overflow-hidden pb-1 max-w-full"
         initial={{
           width: "0%",
         }}
         animate={{
-          width: "fit-content", // <-- THIS IS THE FIX
+          width: "100%",
         }}
         transition={{
-          duration: 2,
+          duration: 1.4,
           ease: "linear",
-          delay: 1,
+          delay: 0.4,
         }}
       >
-        <div
-          className="text-xl md:text-2xl font-bold"
-          style={{
-            whiteSpace: "nowrap",
-          }}
-        >
+        <div className="text-base sm:text-lg md:text-2xl font-bold text-center leading-tight whitespace-normal break-words">
           {renderWords()}
         </div>
       </motion.div>

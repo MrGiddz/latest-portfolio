@@ -752,7 +752,7 @@ export default function PortfolioLayout({
             </motion.div>
 
             <div className="space-y-2">
-              <div className="text-gray-300 text-xl md:text-2xl h-8">
+              <div className="text-gray-300 w-full max-w-[24rem] mx-auto min-h-[3.2rem] md:min-h-[2.75rem] px-1">
                 {/* <Typewriter
                   options={{
                     loop: true,
