@@ -85,6 +85,30 @@ const AboutContent = () => (
 // --- Experience Data ---
 const experienceData = [
   {
+    role: "Full Stack Developer <span class='font-bold'>(Tech Lead)</span>",
+    company: "Edufirst Nigeria Limited",
+    location: "Lagos, Nigeria",
+    date: "Aug 2022 - Present",
+    points: [
+      <>
+        Boosted monthly subscriptions by{" "}
+        <Highlight color="text-green-600 dark:text-green-400">150%</Highlight>{" "}
+        by spearheading performance optimizations and rolling out high-demand
+        features.
+      </>,
+      <>
+        Cut feature deployment times by{" "}
+        <Highlight color="text-green-600 dark:text-green-400">40%</Highlight> by
+        managing and optimizing CI/CD pipelines with GitHub Actions and Docker.
+      </>,
+      <>
+        Accelerated content upload efficiency by{" "}
+        <Highlight color="text-green-600 dark:text-green-400">50%</Highlight> by
+        engineering a custom admin dashboard.
+      </>,
+    ],
+  },
+  {
     role: "Mobile Developer",
     company: "Alabamarketplace.ng",
     location: "Nigeria (Remote)",
@@ -120,30 +144,6 @@ const experienceData = [
       <>
         Collaborating with the client to define project scope and deliver
         high-quality software solutions.
-      </>,
-    ],
-  },
-  {
-    role: "Full Stack Developer <span class='font-bold'>(Tech Lead)</span>",
-    company: "Edufirst Nigeria Limited",
-    location: "Lagos, Nigeria",
-    date: "Aug 2022 - Feb 2025",
-    points: [
-      <>
-        Boosted monthly subscriptions by{" "}
-        <Highlight color="text-green-600 dark:text-green-400">150%</Highlight>{" "}
-        by spearheading performance optimizations and rolling out high-demand
-        features.
-      </>,
-      <>
-        Cut feature deployment times by{" "}
-        <Highlight color="text-green-600 dark:text-green-400">40%</Highlight> by
-        managing and optimizing CI/CD pipelines with GitHub Actions and Docker.
-      </>,
-      <>
-        Accelerated content upload efficiency by{" "}
-        <Highlight color="text-green-600 dark:text-green-400">50%</Highlight> by
-        engineering a custom admin dashboard.
       </>,
     ],
   },
