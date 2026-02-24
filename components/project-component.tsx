@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link as LinkIcon } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
 import { motion, useScroll, useTransform } from "framer-motion";
-import FallbackImage from "@/components/ui/fallback-image";
+import LinkPreviewCard from "@/components/ui/link-preview-card";
 
 // Helper component for syntax highlighting within paragraphs
 const Highlight = ({
@@ -44,7 +44,6 @@ const getTechColor = (tech: string): string => {
 const projectsData = [
   {
     title: "FMT Nigeria Limited – Commerce + Marketing Platform",
-    image: "/FMT%20NIGERIA%20WEBSITE.png",
     desc: (
       <>
         Built the end-to-end digital platform for{" "}
@@ -83,7 +82,6 @@ const projectsData = [
   },
   {
     title: "ERPGo – All-in-One Business ERP Deployment",
-    image: "/erpgo.png", // add a screenshot of the ERP dashboard to /public
     desc: (
       <>
         Deployed and hosted a full-featured enterprise ERP solution,
@@ -121,7 +119,6 @@ const projectsData = [
   },
   {
     title: "KrestCore Hub - All-in-One Church Management System",
-    image: "/rccg-client.png", // Replace with the actual path to your project image
     desc: (
       <>
         Developed a comprehensive, modular dashboard application,{" "}
@@ -132,16 +129,14 @@ const projectsData = [
         engagement.
         <br />
         <br />
-        Key contributions include building a complete{" "}
-        <Highlight>Role-Based Access Control (RBAC)</Highlight> system, a
-        dynamic <Highlight>form builder</Highlight> with submission management,
-        and a rich content management system for sermons and news. I integrated
-        multiple third-party services, including <Highlight>Paystack</Highlight>{" "}
-        for online giving, <Highlight>Termii</Highlight> for SMS notifications,
-        and <Highlight>Cloudinary</Highlight> for media asset management. The
-        platform also features automated cron jobs for sending birthday and
-        event reminders, a full-screen announcement system, and an inbox for
-        direct communication with the public.
+        Core features include end-to-end <Highlight>member, family, and department management</Highlight>,
+        <Highlight>sermon administration</Highlight>, and <Highlight>child check-in</Highlight> tools, plus a dedicated
+        <Highlight>Bible reading plan</Highlight> module. The platform ships with a
+        <Highlight>forms & surveys builder</Highlight> with submission management, an
+        <Highlight>expense tracker</Highlight>, and a full <Highlight>media library</Highlight> for sermon and
+        content assets. It also includes a complete <Highlight>RBAC system</Highlight> with
+        pre-configured roles and a <Highlight>customizable theming engine</Highlight> for
+        colors, fonts, and light/dark modes.
       </>
     ),
     tech: [
@@ -164,7 +159,6 @@ const projectsData = [
   },
   {
     title: "RCCG Ceaseless Joy Church - A Modern Church Website",
-    image: "/rccg-admin.png",
     desc: (
       <>
         Developed a complete, production-ready website for a church
@@ -198,7 +192,6 @@ const projectsData = [
   },
   {
     title: "Bettor in Green & Sportsbook Casino Apps",
-    image: "/big.png",
     desc: (
       <>
         Contributed to the development of{" "}
@@ -232,7 +225,6 @@ const projectsData = [
   },
   {
     title: "Exampadi - E-Learning Ecosystem",
-    image: "/1.png",
     desc: (
       <>
         Architected and developed a comprehensive e-learning ecosystem for{" "}
@@ -267,7 +259,6 @@ const projectsData = [
   },
   {
     title: "OmololasTalksTv - A Cultural Storytelling Platform",
-    image: "/omolola-client.png",
     desc: "Developed a complete, production-ready website for 'Yoruba Narratives', a platform dedicated to preserving and promoting African heritage through authentic storytelling. The entire application is driven by a backend API, allowing for dynamic content management of blog posts, videos, categories, team members, and the hero banner. Key features include a dynamic hero section with a carousel supporting both images and videos, a comprehensive blog with featured posts, recent articles, and category-based similar posts, an API-driven video library with an embedded YouTube player, and an interactive comment system with an admin approval workflow. The site also includes a robust contact form and basic analytics tracking.",
     tech: [
       "Next.js",
@@ -287,7 +278,6 @@ const projectsData = [
 
   {
     title: "Omolola Talks TV Hub - Headless CMS & Content Dashboard",
-    image: "/omolola-admin.png",
     desc: "Developed a full-featured, production-ready headless CMS and admin dashboard designed to manage a modern blog and its associated content. This powerful application provides a central hub for content creation, media management, user administration, and community engagement. The dashboard is built with a robust, API-driven architecture, enabling seamless integration with any front-end application. Key features include a comprehensive post management system with a rich text editor, dynamic categories, and tags; a complete media library with Cloudinary integration for image and video uploads; a full user and role-based access control (RBAC) system with email invitations; a content moderation queue for blog comments; an inbox for managing contact form submissions; integration with the YouTube API to fetch and manage channel videos; a complete newsletter and subscriber management system; and a customizable theming engine for appearance. The dashboard also includes a dedicated analytics section to track website traffic, top pages, referrers, and visitor geography.",
     tech: [
       "Next.js (App Router)",
@@ -320,26 +310,29 @@ const ProjectCard = ({
   compact?: boolean;
   isExpanded?: boolean;
   onToggleExpanded?: () => void;
-}) => (
-  <div className="space-y-4">
-    <div className="group relative rounded-lg overflow-hidden border border-slate-200 dark:border-white/10 shadow-lg">
-      <div
-        className={`overflow-hidden ${
-          compact ? "h-52" : "h-56 md:h-64"
-        }`}
-      >
-        <FallbackImage
-          src={project.image}
-          alt={`${project.title} screenshot`}
-          className="h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
-          fallbackSrc="/images/test-img.png"
-          fallbackText="Project image unavailable"
-          loading="lazy"
-        />
-      </div>
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -translate-x-full transition-transform duration-700 ease-in-out group-hover:translate-x-full"></div>
-    </div>
+}) => {
+  const isAdminPreview = (url: string) => {
+    if (!/^https?:\/\//i.test(url || "")) {
+      return false;
+    }
+    try {
+      const parsed = new URL(url);
+      const host = parsed.hostname.toLowerCase();
+      const path = parsed.pathname.toLowerCase();
+      return (
+        host.startsWith("admin.") ||
+        host.includes("admin") ||
+        host.includes("dashboard") ||
+        path.startsWith("/admin") ||
+        path.includes("/dashboard")
+      );
+    } catch {
+      return false;
+    }
+  };
 
+  return (
+    <div className="space-y-4 group">
     <h3
       className={`text-slate-900 dark:text-white font-semibold ${
         compact ? "text-lg" : "text-xl pt-2"
@@ -400,8 +393,16 @@ const ProjectCard = ({
         Source Code
       </a>
     </div>
+    <div className="pt-3 opacity-0 max-h-0 overflow-hidden translate-y-1 transition-all duration-300 group-hover:opacity-100 group-hover:max-h-40 group-hover:translate-y-0">
+      <LinkPreviewCard
+        url={project.liveLink}
+        label="Live Site Preview"
+        disabled={isAdminPreview(project.liveLink)}
+      />
+    </div>
   </div>
-);
+  );
+};
 
 const ProjectsContent = () => {
   const ref = useRef<HTMLDivElement>(null);
