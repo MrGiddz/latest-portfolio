@@ -43,6 +43,45 @@ const getTechColor = (tech: string): string => {
 // Data for Projects with images and links
 const projectsData = [
   {
+    title: "FMT Nigeria Limited – Commerce + Marketing Platform",
+    image: "/FMT%20NIGERIA%20WEBSITE.png",
+    desc: (
+      <>
+        Built the end-to-end digital platform for{" "}
+        <Highlight>FMT Nigeria Limited</Highlight>, spanning a marketing site,
+        product catalog, and a full admin operating system. The build includes{" "}
+        <Highlight>multi-page content management</Highlight> for services,
+        projects, testimonials, and blog posts, alongside a dedicated shop with{" "}
+        <Highlight>products, packages, and discount promotions</Highlight>.
+        <br />
+        <br />
+        The admin suite delivers <Highlight>order and customer management</Highlight>,
+        marketing campaigns to subscribers/customers with unsubscribe flows,
+        a configurable newsletter popup, and a <Highlight>site media manager</Highlight>
+        with hero slides and Cloudinary uploads. Payments are wired via{" "}
+        <Highlight>Paystack</Highlight>, with Cloudinary, SMTP, and WhatsApp Meta
+        credentials managed from a settings dashboard (including diagnostics) for
+        fast operations and audit-ready workflows.
+      </>
+    ),
+    tech: [
+      "Next.js",
+      "React",
+      "TypeScript",
+      "Tailwind CSS",
+      "ShadCN UI",
+      "MongoDB",
+      "Mongoose",
+      "Paystack API",
+      "Cloudinary",
+      "Nodemailer",
+      "WhatsApp Meta API",
+      "Termii",
+    ],
+    liveLink: "https://fmtlimited.ng",
+    sourceLink: "https://shop.fmtlimited.ng",
+  },
+  {
     title: "ERPGo – All-in-One Business ERP Deployment",
     image: "/erpgo.png", // add a screenshot of the ERP dashboard to /public
     desc: (
