@@ -79,7 +79,7 @@ const LinkPreviewCard = ({
       }
     };
 
-    if ("requestIdleCallback" in window) {
+    if (typeof window.requestIdleCallback === "function") {
       const handle = window.requestIdleCallback(loadPreview, { timeout: 1200 });
       return () => {
         active = false;
@@ -88,11 +88,11 @@ const LinkPreviewCard = ({
       };
     }
 
-    const timeout = window.setTimeout(loadPreview, 150);
+    const timeout = globalThis.setTimeout(loadPreview, 150);
     return () => {
       active = false;
       controller.abort();
-      window.clearTimeout(timeout);
+      globalThis.clearTimeout(timeout);
     };
   }, [previewable, url]);
 

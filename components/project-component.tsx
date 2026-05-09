@@ -1,487 +1,303 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import { Link as LinkIcon } from "lucide-react";
-import { FaGithub } from "react-icons/fa";
-import { motion, useScroll, useTransform } from "framer-motion";
+import React, { useMemo, useState } from "react";
+import {
+  BookOpen,
+  Columns2,
+  ExternalLink,
+  Filter,
+  Github,
+  List,
+  Link as LinkIcon,
+  MonitorUp,
+} from "lucide-react";
+import { motion } from "framer-motion";
+import {
+  projectCategories,
+  projectsData,
+} from "@/lib/projects-data";
+import type {
+  PortfolioProject,
+  ProjectCategory,
+  ProjectLink,
+  ProjectStatus,
+} from "@/lib/projects-data";
 import LinkPreviewCard from "@/components/ui/link-preview-card";
 
-// Helper component for syntax highlighting within paragraphs
-const Highlight = ({
-  children,
-  color = "text-yellow-400",
-}: {
-  children: React.ReactNode;
-  color?: string;
-}) => {
-  return <span className={`${color} font-medium`}>{children}</span>;
-};
+type ProjectFilter = "All" | ProjectCategory;
+type ProjectView = "list" | "columns";
 
-// Helper function to give tech tags different colors
+const filters: ProjectFilter[] = ["All", ...projectCategories];
+const projectViews: { value: ProjectView; label: string; icon: typeof List }[] = [
+  { value: "list", label: "List", icon: List },
+  { value: "columns", label: "Columns", icon: Columns2 },
+];
+
 const getTechColor = (tech: string): string => {
   switch (tech.toLowerCase()) {
     case "react":
     case "next.js":
     case "react native":
+    case "electron":
       return "bg-blue-900/50 text-blue-300 border-blue-500/30";
     case "node.js":
+    case "nestjs":
     case "mongodb":
+    case "postgresql":
     case "express":
       return "bg-green-900/50 text-green-300 border-green-500/30";
+    case "redis":
+    case "rabbitmq":
     case "docker":
     case "nginx":
       return "bg-cyan-900/50 text-cyan-300 border-cyan-500/30";
     case "typescript":
       return "bg-sky-900/50 text-sky-300 border-sky-500/30";
+    case "tailwind css":
+    case "shadcn ui":
+    case "material ui":
+      return "bg-violet-900/50 text-violet-300 border-violet-500/30";
     default:
       return "bg-gray-800/50 text-gray-300 border-gray-600/30";
   }
 };
 
-// Data for Projects with images and links
+const getStatusColor = (status: ProjectStatus): string => {
+  switch (status) {
+    case "Production":
+      return "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300";
+    case "Completed":
+      return "border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-300";
+    case "In Progress":
+      return "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300";
+    case "Prototype":
+      return "border-fuchsia-500/30 bg-fuchsia-500/10 text-fuchsia-700 dark:text-fuchsia-300";
+  }
+};
 
-// Data for Projects with images and links
-const projectsData = [
-  {
-    title: "FMT Nigeria Limited – Commerce + Marketing Platform",
-    desc: (
-      <>
-        Built the end-to-end digital platform for{" "}
-        <Highlight>FMT Nigeria Limited</Highlight>, spanning a marketing site,
-        product catalog, and a full admin operating system. The build includes{" "}
-        <Highlight>multi-page content management</Highlight> for services,
-        projects, testimonials, and blog posts, alongside a dedicated shop with{" "}
-        <Highlight>products, packages, and discount promotions</Highlight>.
-        <br />
-        <br />
-        The admin suite delivers <Highlight>order and customer management</Highlight>,
-        marketing campaigns to subscribers/customers with unsubscribe flows,
-        a configurable newsletter popup, and a <Highlight>site media manager</Highlight>
-        with hero slides and Cloudinary uploads. Payments are wired via{" "}
-        <Highlight>Paystack</Highlight>, with Cloudinary, SMTP, and WhatsApp Meta
-        credentials managed from a settings dashboard (including diagnostics) for
-        fast operations and audit-ready workflows.
-      </>
-    ),
-    tech: [
-      "Next.js",
-      "React",
-      "TypeScript",
-      "Tailwind CSS",
-      "ShadCN UI",
-      "MongoDB",
-      "Mongoose",
-      "Paystack API",
-      "Cloudinary",
-      "Nodemailer",
-      "WhatsApp Meta API",
-      "Termii",
-    ],
-    liveLink: "https://fmtlimited.ng",
-    sourceLink: "https://shop.fmtlimited.ng",
-  },
-  {
-    title: "ERPGo – All-in-One Business ERP Deployment",
-    desc: (
-      <>
-        Deployed and hosted a full-featured enterprise ERP solution,
-        <Highlight>ERPGo – All-in-One Business ERP</Highlight>, designed to
-        support core business operations including{" "}
-        <Highlight>Accounting</Highlight>,{" "}
-        <Highlight>Project Management</Highlight>, <Highlight>HRM</Highlight>,{" "}
-        <Highlight>CRM</Highlight>, and{" "}
-        <Highlight>Point of Sale (POS)</Highlight>.
-        <br />
-        <br />
-        My role focused on procurement, deployment, configuration, and
-        production hosting of the system. I handled server setup, environment
-        configuration, domain and SSL management, and ensured the application
-        was production-ready, stable, and secure. This project demonstrates
-        strong experience in{" "}
-        <Highlight>enterprise software deployment</Highlight>,{" "}
-        <Highlight>system administration</Highlight>, and{" "}
-        <Highlight>hosting management</Highlight>.
-      </>
-    ),
-    tech: [
-      "Laravel (PHP)",
-      "MySQL",
-      "ERP System",
-      "Linux Server",
-      "Web Hosting",
-      "Domain & SSL Configuration",
-      "Production Deployment",
-    ],
-    liveLink:
-      "http://modamaestros.com",
-    sourceLink:
-      "https://codecanyon.net/item/erpgo-all-in-one-business-erp-with-project-account-hrm-crm-pos/33263435",
-  },
-  {
-    title: "KrestCore Hub - All-in-One Church Management System",
-    desc: (
-      <>
-        Developed a comprehensive, modular dashboard application,{" "}
-        <Highlight>KrestCore Hub</Highlight>, from the ground up using Next.js
-        and a modern tech stack. The system is designed as a powerful{" "}
-        <Highlight>Church Management System</Highlight> for RCCG Ceaseless Joy
-        Area HQ, automating administrative tasks and enhancing community
-        engagement.
-        <br />
-        <br />
-        Core features include end-to-end <Highlight>member, family, and department management</Highlight>,
-        <Highlight>sermon administration</Highlight>, and <Highlight>child check-in</Highlight> tools, plus a dedicated
-        <Highlight>Bible reading plan</Highlight> module. The platform ships with a
-        <Highlight>forms & surveys builder</Highlight> with submission management, an
-        <Highlight>expense tracker</Highlight>, and a full <Highlight>media library</Highlight> for sermon and
-        content assets. It also includes a complete <Highlight>RBAC system</Highlight> with
-        pre-configured roles and a <Highlight>customizable theming engine</Highlight> for
-        colors, fonts, and light/dark modes.
-      </>
-    ),
-    tech: [
-      "Next.js",
-      "React",
-      "TypeScript",
-      "ShadCN UI",
-      "Tailwind CSS",
-      "MongoDB",
-      "Mongoose",
-      "NextAuth.js",
-      "Google Genkit (for AI)",
-      "Nodemailer",
-      "Cloudinary API",
-      "Paystack API",
-      "Termii SMS API",
-    ],
-    liveLink: "https://admin.rccg-cjp-admin.vercel.app", // Replace with the live URL
-    sourceLink: "https://admin.rccg-cjp-admin.vercel.app", // Replace with the source code URL
-  },
-  {
-    title: "RCCG Ceaseless Joy Church - A Modern Church Website",
-    desc: (
-      <>
-        Developed a complete, production-ready website for a church
-        organization,{" "}
-        <Highlight color="text-purple-400">Beacon Church</Highlight>. The
-        platform features a dynamic and engaging user experience built with a
-        modern tech stack. The entire application is driven by a backend API,
-        allowing for dynamic content management of pages, events, announcements,
-        blog posts, and site configuration. Key features include a{" "}
-        <Highlight>dynamic announcement system</Highlight> (supporting both
-        banner and full-screen modal styles), a{" "}
-        <Highlight>backend-driven form builder</Highlight> for creating various
-        forms like membership and contact-us, and dedicated pages for
-        ministries, events, and news.
-      </>
-    ),
-    tech: [
-      "Next.js",
-      "React",
-      "TypeScript",
-      "Tailwind CSS",
-      "ShadCN UI",
-      "React Hook Form",
-      "Zod",
-      "Framer Motion",
-      "Vercel",
-      "CMS Integration",
-    ],
-    liveLink: "https://rccgceaselessjoy.com",
-    sourceLink: "https://rccg-cjp-client.vercel.app/",
-  },
-  {
-    title: "Bettor in Green & Sportsbook Casino Apps",
-    desc: (
-      <>
-        Contributed to the development of{" "}
-        <Highlight color="text-green-400">Bettor in Green</Highlight> and{" "}
-        <Highlight color="text-green-400">Sportsbook Casino</Highlight> apps
-        while working with{" "}
-        <Highlight color="text-purple-400">
-          RickbekaMedia, Stockholm Sweden
-        </Highlight>
-        . I was responsible for building and integrating{" "}
-        <Highlight>personalized sportsbook promos</Highlight>, including{" "}
-        <Highlight color="text-yellow-400">state-based filtering</Highlight>,
-        user <Highlight color="text-cyan-400">onboarding flows</Highlight>,{" "}
-        <Highlight color="text-cyan-400">signup status tracking</Highlight>, and
-        dynamic affiliate link handling. I also optimized backend subscription
-        logic with <Highlight>Stripe</Highlight> to manage user roles, plans,
-        and upgrades in real time, ensuring seamless user experience.
-      </>
-    ),
-    tech: [
-      "Next.js",
-      "React",
-      "Material UI",
-      "Prisma",
-      "Stripe API",
-      "Node.js",
-      "Railway",
-    ],
-    liveLink: "https://app.bettoringreen.com/",
-    sourceLink: "#",
-  },
-  {
-    title: "Exampadi - E-Learning Ecosystem",
-    desc: (
-      <>
-        Architected and developed a comprehensive e-learning ecosystem for{" "}
-        <Highlight color="text-green-400">Edufirst Nigeria Limited</Highlight>.
-        My contributions spanned the entire stack, including a{" "}
-        <Highlight color="text-purple-400">React Native</Highlight> mobile app,
-        a <Highlight>React & Electron</Highlight> desktop app, a{" "}
-        <Highlight>Next.js</Highlight> web version, and a{" "}
-        <Highlight>React & Ant Design</Highlight> admin panel. I also handled
-        the full DevOps lifecycle, deploying the backend on{" "}
-        <Highlight color="text-yellow-400">Digital Ocean VPS</Highlight> using{" "}
-        <Highlight color="text-cyan-400">Nginx</Highlight>,{" "}
-        <Highlight color="text-cyan-400">Docker</Highlight>, and{" "}
-        <Highlight color="text-cyan-400">PM2</Highlight>.
-      </>
-    ),
-    tech: [
-      "React Native",
-      "Electron",
-      "Next.js",
-      "Ant Design",
-      "Styled-Components",
-      "Node.js",
-      "Docker",
-      "Nginx",
-      "PM2",
-      "Digital Ocean",
-    ],
-    liveLink:
-      "https://play.google.com/store/apps/details?id=com.exampadi&pcampaignid=web_share",
-    sourceLink: "https://exampadi.ng/",
-  },
-  {
-    title: "OmololasTalksTv - A Cultural Storytelling Platform",
-    desc: "Developed a complete, production-ready website for 'Yoruba Narratives', a platform dedicated to preserving and promoting African heritage through authentic storytelling. The entire application is driven by a backend API, allowing for dynamic content management of blog posts, videos, categories, team members, and the hero banner. Key features include a dynamic hero section with a carousel supporting both images and videos, a comprehensive blog with featured posts, recent articles, and category-based similar posts, an API-driven video library with an embedded YouTube player, and an interactive comment system with an admin approval workflow. The site also includes a robust contact form and basic analytics tracking.",
-    tech: [
-      "Next.js",
-      "React",
-      "TypeScript",
-      "Tailwind CSS",
-      "ShadCN UI",
-      "React Hook Form",
-      "Zod",
-      "Lucide React",
-      "Embla Carousel",
-      "CMS Integration",
-    ],
-    liveLink: "https://omololastalkstv.com",
-    sourceLink: "#",
-  },
+const getLinkIcon = (type: ProjectLink["type"]) => {
+  switch (type) {
+    case "GitHub":
+      return Github;
+    case "Case Study":
+      return BookOpen;
+    case "Admin":
+      return MonitorUp;
+    default:
+      return LinkIcon;
+  }
+};
 
-  {
-    title: "Omolola Talks TV Hub - Headless CMS & Content Dashboard",
-    desc: "Developed a full-featured, production-ready headless CMS and admin dashboard designed to manage a modern blog and its associated content. This powerful application provides a central hub for content creation, media management, user administration, and community engagement. The dashboard is built with a robust, API-driven architecture, enabling seamless integration with any front-end application. Key features include a comprehensive post management system with a rich text editor, dynamic categories, and tags; a complete media library with Cloudinary integration for image and video uploads; a full user and role-based access control (RBAC) system with email invitations; a content moderation queue for blog comments; an inbox for managing contact form submissions; integration with the YouTube API to fetch and manage channel videos; a complete newsletter and subscriber management system; and a customizable theming engine for appearance. The dashboard also includes a dedicated analytics section to track website traffic, top pages, referrers, and visitor geography.",
-    tech: [
-      "Next.js (App Router)",
-      "React",
-      "TypeScript",
-      "Tailwind CSS",
-      "ShadCN UI",
-      "NextAuth.js",
-      "MongoDB",
-      "Mongoose",
-      "Genkit (AI)",
-      "Cloudinary",
-      "Nodemailer",
-      "Recharts",
-      "Zod",
-      "React Hook Form",
-    ],
-    liveLink: "#",
-    sourceLink: "#",
-  },
-];
+const isAdminPreview = (url: string) => {
+  if (!/^https?:\/\//i.test(url || "")) {
+    return false;
+  }
 
-const ProjectCard = ({
-  project,
-  compact = false,
-  isExpanded = false,
-  onToggleExpanded,
-}: {
-  project: (typeof projectsData)[number];
-  compact?: boolean;
-  isExpanded?: boolean;
-  onToggleExpanded?: () => void;
-}) => {
-  const isAdminPreview = (url: string) => {
-    if (!/^https?:\/\//i.test(url || "")) {
-      return false;
-    }
-    try {
-      const parsed = new URL(url);
-      const host = parsed.hostname.toLowerCase();
-      const path = parsed.pathname.toLowerCase();
-      return (
-        host.startsWith("admin.") ||
-        host.includes("admin") ||
-        host.includes("dashboard") ||
-        path.startsWith("/admin") ||
-        path.includes("/dashboard")
-      );
-    } catch {
-      return false;
-    }
-  };
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.toLowerCase();
+    const path = parsed.pathname.toLowerCase();
+
+    return (
+      host.startsWith("admin.") ||
+      host.includes("admin") ||
+      host.includes("dashboard") ||
+      path.startsWith("/admin") ||
+      path.includes("/dashboard")
+    );
+  } catch {
+    return false;
+  }
+};
+
+const ProjectCard = ({ project, index }: { project: PortfolioProject; index: number }) => {
+  const previewLink = project.links?.find((link) => link.type === "Live Demo");
 
   return (
-    <div className="space-y-4 group">
-    <h3
-      className={`text-slate-900 dark:text-white font-semibold ${
-        compact ? "text-lg" : "text-xl pt-2"
-      }`}
+    <motion.article
+      className="group flex h-full flex-col rounded-2xl border border-slate-200 bg-white/70 p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-sky-400/50 hover:shadow-xl hover:shadow-sky-900/10 dark:border-white/15 dark:bg-white/[0.055] dark:hover:border-sky-300/40 md:p-5"
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, delay: index * 0.025 }}
     >
-      {project.title}
-    </h3>
-    {compact ? (
-      <div className="rounded-xl border border-slate-300/70 dark:border-white/15 bg-white/40 dark:bg-white/5 p-3">
-        <button
-          type="button"
-          onClick={onToggleExpanded}
-          className="text-xs font-semibold uppercase tracking-wide text-slate-700 dark:text-slate-200"
-          aria-expanded={isExpanded}
-        >
-          {isExpanded ? "Hide Project Details" : "About Project"}
-        </button>
-        {isExpanded ? (
-          <p className="mt-2 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-            {project.desc}
-          </p>
-        ) : null}
-      </div>
-    ) : (
-      <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-        {project.desc}
-      </p>
-    )}
-    <div className="flex flex-wrap gap-2">
-      {project.tech.map((tech) => (
+      <div className="flex items-start justify-between gap-3">
+        <span className="rounded-full border border-sky-500/25 bg-sky-500/10 px-2.5 py-1 text-xs font-semibold text-sky-700 dark:text-sky-300">
+          {project.categories[0]}
+        </span>
         <span
-          key={tech}
-          className={`px-2.5 py-1 rounded text-xs font-mono border ${getTechColor(
-            tech
+          className={`shrink-0 rounded-full border px-2.5 py-1 text-xs font-semibold ${getStatusColor(
+            project.status
           )}`}
         >
-          {tech}
+          {project.status}
         </span>
-      ))}
-    </div>
-    <div className="flex items-center gap-4 pt-2">
-      <a
-        href={project.liveLink}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex items-center gap-2 text-sm text-sky-600 dark:text-sky-400 hover:text-sky-500 dark:hover:text-sky-300 transition-colors"
-      >
-        <LinkIcon size={16} />
-        Live Demo
-      </a>
-      <a
-        href={project.sourceLink}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors"
-      >
-        <FaGithub size={16} />
-        Source Code
-      </a>
-    </div>
-    <div className="pt-3 opacity-0 max-h-0 overflow-hidden translate-y-1 transition-all duration-300 group-hover:opacity-100 group-hover:max-h-40 group-hover:translate-y-0">
-      <LinkPreviewCard
-        url={project.liveLink}
-        label="Live Site Preview"
-        disabled={isAdminPreview(project.liveLink)}
-      />
-    </div>
-  </div>
+      </div>
+
+      <h3 className="mt-4 text-lg font-semibold leading-snug text-slate-950 dark:text-white">
+        {project.name}
+      </h3>
+      <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
+        {project.description}
+      </p>
+
+      <div className="mt-4">
+        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+          Key Features
+        </p>
+        <ul className="mt-2 space-y-2 text-sm leading-5 text-slate-700 dark:text-slate-300">
+          {project.features.map((feature) => (
+            <li key={feature} className="flex gap-2">
+              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-sky-500 dark:bg-sky-300" />
+              <span>{feature}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="mt-5 flex flex-wrap gap-2">
+        {project.techStack.map((tech) => (
+          <span
+            key={tech}
+            className={`rounded border px-2 py-1 text-[11px] font-mono ${getTechColor(
+              tech
+            )}`}
+          >
+            {tech}
+          </span>
+        ))}
+      </div>
+
+      {project.links?.length ? (
+        <div className="mt-5 flex flex-wrap gap-3 border-t border-slate-200 pt-4 dark:border-white/10">
+          {project.links.map((link) => {
+            const Icon = getLinkIcon(link.type);
+
+            return (
+              <a
+                key={`${project.name}-${link.href}`}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-sky-700 transition-colors hover:text-sky-500 dark:text-sky-300 dark:hover:text-sky-200"
+              >
+                <Icon size={15} />
+                {link.label}
+                <ExternalLink size={13} />
+              </a>
+            );
+          })}
+        </div>
+      ) : null}
+
+      {previewLink ? (
+        <div className="mt-auto pt-4 opacity-0 max-h-0 overflow-hidden translate-y-1 transition-all duration-300 group-hover:opacity-100 group-hover:max-h-40 group-hover:translate-y-0">
+          <LinkPreviewCard
+            url={previewLink.href}
+            label="Live Site Preview"
+            disabled={isAdminPreview(previewLink.href)}
+          />
+        </div>
+      ) : null}
+    </motion.article>
   );
 };
 
 const ProjectsContent = () => {
-  const ref = useRef<HTMLDivElement>(null);
-  const [scrollContainer, setScrollContainer] = useState<HTMLElement | null>(
-    null
-  );
-  const [expandedProjects, setExpandedProjects] = useState<number[]>([]);
+  const [activeFilter, setActiveFilter] = useState<ProjectFilter>("All");
+  const [projectView, setProjectView] = useState<ProjectView>("list");
 
-  useEffect(() => {
-    // Find the correct scroll container when the component mounts
-    setScrollContainer(document.getElementById("page-content"));
-  }, []);
+  const filteredProjects = useMemo(() => {
+    if (activeFilter === "All") {
+      return projectsData;
+    }
 
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    container: scrollContainer ? { current: scrollContainer } : undefined,
-    offset: ["start end", "end start"],
-  });
-
-  const height = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
-  const opacity = useTransform(scrollYProgress, [0, 0.1], [0, 1]);
-
-  const toggleExpandedProject = (index: number) => {
-    setExpandedProjects((prev) =>
-      prev.includes(index) ? prev.filter((item) => item !== index) : [...prev, index]
-    );
-  };
+    return projectsData.filter((project) => project.categories.includes(activeFilter));
+  }, [activeFilter]);
 
   return (
-    <>
-      <div className="md:hidden space-y-4">
-        {projectsData.map((project, index) => (
-          <motion.div
-            key={index}
-            className="rounded-2xl border border-slate-200 dark:border-white/20 bg-slate-100/80 dark:bg-white/5 p-4"
-            initial={false}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2, delay: index * 0.02 }}
-          >
-            <ProjectCard
-              project={project}
-              compact
-              isExpanded={expandedProjects.includes(index)}
-              onToggleExpanded={() => toggleExpandedProject(index)}
-            />
-          </motion.div>
-        ))}
-      </div>
+    <div className="space-y-8">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div className="max-w-2xl">
+          <p className="inline-flex items-center gap-2 rounded-full border border-sky-500/25 bg-sky-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-sky-700 dark:text-sky-300">
+            <Filter size={14} />
+            Featured Work
+          </p>
+          <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300">
+            SaaS products, utility tools, education platforms, AI-assisted media
+            tooling, church tech, HR systems, and mobile marketplace apps.
+          </p>
+        </div>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center lg:justify-end">
+          <p className="text-sm font-mono text-slate-500 dark:text-slate-400">
+            {filteredProjects.length} / {projectsData.length} projects
+          </p>
+          <div className="inline-flex w-fit rounded-full border border-slate-300 bg-white/60 p-1 dark:border-white/15 dark:bg-white/5">
+            {projectViews.map((view) => {
+              const isActive = projectView === view.value;
+              const Icon = view.icon;
 
-      <div ref={ref} className="relative hidden md:block">
-        <div className="absolute left-4 top-0 h-full w-0.5 bg-slate-200 dark:bg-gray-700/50"></div>
-        <motion.div
-          className="absolute left-4 top-0 w-0.5 bg-sky-500 dark:bg-sky-400"
-          style={{ height, opacity }}
-        />
-
-        <div className="space-y-12">
-          {projectsData.map((project, index) => (
-            <motion.div
-              key={index}
-              className="relative pl-12"
-              initial={false}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <ProjectCard project={project} />
-            </motion.div>
-          ))}
+              return (
+                <button
+                  key={view.value}
+                  type="button"
+                  aria-pressed={isActive}
+                  onClick={() => setProjectView(view.value)}
+                  className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
+                    isActive
+                      ? "bg-sky-500/20 text-sky-800 dark:text-sky-100"
+                      : "text-slate-500 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
+                  }`}
+                >
+                  <Icon size={14} />
+                  {view.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
-    </>
+
+      <div className="flex gap-2 overflow-x-auto pb-2 md:flex-wrap md:overflow-visible">
+        {filters.map((filter) => {
+          const isActive = activeFilter === filter;
+
+          return (
+            <button
+              key={filter}
+              type="button"
+              onClick={() => setActiveFilter(filter)}
+              className={`shrink-0 rounded-full border px-3 py-2 text-sm font-medium transition-colors ${
+                isActive
+                  ? "border-sky-400 bg-sky-500/20 text-sky-800 dark:text-sky-100"
+                  : "border-slate-300 bg-white/50 text-slate-600 hover:border-sky-400/60 hover:text-slate-900 dark:border-white/15 dark:bg-white/5 dark:text-slate-300 dark:hover:text-white"
+              }`}
+            >
+              {filter}
+            </button>
+          );
+        })}
+      </div>
+
+      <div
+        className={`grid grid-cols-1 gap-4 ${
+          projectView === "list"
+            ? "mx-auto max-w-4xl"
+            : "xl:grid-cols-2"
+        }`}
+      >
+        {filteredProjects.map((project, index) => (
+          <ProjectCard key={project.name} project={project} index={index} />
+        ))}
+      </div>
+    </div>
   );
 };
 
 const ProjectComponent = () => {
   return (
     <motion.div
-      className="w-full max-w-2xl mx-auto bg-slate-100/90 dark:bg-slate-900/90 md:supports-[backdrop-filter]:bg-white/10 md:supports-[backdrop-filter]:backdrop-blur-md border border-slate-200 dark:border-white/20 rounded-2xl md:rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl my-8 md:my-16"
-      initial={{ opacity: 0, scale: 0.95 }}
+      className="my-8 w-full max-w-7xl rounded-2xl border border-slate-200 bg-slate-100/90 p-4 shadow-2xl dark:border-white/20 dark:bg-slate-900/90 md:my-16 md:rounded-3xl md:p-8 md:supports-[backdrop-filter]:bg-white/10 md:supports-[backdrop-filter]:backdrop-blur-md"
+      initial={{ opacity: 0, scale: 0.98 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{
         duration: 0.5,
@@ -489,9 +305,15 @@ const ProjectComponent = () => {
         delay: 0.4,
       }}
     >
-      <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-8 text-center font-mono">
-        Projects
-      </h2>
+      <div className="mx-auto mb-8 max-w-3xl text-center">
+        <h2 className="text-3xl font-bold text-slate-900 dark:text-white md:text-4xl">
+          Projects
+        </h2>
+        <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300 md:text-base">
+          A curated view of full-stack systems, product builds, and platform
+          work organized by domain.
+        </p>
+      </div>
       <ProjectsContent />
     </motion.div>
   );
