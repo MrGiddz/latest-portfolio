@@ -47,6 +47,13 @@ export const projectsData: PortfolioProject[] = [
     techStack: ["React", "TypeScript", "TanStack", "NestJS", "PostgreSQL", "TypeORM", "RBAC"],
     categories: ["HR Tech", "SaaS"],
     status: "In Progress",
+       links: [
+      {
+        label: "Live Preview",
+        href: "https://worksphere-hr-hub.vercel.app/",
+        type: "Live Demo",
+      },
+    ],
   },
   {
     name: "Convertify Pro",
@@ -62,6 +69,13 @@ export const projectsData: PortfolioProject[] = [
     techStack: ["Node.js", "TypeScript", "Express", "Redis", "RabbitMQ", "PostgreSQL", "Prisma", "Socket.IO"],
     categories: ["SaaS", "Utility Apps"],
     status: "In Progress",
+       links: [
+      {
+        label: "Live Preview",
+        href: "https://convertify-pro.vercel.app/",
+        type: "Live Demo",
+      },
+    ],
   },
   {
     name: "ChurchCast AI",
@@ -79,7 +93,7 @@ export const projectsData: PortfolioProject[] = [
     status: "In Progress",
   },
   {
-    name: "KrestCore Hub",
+    name: "The Redeemed Christian Church Of God Ceaseless Joy Area HQ, Makogi Ogun State Website",
     description:
       "A modular church operations platform for managing people, ministries, communications, giving, media, and administrative workflows.",
     features: [
@@ -93,9 +107,9 @@ export const projectsData: PortfolioProject[] = [
     status: "Production",
     links: [
       {
-        label: "Admin Preview",
-        href: "https://admin.rccg-cjp-admin.vercel.app",
-        type: "Admin",
+        label: "Live Preview",
+        href: "https://rccgceaselessjoy.com",
+        type: "Live Demo",
       },
     ],
   },
@@ -112,9 +126,16 @@ export const projectsData: PortfolioProject[] = [
     techStack: ["React", "TypeScript", "Vite", "Tailwind CSS", "API Integration", "TanStack Query"],
     categories: ["Utility Apps"],
     status: "Completed",
+       links: [
+      {
+        label: "App Preview",
+        href: "https://word-finder-pro-ui.vercel.app/",
+        type: "Live Demo",
+      },
+    ],
   },
   {
-    name: "TakeUp LMS",
+    name: "TechOpp LMS",
     description:
       "A learning management system for secondary school students with practical academic workflows and a polished student-friendly dashboard.",
     features: [
@@ -140,6 +161,9 @@ export const projectsData: PortfolioProject[] = [
     techStack: ["React Native", "TypeScript", "Redux Toolkit", "Node.js", "NestJS", "PostgreSQL", "Mobile Authentication"],
     categories: ["Mobile Apps", "SaaS"],
     status: "Production",
+      links: [
+      { label: "Website", href: "https://alabamarketplace.ng", type: "Live Demo" },
+    ],
   },
   {
     name: "Watermark App",
